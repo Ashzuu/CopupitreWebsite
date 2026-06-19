@@ -1,0 +1,36 @@
+@use '../../../../styles/variables' as *;
+.org-card {
+  background: $color-background-alt;
+  border-radius: $border-radius-md;
+  padding: $spacing-md;
+  border-left: 4px solid $color-primary;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: $spacing-xs;
+
+    h3 {
+      font-size: $font-size-lg;
+      margin: 0;
+    }
+  }
+
+  &__city {
+    font-size: $font-size-xs;
+    color: $color-text-light;
+    background: rgba($color-discrete, 0.2);
+    padding: 2px 6px;
+    border-radius: $border-radius-sm;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__desc {
+    font-size: $font-size-sm;
+    color: $color-text;
+    margin: 0;
+  }
+}

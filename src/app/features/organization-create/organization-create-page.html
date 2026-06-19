@@ -1,0 +1,83 @@
+<copupitre-base-layout>
+  <div class="container section create-page">
+    <div class="card">
+      <h1><i class="pi pi-building"></i> Créer une organisation</h1>
+      <p class="subtitle">Référencez votre orchestre, harmonie ou ensemble sur Copupitre.</p>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-layout">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Nom de l'organisation <span class="required">*</span></label>
+            <input type="text" id="name" formControlName="name" class="input-field" placeholder="Ex: Orchestre Symphonique...">
+          </div>
+          <div class="form-group">
+            <label for="musicianCount">Nombre de musiciens <span class="required">*</span></label>
+            <input type="number" id="musicianCount" formControlName="musicianCount" class="input-field" min="1" placeholder="Ex: 50">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description <span class="required">*</span></label>
+          <textarea id="description" formControlName="description" class="input-field" rows="4" placeholder="Présentation de votre ensemble, répertoire..."></textarea>
+        </div>
+
+        <div class="rehearsals-section">
+          <h2>Répétitions Régulières</h2>
+          <p class="section-desc">Pour les répétitions qui ont lieu toutes les semaines (ex: Tous les lundis de 20h à 22h).</p>
+          
+          <div formArrayName="regularRehearsals" class="manual-list">
+            @for (regularCtrl of regularRehearsals.controls; track $index) {
+              <div [formGroupName]="$index" class="manual-row">
+                <select formControlName="dayOfWeek" class="input-field" title="Jour de la semaine">
+                  <option value="MONDAY">Lundi</option>
+                  <option value="TUESDAY">Mardi</option>
+                  <option value="WEDNESDAY">Mercredi</option>
+                  <option value="THURSDAY">Jeudi</option>
+                  <option value="FRIDAY">Vendredi</option>
+                  <option value="SATURDAY">Samedi</option>
+                  <option value="SUNDAY">Dimanche</option>
+                </select>
+                <input type="time" formControlName="startTime" class="input-field" title="Heure de début">
+                <input type="time" formControlName="endTime" class="input-field" title="Heure de fin">
+                <input type="text" formControlName="location" class="input-field" placeholder="Lieu (Ex: Conservatoire)">
+                <button type="button" class="btn btn--icon btn--danger" (click)="removeRegularRehearsal($index)">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            }
+          </div>
+          <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addRegularRehearsal()">
+            <i class="pi pi-plus"></i> Ajouter une répétition régulière
+          </button>
+        </div>
+
+        <div class="rehearsals-section">
+          <h2>Répétitions Irrégulières</h2>
+          <p class="section-desc">Pour les répétitions avec des dates précises, générales, raccords, etc.</p>
+
+          <div formArrayName="manualRehearsals" class="manual-list">
+            @for (rehearsalCtrl of manualRehearsals.controls; track $index) {
+              <div [formGroupName]="$index" class="manual-row">
+                <input type="date" formControlName="date" class="input-field" title="Date">
+                <input type="time" formControlName="startTime" class="input-field" title="Heure de début">
+                <input type="time" formControlName="endTime" class="input-field" title="Heure de fin">
+                <input type="text" formControlName="location" class="input-field" placeholder="Lieu">
+                <button type="button" class="btn btn--icon btn--danger" (click)="removeManualRehearsal($index)">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            }
+          </div>
+          <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addManualRehearsal()">
+            <i class="pi pi-plus"></i> Ajouter une date spécifique
+          </button>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn--primary">Créer l'organisation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</copupitre-base-layout>

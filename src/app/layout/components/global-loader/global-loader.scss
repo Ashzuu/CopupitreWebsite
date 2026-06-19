@@ -1,0 +1,41 @@
+@use '../../../styles/variables' as *;
+
+.global-loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  pointer-events: all;
+}
+
+.global-loader-content {
+  background: $color-background;
+  padding: $spacing-xl $spacing-3xl;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-xl;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-md;
+
+  i {
+    font-size: 3rem;
+    color: $color-primary;
+  }
+
+  p {
+    font-family: $font-family-heading;
+    font-size: $font-size-lg;
+    color: $color-secondary;
+    font-weight: 600;
+    margin: 0;
+  }
+}

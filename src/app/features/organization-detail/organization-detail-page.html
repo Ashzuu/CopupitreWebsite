@@ -1,0 +1,100 @@
+<copupitre-base-layout>
+  <div class="org-detail container section">
+    @if (service.error()) {
+      <div class="org-detail__error">
+        <i class="pi pi-exclamation-triangle"></i>
+        <p>{{ service.error() }}</p>
+      </div>
+    } @else if (service.organization(); as org) {
+      <div class="org-header">
+        <div class="org-header__content">
+          <h1>{{ org.name }}</h1>
+          <p class="org-header__city"><i class="pi pi-map-marker"></i> {{ org.city }}</p>
+          <p class="org-header__desc">{{ org.description }}</p>
+        </div>
+        <div class="org-header__actions">
+          <button class="btn btn--primary" (click)="service.subscribeToAnnouncements()">
+            <i class="pi pi-bell"></i> M'avertir des annonces
+          </button>
+        </div>
+      </div>
+
+      <div class="org-grid">
+        <!-- Colonne Principale -->
+        <div class="org-col org-col--main">
+          
+          <!-- Renforts potentiels -->
+          <section class="org-section">
+            <h2 class="org-section__title"><i class="pi pi-megaphone"></i> Renforts recherchés actuellement</h2>
+            @if (service.announcements().length > 0) {
+              <copupitre-reinforcement-list [announcements]="service.announcements()"></copupitre-reinforcement-list>
+            } @else {
+              <p class="empty-state">Aucun besoin de renfort immédiat.</p>
+            }
+          </section>
+
+          <!-- Concerts -->
+          <section class="org-section">
+            <h2 class="org-section__title"><i class="pi pi-ticket"></i> Prochains Concerts</h2>
+            @if (org.concerts && org.concerts.length > 0) {
+              <div class="concert-list">
+                @for (concert of org.concerts; track concert.id) {
+                  <div class="concert-card">
+                    <div class="concert-card__date">
+                      <span class="day">{{ concert.date | date:'dd' }}</span>
+                      <span class="month">{{ concert.date | date:'MMM' }}</span>
+                    </div>
+                    <div class="concert-card__info">
+                      <h3>{{ concert.title }}</h3>
+                      <p class="location"><i class="pi pi-map-marker"></i> {{ concert.location }}</p>
+                      <p class="desc">{{ concert.description }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="empty-state">Aucun concert prévu prochainement.</p>
+            }
+          </section>
+
+        </div>
+
+        <!-- Colonne Secondaire -->
+        <div class="org-col org-col--side">
+          
+          <!-- Horaires -->
+          <section class="org-section">
+            <h2 class="org-section__title"><i class="pi pi-calendar"></i> Répétitions</h2>
+            @if (org.rehearsalSchedules && org.rehearsalSchedules.length > 0) {
+              <copupitre-schedule-table [schedules]="org.rehearsalSchedules"></copupitre-schedule-table>
+            } @else {
+              <p class="empty-state">Aucun horaire renseigné.</p>
+            }
+          </section>
+
+          <!-- Besoins annuels -->
+          <section class="org-section">
+            <h2 class="org-section__title"><i class="pi pi-users"></i> Besoins Annuels</h2>
+            <p class="org-section__subtitle">Instruments recherchés pour rejoindre l'orchestre à l'année.</p>
+            @if (org.annualNeeds && org.annualNeeds.length > 0) {
+              <ul class="needs-list">
+                @for (need of org.annualNeeds; track need.id) {
+                  <li class="needs-item">
+                    <div class="needs-item__header">
+                      <strong>{{ need.instrument }}</strong>
+                      <span class="badge">{{ need.count }} place(s)</span>
+                    </div>
+                    <p class="needs-item__desc">{{ need.description }}</p>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="empty-state">Aucun recrutement annuel en cours.</p>
+            }
+          </section>
+
+        </div>
+      </div>
+    }
+  </div>
+</copupitre-base-layout>

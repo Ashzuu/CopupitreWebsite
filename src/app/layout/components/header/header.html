@@ -1,0 +1,30 @@
+<header class="header">
+  <div class="container header__inner">
+    <a routerLink="/dashboard" class="header__logo">
+      <i class="pi pi-music"></i>
+      <span>Copupitre</span>
+    </a>
+
+    <button class="header__mobile-toggle" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()">
+      <i class="pi" [class]="menuOpen() ? 'pi-times' : 'pi-bars'"></i>
+    </button>
+
+    <nav class="header__nav" [class.header__nav--open]="menuOpen()">
+      <ul class="header__nav-list">
+        <li><a routerLink="/renforts" class="header__nav-link" (click)="closeMenu()">Renforts</a></li>
+        <li><a routerLink="/materiels" class="header__nav-link" (click)="closeMenu()">Matériel</a></li>
+        <li><a routerLink="/a-propos" class="header__nav-link" (click)="closeMenu()">À propos</a></li>
+      </ul>
+
+      <div class="header__actions">
+        @if (authService.isAuthenticated()) {
+          <a routerLink="/dashboard" class="btn btn--primary" (click)="closeMenu()">Tableau de bord</a>
+          <button class="btn btn--secondary" (click)="logout()">Déconnexion</button>
+        } @else {
+          <a routerLink="/login" class="btn btn--secondary" (click)="closeMenu()">Connexion</a>
+          <a routerLink="/login" class="btn btn--primary" (click)="closeMenu()">Inscription</a>
+        }
+      </div>
+    </nav>
+  </div>
+</header>

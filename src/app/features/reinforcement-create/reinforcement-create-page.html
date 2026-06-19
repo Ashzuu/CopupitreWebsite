@@ -1,0 +1,65 @@
+<copupitre-base-layout>
+  <div class="container section create-page">
+    <div class="card">
+      <h1><i class="pi pi-plus-circle"></i> Publier une annonce de renfort</h1>
+      <p class="subtitle">Indiquez les besoins de votre organisation pour un événement spécifique.</p>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-layout">
+        
+        <div class="form-group">
+          <label for="org">Organisation <span class="required">*</span></label>
+          <select id="org" formControlName="organizationId" class="input-field">
+            <option value="">Sélectionnez une organisation...</option>
+            @for (org of userOrganizations(); track org.id) {
+              <option [value]="org.id">{{ org.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="eventDate">Date de l'événement <span class="required">*</span></label>
+            <input type="date" id="eventDate" formControlName="eventDate" class="input-field">
+          </div>
+          <div class="form-group">
+            <label for="location">Lieu de l'événement <span class="required">*</span></label>
+            <input type="text" id="location" formControlName="location" class="input-field" placeholder="Ex: Salle Pleyel, Paris">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description <span class="required">*</span></label>
+          <textarea id="description" formControlName="description" class="input-field" rows="4" placeholder="Détails du concert, programme..."></textarea>
+        </div>
+
+        <div class="instruments-section">
+          <h2>Instruments recherchés</h2>
+          <div formArrayName="instruments" class="instruments-list">
+            @for (instrumentCtrl of instruments.controls; track $index) {
+              <div [formGroupName]="$index" class="instrument-row">
+                <div class="form-group">
+                  <input type="text" formControlName="name" class="input-field" placeholder="Ex: Violon, Trompette...">
+                </div>
+                <div class="form-group count-group">
+                  <input type="number" formControlName="count" class="input-field" min="1" placeholder="Qté">
+                </div>
+                @if (instruments.length > 1) {
+                  <button type="button" class="btn btn--icon btn--danger" (click)="removeInstrument($index)">
+                    <i class="pi pi-trash"></i>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+          <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addInstrument()">
+            <i class="pi pi-plus"></i> Ajouter un instrument
+          </button>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn--primary">Publier l'annonce</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</copupitre-base-layout>

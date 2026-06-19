@@ -1,0 +1,94 @@
+@use '../../styles/variables' as *;
+
+.create-page {
+  max-width: 800px;
+}
+
+.card {
+  background: $color-background;
+  padding: $spacing-2xl;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+
+  h1 {
+    font-size: $font-size-2xl;
+    color: $color-primary-dark;
+    margin-bottom: $spacing-xs;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .subtitle {
+    color: $color-text-light;
+    margin-bottom: $spacing-xl;
+  }
+}
+
+.form-layout {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+
+  > * {
+    flex: 1 1 200px;
+  }
+}
+
+.rehearsals-section {
+  background: $color-background-alt;
+  padding: $spacing-lg;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba($color-discrete, 0.2);
+
+  h2 {
+    font-size: $font-size-lg;
+    color: $color-secondary;
+    margin-bottom: $spacing-xs;
+  }
+
+  .section-desc {
+    color: $color-text-light;
+    font-size: $font-size-sm;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.manual-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.manual-row {
+  display: flex;
+  gap: $spacing-sm;
+  align-items: center;
+
+  .input-field {
+    flex: 1;
+    min-width: 0; // Prevent overflow
+  }
+
+  input[type="time"] {
+    flex: 0 0 100px;
+  }
+}
+
+.add-btn {
+  margin-top: $spacing-md;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: $spacing-xl;
+  padding-top: $spacing-xl;
+  border-top: 1px solid rgba($color-discrete, 0.2);
+}

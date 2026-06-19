@@ -1,1 +1,240 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'app/styles/variables' as *;
+
+// === GOOGLE FONTS ===
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+// === GLOBAL RESET ===
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100dvh;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  color: $color-text;
+  background-color: $color-background;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-family-heading;
+  font-weight: 700;
+  line-height: 1.2;
+  color: $color-secondary;
+}
+
+:root {
+  height: 100dvh;
+}
+
+a {
+  color: $color-primary;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-primary-dark;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+    border-radius: $border-radius-sm;
+  }
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+    border-radius: $border-radius-sm;
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+// === UTILITY CLASSES ===
+.container {
+  width: 80%;
+  margin-inline: auto;
+  padding-inline: $spacing-md;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// === BUTTON STYLES ===
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-lg;
+  font-weight: 600;
+  border-radius: $border-radius-lg;
+  transition: all $transition-base;
+  text-decoration: none;
+  font-size: $font-size-base;
+
+  &--primary {
+    background: $color-primary;
+    color: $color-text-inverse;
+    box-shadow: 0 4px 14px rgba(239, 131, 84, 0.35);
+
+    &:hover {
+      background: $color-primary-dark;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 131, 84, 0.45);
+      color: $color-text-inverse;
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &--secondary {
+    background: transparent;
+    color: $color-secondary;
+    border: 2px solid $color-secondary;
+
+    &:hover {
+      background: $color-secondary;
+      color: $color-text-inverse;
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &--lg {
+    padding: $spacing-md $spacing-xl;
+    font-size: $font-size-lg;
+    border-radius: $border-radius-xl;
+  }
+
+  &--small {
+    padding: $spacing-xs $spacing-sm;
+    font-size: 0.85rem;
+    border-radius: $border-radius-sm;
+  }
+
+  &--icon {
+    padding: $spacing-sm;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $border-radius-md;
+  }
+
+  &--danger {
+    background: #fff0f0;
+    color: #e74c3c;
+    border: 1px solid rgba(#e74c3c, 0.2);
+
+    &:hover {
+      background: #e74c3c;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// === SECTION BASE ===
+.section {
+  padding: $spacing-3xl 0;
+
+  &__title {
+    font-size: $font-size-3xl;
+    text-align: center;
+    margin-bottom: $spacing-md;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: $font-size-4xl;
+    }
+  }
+
+  &__subtitle {
+    text-align: center;
+    color: $color-text-light;
+    font-size: $font-size-lg;
+    max-width: 600px;
+    margin-inline: auto;
+    margin-bottom: $spacing-3xl;
+  }
+}
+
+// === FORM STYLES ===
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+
+  label {
+    font-weight: 500;
+    color: $color-primary-dark;
+  }
+}
+
+.input-field {
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid rgba($color-discrete, 0.3);
+  border-radius: $border-radius-md;
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  color: $color-text;
+  background-color: $color-background;
+  transition: all $transition-fast;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+  }
+
+  &::placeholder {
+    color: rgba($color-text-light, 0.6);
+  }
+}
+
+.required {
+  color: #e74c3c;
+  margin-left: 2px;
+}

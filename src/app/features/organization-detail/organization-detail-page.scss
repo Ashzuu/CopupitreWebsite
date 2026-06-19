@@ -1,0 +1,239 @@
+@use '../../styles/variables' as *;
+
+.org-detail {
+  padding-top: $spacing-xl;
+  padding-bottom: $spacing-xl;
+}
+
+.org-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: $color-background;
+  padding: $spacing-xl;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  margin-bottom: $spacing-xl;
+  border-left: 6px solid $color-primary;
+
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__content {
+    h1 {
+      font-size: $font-size-3xl;
+      font-family: $font-family-heading;
+      color: $color-primary-dark;
+      margin-bottom: $spacing-xs;
+    }
+  }
+
+  &__city {
+    color: $color-text-light;
+    font-weight: 600;
+    margin-bottom: $spacing-sm;
+    i { margin-right: 4px; }
+  }
+
+  &__desc {
+    color: $color-text;
+    max-width: 800px;
+    line-height: 1.6;
+  }
+
+  &__actions {
+    flex-shrink: 0;
+  }
+}
+
+.org-grid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+
+  @media (min-width: $breakpoint-lg) {
+    flex-direction: row;
+    > :nth-child(1) { flex: 2; }
+    > :nth-child(2) { flex: 1; }
+  }
+}
+
+.org-col {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+.org-section {
+  background: $color-background;
+  padding: $spacing-lg;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+
+  &__title {
+    font-size: $font-size-xl;
+    font-family: $font-family-heading;
+    color: $color-secondary;
+    margin-bottom: $spacing-md;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    i {
+      color: $color-primary;
+    }
+  }
+
+  &__subtitle {
+    font-size: $font-size-sm;
+    color: $color-text-light;
+    margin-top: -$spacing-sm;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.empty-state {
+  color: $color-discrete;
+  font-style: italic;
+  font-size: $font-size-sm;
+  padding: $spacing-md;
+  text-align: center;
+  background: $color-background-alt;
+  border-radius: $border-radius-md;
+}
+
+/* Concert List */
+.concert-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.concert-card {
+  display: flex;
+  gap: $spacing-md;
+  background: $color-background-alt;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba($color-discrete, 0.2);
+  transition: transform $transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &__date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: $color-primary;
+    color: $color-text-inverse;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius-sm;
+    min-width: 80px;
+
+    .day {
+      font-size: $font-size-xl;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .month {
+      font-size: $font-size-sm;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+  }
+
+  &__info {
+    flex: 1;
+
+    h3 {
+      font-size: $font-size-lg;
+      margin-bottom: $spacing-xs;
+      color: $color-secondary;
+    }
+
+    .location {
+      font-size: $font-size-xs;
+      color: $color-text-light;
+      margin-bottom: $spacing-xs;
+      i { margin-right: 4px; }
+    }
+
+    .desc {
+      font-size: $font-size-sm;
+      color: $color-text;
+      margin: 0;
+    }
+  }
+}
+
+/* Needs List */
+.needs-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.needs-item {
+  background: $color-background-alt;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  border-left: 3px solid $color-primary;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-xs;
+
+    strong {
+      color: $color-secondary;
+    }
+
+    .badge {
+      background: rgba($color-primary, 0.1);
+      color: $color-primary-dark;
+      font-size: $font-size-xs;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: $border-radius-sm;
+    }
+  }
+
+  &__desc {
+    font-size: $font-size-sm;
+    color: $color-text;
+    margin: 0;
+  }
+}
+
+/* Loading & Error */
+.org-detail__loading, .org-detail__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-3xl;
+  gap: $spacing-md;
+  text-align: center;
+  
+  p {
+    color: $color-text-light;
+    font-size: $font-size-lg;
+  }
+}
+
+.org-detail__error {
+  i {
+    font-size: 3rem;
+    color: $color-error;
+  }
+}

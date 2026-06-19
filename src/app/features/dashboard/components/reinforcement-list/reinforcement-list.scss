@@ -1,0 +1,66 @@
+@use '../../../../styles/variables' as *;
+.announcement-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+.announcement-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md;
+  background: $color-background-alt;
+  border-radius: $border-radius-md;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: rgba($color-primary, 0.05);
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+  }
+
+  &__main h4 {
+    margin: 0 0 $spacing-xs 0;
+    font-size: $font-size-base;
+  }
+
+  &__meta {
+    display: flex;
+    gap: $spacing-md;
+    font-size: $font-size-xs;
+    color: $color-text-light;
+  }
+
+  &__side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: $spacing-xs;
+
+    @media (max-width: $breakpoint-sm) {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+}
+.status-badge {
+  font-size: $font-size-xs;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: $border-radius-sm;
+
+  &--open { background: rgba($color-success, 0.1); color: $color-success; }
+  &--objective_met { background: rgba($color-warning, 0.1); color: #B38600; }
+  &--closed { background: rgba($color-discrete, 0.2); color: $color-text-light; }
+}
+.instrument-tag {
+  font-size: $font-size-xs;
+  background: rgba($color-discrete,0.5);
+  color: $color-text;
+  padding: 2px 8px;
+  border-radius: $border-radius-sm;
+}

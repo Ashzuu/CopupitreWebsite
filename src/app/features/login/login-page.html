@@ -1,0 +1,110 @@
+<copupitre-base-layout [Footer]="false" [Header]="false">
+  <div class="auth-container section">
+    <div class="auth-card">
+      @if (isLoginMode()) {
+        <div class="auth-header">
+          <h1>Connexion</h1>
+          <p>Accédez à votre espace Copupitre</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()" class="auth-form">
+          <div class="form-group">
+            <label for="identifier">Identifiant (Email ou Pseudo)</label>
+            <input id="identifier" type="text" formControlName="identifier" class="form-control" placeholder="Votre identifiant">
+            @if (loginForm.controls.identifier.touched && loginForm.controls.identifier.invalid) {
+              <span class="error-msg">L'identifiant est requis.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input id="password" type="password" formControlName="password" class="form-control" placeholder="Votre mot de passe">
+            @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+              <span class="error-msg">Le mot de passe est requis.</span>
+            }
+          </div>
+
+          <div class="form-group form-group--checkbox">
+            <input id="rememberMe" type="checkbox" formControlName="rememberMe">
+            <label for="rememberMe">Restez connecté</label>
+          </div>
+
+          @if (errorMessage()) {
+            <div class="auth-error">{{ errorMessage() }}</div>
+          }
+
+          <button type="submit" class="btn btn--primary auth-submit">Se connecter</button>
+
+          <div class="auth-footer">
+            <a href="javascript:void(0)" (click)="toggleMode()" class="discrete-link">Pas encore de compte ? S'inscrire.</a>
+          </div>
+        </form>
+      } @else {
+        <div class="auth-header">
+          <h1>Inscription</h1>
+          <p>Rejoignez la communauté Copupitre</p>
+          <div class="rgpd-notice">
+            <i class="pi pi-shield"></i> Vos données sont sécurisées. Conformément au RGPD, votre adresse email ne sera jamais affichée publiquement.
+          </div>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmitRegister()" class="auth-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">Prénom *</label>
+              <input id="firstName" type="text" formControlName="firstName" class="form-control">
+            </div>
+            <div class="form-group">
+              <label for="lastName">Nom *</label>
+              <input id="lastName" type="text" formControlName="lastName" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="username">Nom d'utilisateur (Pseudo) *</label>
+            <input id="username" type="text" formControlName="username" class="form-control">
+            <small>Doit être unique.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Adresse Email *</label>
+            <input id="email" type="email" formControlName="email" class="form-control">
+            <small>Doit être unique et ne sera pas rendue publique.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-password">Mot de passe *</label>
+            <input id="reg-password" type="password" formControlName="password" class="form-control">
+            <small>8 caractères minimum.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="mainInstrument">Instrument principal *</label>
+            <input id="mainInstrument" type="text" formControlName="mainInstrument" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="secondaryInstruments">Instruments secondaires</label>
+            <input id="secondaryInstruments" type="text" formControlName="secondaryInstruments" class="form-control" placeholder="Ex: Piano, Flûte... (Optionnel)">
+          </div>
+
+          <div class="form-group">
+            <label for="yearsOfPractice">Années de pratique (Optionnel)</label>
+            <input id="yearsOfPractice" type="number" formControlName="yearsOfPractice" class="form-control" min="0">
+          </div>
+
+          <div class="form-group">
+            <label for="musicalDescription">Description musicale (Optionnel)</label>
+            <textarea id="musicalDescription" formControlName="musicalDescription" class="form-control" rows="3" placeholder="Parlez de votre parcours musical..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn--primary auth-submit">S'inscrire</button>
+
+          <div class="auth-footer">
+            <a href="javascript:void(0)" (click)="toggleMode()" class="discrete-link">Déjà un compte ? Se connecter.</a>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</copupitre-base-layout>

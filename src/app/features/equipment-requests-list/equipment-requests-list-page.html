@@ -1,0 +1,22 @@
+<copupitre-base-layout>
+  <div class="container section">
+    <div class="header-section">
+      <h1><i class="pi pi-box"></i> Demandes de matériel</h1>
+      <p class="subtitle">Aidez d'autres orchestres en leur prêtant du matériel ou des instruments.</p>
+    </div>
+
+    <div class="filters-section">
+      <input type="text" [formControl]="searchCtrl" class="input-field" placeholder="Rechercher un instrument, une organisation...">
+    </div>
+
+    <div class="results-section">
+      @if (filteredRequests().length > 0) {
+        <copupitre-equipment-request-list [requests]="filteredRequests()"></copupitre-equipment-request-list>
+      } @else {
+        <div class="empty-state">
+          <p>Aucune demande de matériel trouvée.</p>
+        </div>
+      }
+    </div>
+  </div>
+</copupitre-base-layout>

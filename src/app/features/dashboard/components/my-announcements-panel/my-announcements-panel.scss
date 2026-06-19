@@ -1,0 +1,71 @@
+@use '../../../../styles/variables' as *;
+.my-announcements {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+.announcement-card {
+  border: 1px solid rgba($color-discrete, 0.3);
+  border-radius: $border-radius-md;
+  padding: $spacing-md;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-sm;
+    border-bottom: 1px dashed rgba($color-discrete, 0.3);
+
+    h4 { margin: 0; }
+  }
+}
+.count-badge {
+  font-size: $font-size-xs;
+  background: rgba($color-primary, 0.1);
+  color: $color-primary-dark;
+  padding: 2px 8px;
+  border-radius: $border-radius-sm;
+  font-weight: 600;
+}
+.responses-section {
+  h5 {
+    font-size: $font-size-sm;
+    color: $color-text-light;
+    margin: 0 0 $spacing-sm 0;
+  }
+}
+.responses-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+.response-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: $color-background-alt;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    i { color: $color-primary; }
+  }
+}
+.response-status {
+  font-size: $font-size-xs;
+  font-weight: 600;
+  &--pending { color: $color-warning; }
+  &--accepted { color: $color-success; }
+  &--rejected { color: $color-error; }
+}
+.no-responses {
+  font-size: $font-size-sm;
+  color: $color-discrete;
+  font-style: italic;
+  margin: 0;
+}

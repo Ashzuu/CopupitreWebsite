@@ -1,0 +1,18 @@
+<div class="equipment-list">
+  @for (req of requests(); track req.id) {
+    <div class="equipment-item">
+      <div class="equipment-item__main">
+        <h4>{{ req.title }} ({{ req.equipmentName }})</h4>
+        <div class="equipment-item__meta">
+          <span><i class="pi pi-building"></i> {{ req.organizationName }}</span>
+          <span><i class="pi pi-clock"></i> Durée: {{ req.duration }}</span>
+        </div>
+      </div>
+      <div class="equipment-item__side">
+        <span class="status-badge" [class]="'status-badge--' + req.status | lowercase">
+          {{ translateStatus(req.status) }}
+        </span>
+      </div>
+    </div>
+  }
+</div>

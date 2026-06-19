@@ -1,0 +1,9 @@
+<div class="stat-card" [style.border-bottom-color]="accentColor()">
+  <div class="stat-card__icon" [style.color]="accentColor()" [style.background-color]="accentColor() + '20'">
+    <i class="pi" [class]="icon()"></i>
+  </div>
+  <div class="stat-card__content">
+    <div class="stat-card__value">{{ value() }}</div>
+    <div class="stat-card__label">{{ label() }}</div>
+  </div>
+</div>

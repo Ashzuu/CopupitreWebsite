@@ -1,0 +1,173 @@
+@use '../../styles/variables' as *;
+
+:host {
+  width: 100dvh;
+  height: 100vh;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+}
+
+.auth-card {
+  background: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-lg;
+  padding: $spacing-xl;
+  width: 100%;
+  max-width: 800px;
+  border: 1px solid rgba($color-discrete, 0.2);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: $spacing-xl;
+
+  h1 {
+    font-size: $font-size-4xl;
+    font-family: $font-family-heading;
+    color: $color-primary-dark;
+    margin-bottom: $spacing-xs;
+  }
+
+  p {
+    color: $color-text-light;
+    margin: 0;
+  }
+}
+
+.rgpd-notice {
+  background: rgba($color-success, 0.1);
+  color: $color-success;
+  padding: $spacing-sm;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-xs;
+  margin-top: $spacing-md;
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+  text-align: left;
+  line-height: 1.4;
+
+  i {
+    margin-top: 2px;
+  }
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.form-row {
+  display: flex;
+  gap: $spacing-md;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+  }
+
+  .form-group {
+    flex: 1;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  label {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-text;
+  }
+
+  small {
+    font-size: $font-size-xs;
+    color: $color-discrete;
+  }
+
+  &--checkbox {
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-sm;
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: $color-primary;
+    }
+
+    label {
+      font-weight: 400;
+      cursor: pointer;
+    }
+  }
+}
+
+.form-control {
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid rgba($color-discrete, 0.5);
+  border-radius: $border-radius-sm;
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  color: $color-text;
+  background: $color-background;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+  }
+}
+
+textarea.form-control {
+  resize: vertical;
+}
+
+.error-msg {
+  color: $color-error;
+  font-size: $font-size-xs;
+  font-weight: 600;
+}
+
+.auth-error {
+  color: $color-error;
+  background: rgba($color-error, 0.1);
+  padding: $spacing-sm;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  text-align: center;
+}
+
+.auth-submit {
+  margin-top: $spacing-md;
+  width: 100%;
+  padding: $spacing-md;
+  font-size: $font-size-base;
+}
+
+.auth-footer {
+  margin-top: $spacing-lg;
+  text-align: center;
+  padding-top: $spacing-md;
+  border-top: 1px solid rgba($color-discrete, 0.2);
+}
+
+.discrete-link {
+  color: $color-text-light;
+  font-size: $font-size-sm;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-primary;
+    text-decoration: underline;
+  }
+}

@@ -3,6 +3,21 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@style": [
+        "src/styles/variables.scss"
+      ],
+      "@services/*": [
+        "src/app/services/*"
+      ],
+      "@layouts/*": [
+        "src/app/layouts/*"
+      ],
+      "@models/*": [
+        "src/app/models/*"
+      ],
+    },
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

@@ -1,0 +1,111 @@
+@use '../../../styles/variables' as *;
+
+.footer {
+  background-color: $color-secondary;
+  color: $color-text-inverse;
+  padding-top: $spacing-3xl;
+  margin-top: auto;
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2xl;
+    margin-bottom: $spacing-3xl;
+
+    @media (min-width: $breakpoint-md) {
+      flex-direction: row;
+      > :nth-child(1) { flex: 1; }
+      > :nth-child(2) { flex: 2; }
+    }
+  }
+
+  &__brand {
+    max-width: 300px;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-family: $font-family-heading;
+    font-size: $font-size-2xl;
+    font-weight: 700;
+    color: $color-text-inverse;
+    margin-bottom: $spacing-sm;
+    
+    i {
+      color: $color-primary;
+    }
+  }
+
+  &__tagline {
+    color: $color-discrete;
+    font-size: $font-size-sm;
+  }
+
+  &__links {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xl;
+
+    @media (min-width: $breakpoint-sm) {
+      flex-direction: row;
+      > * { flex: 1; }
+    }
+  }
+
+  &__col {
+    h3 {
+      color: $color-text-inverse;
+      font-size: $font-size-lg;
+      margin-bottom: $spacing-md;
+    }
+
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+    }
+
+    a {
+      color: $color-discrete;
+      font-size: $font-size-sm;
+
+      &:hover, &:focus-visible {
+        color: $color-primary;
+      }
+    }
+  }
+
+  &__bottom {
+    border-top: 1px solid rgba($color-text-inverse, 0.1);
+    padding-block: $spacing-md;
+  }
+
+  &__bottom-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-md;
+
+    @media (min-width: $breakpoint-sm) {
+      flex-direction: row;
+    }
+  }
+
+  &__copyright {
+    color: $color-discrete;
+    font-size: $font-size-xs;
+  }
+
+  &__donation-link {
+    color: $color-discrete;
+    font-size: $font-size-xs;
+    text-decoration: underline;
+
+    &:hover, &:focus-visible {
+      color: $color-primary;
+    }
+  }
+}

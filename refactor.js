@@ -8,8 +8,6 @@ project.addSourceFilesAtPaths("src/app/**/*.ts");
 
 const sourceFiles = project.getSourceFiles("src/app/**/*.ts");
 
-console.log(`Found ${sourceFiles.length} source files.`);
-
 let changedCount = 0;
 
 for (const sourceFile of sourceFiles) {
@@ -22,7 +20,7 @@ for (const sourceFile of sourceFiles) {
         sourceFile.organizeImports();
         changed = true;
     } catch (e) {
-        console.error(`Error organizing imports in ${sourceFile.getFilePath()}:`, e.message);
+        console.error('Error organizing imports');
     }
 
     // 2. Add JSDoc to public methods and properties
@@ -73,5 +71,3 @@ for (const sourceFile of sourceFiles) {
         changedCount++;
     }
 }
-
-console.log(`Refactored ${changedCount} files.`);

@@ -27,7 +27,7 @@ export class OrganizationDetailService {
       if (announcements) this.announcements.set(announcements);
     } catch (e) {
       this.error.set('Impossible de charger les informations de cette organisation.');
-      console.error(e);
+      console.error('An error occurred while loading organization data.');
     }
   }
 

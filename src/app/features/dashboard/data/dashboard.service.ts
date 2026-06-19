@@ -71,7 +71,7 @@ export class DashboardService {
       this.orgBlocks.set(blocks);
     } catch (e) {
       this.error.set('Une erreur est survenue lors du chargement des données.');
-      console.error('Dashboard data loading error:', e);
+      console.error('Dashboard data loading error');
     }
   }
 }

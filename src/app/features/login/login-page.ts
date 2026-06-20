@@ -25,9 +25,8 @@ export class LoginPage {
     rememberMe: [false],
   });
 
-  /** The registerForm property. */
   readonly registerForm = this.fb.nonNullable.group({
-    username: ['', Validators.required],
+    username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     firstName: ['', Validators.required],
@@ -47,9 +46,12 @@ export class LoginPage {
   /** Executes the onSubmitLogin action. */
   onSubmitLogin() {
     if (this.loginForm.valid) {
-      const username = this.loginForm.getRawValue().identifier;
-      const mockToken = 'mock.' + btoa(JSON.stringify({ sub: username })) + '.mock';
-      this.authService.login(mockToken);
+      const { identifier, password } = this.loginForm.getRawValue();
+      this.authService.login({ username: identifier, password }).subscribe({
+        error: (err) => {
+          this.errorMessage.set(err.error?.username || 'Identifiants incorrects');
+        }
+      });
     } else {
       this.loginForm.markAllAsTouched();
     }
@@ -59,8 +61,22 @@ export class LoginPage {
   onSubmitRegister() {
     if (this.registerForm.valid) {
       const formValue = this.registerForm.getRawValue();
-      const mockToken = 'mock.' + btoa(JSON.stringify({ sub: formValue.username })) + '.mock';
-      this.authService.login(mockToken);
+      const payload = {
+        username: formValue.username,
+        email: formValue.email,
+        password: formValue.password,
+        firstName: formValue.firstName,
+        lastName: formValue.lastName,
+        mainInstrument: formValue.mainInstrument,
+        secondaryInstruments: formValue.secondaryInstruments,
+        musicalDescription: formValue.musicalDescription,
+        yearsOfPractice: formValue.yearsOfPractice,
+      };
+      this.authService.register(payload).subscribe({
+        error: (err) => {
+          this.errorMessage.set(err.error?.username || 'Erreur lors de l\'inscription');
+        }
+      });
     } else {
       this.registerForm.markAllAsTouched();
     }

@@ -30,11 +30,4 @@ export class Header {
     this.closeMenu();
   }
 
-  /** Executes the mockLogin action. */
-  mockLogin() {
-    // Basic mock token for test
-    const mockToken = 'header.' + btoa(JSON.stringify({ sub: 'Jean Dupont' })) + '.signature';
-    this.authService.login(mockToken);
-    this.closeMenu();
-  }
 }

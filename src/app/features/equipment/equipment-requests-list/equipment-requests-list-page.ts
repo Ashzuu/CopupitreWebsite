@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { EquipmentRequest } from '../../core/model';
-import { BaseLayout } from '../../layout/base-layout/base-layout';
-import { EquipmentRequestList } from '../dashboard/components/equipment-request-list/equipment-request-list';
+import { EquipmentRequest } from '../../../core/model';
+import { BaseLayout } from '../../../layout/base-layout/base-layout';
+import { EquipmentRequestList } from '../../dashboard/components/equipment-request-list/equipment-request-list';
 
 @Component({
   selector: 'copupitre-equipment-requests-list-page',

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { BaseLayout } from '../../layout/base-layout/base-layout';
+import { BaseLayout } from '../../../layout/base-layout/base-layout';
 
 @Component({
   selector: 'copupitre-organization-create-page',

@@ -1,4 +1,4 @@
-@use '../../styles/variables' as *;
+@use '../../../styles/variables' as *;
 
 .org-detail {
   padding-top: $spacing-xl;
@@ -224,7 +224,7 @@
   padding: $spacing-3xl;
   gap: $spacing-md;
   text-align: center;
-  
+
   p {
     color: $color-text-light;
     font-size: $font-size-lg;

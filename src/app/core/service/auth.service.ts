@@ -1,17 +1,21 @@
 import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable, tap } from 'rxjs';
+import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
 
   private readonly tokenSignal = signal<string | null>(this.getInitialToken());
 
-  /** The isAuthenticated property. */
   readonly isAuthenticated = computed(() => !!this.tokenSignal());
-  /** The currentUsername property. */
   readonly currentUsername = computed(() => {
     const token = this.tokenSignal();
     if (!token) return null;
@@ -35,13 +39,29 @@ export class AuthService {
     return this.tokenSignal();
   }
 
-  /** Executes the login action. */
-  login(token: string) {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('jwt_token', token);
+  /** Executes the authenticate action. */
+  private authenticate(response: AuthResponse) {
+    if (response.token) {
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.setItem('jwt_token', response.token);
+      }
+      this.tokenSignal.set(response.token);
+      this.router.navigate(['/dashboard']);
     }
-    this.tokenSignal.set(token);
-    this.router.navigate(['/dashboard']);
+  }
+
+  /** Executes the login action. */
+  login(request: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>('/api/auth/login', request).pipe(
+      tap((res) => this.authenticate(res))
+    );
+  }
+
+  /** Executes the register action. */
+  register(request: RegisterRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>('/api/auth/register', request).pipe(
+      tap((res) => this.authenticate(res))
+    );
   }
 
   /** Executes the logout action. */

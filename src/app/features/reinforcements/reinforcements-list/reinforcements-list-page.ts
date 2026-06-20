@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ReinforcementAnnouncement } from '../../core/model';
-import { BaseLayout } from '../../layout/base-layout/base-layout';
-import { ReinforcementList } from '../dashboard/components/reinforcement-list/reinforcement-list';
+import { ReinforcementAnnouncement } from '../../../core/model';
+import { BaseLayout } from '../../../layout/base-layout/base-layout';
+import { ReinforcementList } from '../../dashboard/components/reinforcement-list/reinforcement-list';
 
 @Component({
   selector: 'copupitre-reinforcements-list-page',

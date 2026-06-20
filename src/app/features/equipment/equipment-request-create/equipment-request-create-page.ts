@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Organization } from '../../core/model';
-import { BaseLayout } from '../../layout/base-layout/base-layout';
+import { Organization } from '../../../core/model';
+import { BaseLayout } from '../../../layout/base-layout/base-layout';
 
 @Component({
   selector: 'copupitre-equipment-request-create-page',

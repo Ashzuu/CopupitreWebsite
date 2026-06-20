@@ -17,7 +17,7 @@ export const routes: Routes = [
   {
     path: 'organization/:id',
     loadComponent: () =>
-      import('../features/organization-detail/organization-detail-page').then(
+      import('../features/organization/organization-detail/organization-detail-page').then(
         (m) => m.OrganizationDetailPage,
       ),
     title: "Détails de l'organisation - Copupitre",
@@ -25,7 +25,7 @@ export const routes: Routes = [
   {
     path: 'renforts',
     loadComponent: () =>
-      import('../features/reinforcements-list/reinforcements-list-page').then(
+      import('../features/reinforcements/reinforcements-list/reinforcements-list-page').then(
         (m) => m.ReinforcementsListPage,
       ),
     title: 'Annonces de Renforts - Copupitre',
@@ -33,7 +33,7 @@ export const routes: Routes = [
   {
     path: 'annonces/create',
     loadComponent: () =>
-      import('../features/reinforcement-create/reinforcement-create-page').then(
+      import('../features/reinforcements/reinforcement-create/reinforcement-create-page').then(
         (m) => m.ReinforcementCreatePage,
       ),
     title: 'Créer une annonce - Copupitre',
@@ -42,7 +42,7 @@ export const routes: Routes = [
   {
     path: 'organizations/create',
     loadComponent: () =>
-      import('../features/organization-create/organization-create-page').then(
+      import('../features/organization/organization-create/organization-create-page').then(
         (m) => m.OrganizationCreatePage,
       ),
     title: 'Créer une organisation - Copupitre',
@@ -51,7 +51,7 @@ export const routes: Routes = [
   {
     path: 'materiels',
     loadComponent: () =>
-      import('../features/equipment-requests-list/equipment-requests-list-page').then(
+      import('../features/equipment/equipment-requests-list/equipment-requests-list-page').then(
         (m) => m.EquipmentRequestsListPage,
       ),
     title: 'Demandes de Matériel - Copupitre',
@@ -59,7 +59,7 @@ export const routes: Routes = [
   {
     path: 'materiel/create',
     loadComponent: () =>
-      import('../features/equipment-request-create/equipment-request-create-page').then(
+      import('../features/equipment/equipment-request-create/equipment-request-create-page').then(
         (m) => m.EquipmentRequestCreatePage,
       ),
     title: 'Créer une demande de matériel - Copupitre',

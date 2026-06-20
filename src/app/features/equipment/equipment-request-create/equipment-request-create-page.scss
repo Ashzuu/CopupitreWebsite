@@ -1,4 +1,4 @@
-@use '../../styles/variables' as *;
+@use '../../../styles/variables' as *;
 
 .create-page {
   max-width: 800px;
@@ -20,7 +20,7 @@
     align-items: center;
     gap: $spacing-sm;
   }
-  
+
   .subtitle {
     color: $color-text-light;
     margin-bottom: $spacing-xl;

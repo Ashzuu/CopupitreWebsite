@@ -1,9 +1,9 @@
-@use '../../styles/variables' as *;
+@use '../../../styles/variables' as *;
 
 .header-section {
   text-align: center;
   margin-bottom: $spacing-2xl;
-  
+
   h1 {
     font-size: $font-size-3xl;
     color: $color-primary-dark;

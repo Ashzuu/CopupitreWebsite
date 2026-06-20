@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Organization } from '../../core/model';
-import { BaseLayout } from '../../layout/base-layout/base-layout';
+import { Organization } from '../../../core/model';
+import { BaseLayout } from '../../../layout/base-layout/base-layout';
 
 @Component({
   selector: 'copupitre-reinforcement-create-page',

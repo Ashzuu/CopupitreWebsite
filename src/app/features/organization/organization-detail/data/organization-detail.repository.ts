@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Organization, ReinforcementAnnouncement } from '../../../core/model';
+import { Organization, ReinforcementAnnouncement } from '../../../../core/model';
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationDetailRepository {

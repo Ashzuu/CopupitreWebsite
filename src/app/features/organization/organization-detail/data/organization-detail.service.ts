@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { Organization, ReinforcementAnnouncement } from '../../../core/model';
+import { Organization, ReinforcementAnnouncement } from '../../../../core/model';
 import { OrganizationDetailRepository } from './organization-detail.repository';
 
 @Injectable()

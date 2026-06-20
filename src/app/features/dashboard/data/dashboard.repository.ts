@@ -7,45 +7,53 @@ import {
   ReinforcementAnnouncement,
   ReinforcementResponse,
 } from '../../../core/model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardRepository {
   private readonly http = inject(HttpClient);
+  private readonly BASE_API_URL = environment.BASE_API_URL;
 
   /** Executes the getUserOrganizations action. */
   getUserOrganizations(): Observable<Organization[]> {
-    return this.http.get<Organization[]>('/api/users/me/organizations');
+    return this.http.get<Organization[]>(this.BASE_API_URL + '/api/users/me/organizations');
   }
 
   /** Executes the getAllReinforcementAnnouncements action. */
   getAllReinforcementAnnouncements(): Observable<ReinforcementAnnouncement[]> {
-    return this.http.get<ReinforcementAnnouncement[]>('/api/reinforcements');
+    return this.http.get<ReinforcementAnnouncement[]>(this.BASE_API_URL + '/api/reinforcements');
   }
 
   /** Executes the getAllEquipmentRequests action. */
   getAllEquipmentRequests(): Observable<EquipmentRequest[]> {
-    return this.http.get<EquipmentRequest[]>('/api/equipment-requests');
+    return this.http.get<EquipmentRequest[]>(this.BASE_API_URL + '/api/equipment-requests');
   }
 
   /** Executes the getMyReinforcementAnnouncements action. */
   getMyReinforcementAnnouncements(): Observable<ReinforcementAnnouncement[]> {
-    return this.http.get<ReinforcementAnnouncement[]>('/api/users/me/reinforcements');
+    return this.http.get<ReinforcementAnnouncement[]>(
+      this.BASE_API_URL + '/api/users/me/reinforcements',
+    );
   }
 
   /** Executes the getResponsesForAnnouncement action. */
   getResponsesForAnnouncement(announcementId: number): Observable<ReinforcementResponse[]> {
     return this.http.get<ReinforcementResponse[]>(
-      `/api/reinforcements/${announcementId}/responses`,
+      `${this.BASE_API_URL}/api/reinforcements/${announcementId}/responses`,
     );
   }
 
   /** Executes the getOrganizationReinforcements action. */
   getOrganizationReinforcements(orgId: number): Observable<ReinforcementAnnouncement[]> {
-    return this.http.get<ReinforcementAnnouncement[]>(`/api/organizations/${orgId}/reinforcements`);
+    return this.http.get<ReinforcementAnnouncement[]>(
+      `${this.BASE_API_URL}/api/organizations/${orgId}/reinforcements`,
+    );
   }
 
   /** Executes the getOrganizationEquipmentRequests action. */
   getOrganizationEquipmentRequests(orgId: number): Observable<EquipmentRequest[]> {
-    return this.http.get<EquipmentRequest[]>(`/api/organizations/${orgId}/equipment-requests`);
+    return this.http.get<EquipmentRequest[]>(
+      `${this.BASE_API_URL}/api/organizations/${orgId}/equipment-requests`,
+    );
   }
 }

@@ -4,6 +4,8 @@ import { computed, inject, Injectable, PLATFORM_ID, signal } from '@angular/core
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth.model';
+import { ValueChangeEvent } from '@angular/forms';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +14,7 @@ export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
+  private readonly BASE_URL = environment.BASE_API_URL;
 
   private readonly tokenSignal = signal<string | null>(this.getInitialToken());
 
@@ -52,16 +55,16 @@ export class AuthService {
 
   /** Executes the login action. */
   login(request: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/login', request).pipe(
+    return this.http.post<AuthResponse>(this.BASE_URL + '/api/auth/login', request).pipe(
       tap((res) => this.authenticate(res))
     );
   }
 
   /** Executes the register action. */
   register(request: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/register', request).pipe(
-      tap((res) => this.authenticate(res))
-    );
+    return this.http
+      .post<AuthResponse>(this.BASE_URL + '/api/auth/register', request)
+      .pipe(tap((res) => this.authenticate(res)));
   }
 
   /** Executes the logout action. */
@@ -70,6 +73,6 @@ export class AuthService {
       localStorage.removeItem('jwt_token');
     }
     this.tokenSignal.set(null);
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 }

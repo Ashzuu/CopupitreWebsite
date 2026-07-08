@@ -4,6 +4,10 @@
   max-width: 800px;
 }
 
+textarea {
+  resize: none;
+}
+
 .card {
   background: $color-background;
   padding: $spacing-2xl;
@@ -91,4 +95,9 @@
   margin-top: $spacing-xl;
   padding-top: $spacing-xl;
   border-top: 1px solid rgba($color-discrete, 0.2);
+}
+
+.input-field.ng-invalid.ng-touched {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 3px rgba(#e74c3c, 0.1);
 }

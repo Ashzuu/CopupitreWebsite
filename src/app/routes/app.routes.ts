@@ -59,6 +59,15 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'organizations/edit/:id',
+    loadComponent: () =>
+      import('../features/organization/organization-create/organization-create-page').then(
+        (m) => m.OrganizationCreatePage,
+      ),
+    title: 'Modifier une organisation - Copupitre',
+    canActivate: [authGuard],
+  },
+  {
     path: 'materiels',
     loadComponent: () =>
       import('../features/equipment/equipment-requests-list/equipment-requests-list-page').then(

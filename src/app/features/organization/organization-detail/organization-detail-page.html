@@ -13,6 +13,11 @@
           <p class="org-header__desc">{{ org.description }}</p>
         </div>
         <div class="org-header__actions">
+          @if (isAdmin()) {
+            <a [routerLink]="['/organizations/edit', org.id]" class="btn btn--secondary">
+              <i class="pi pi-pencil"></i> Modifier
+            </a>
+          }
           <button class="btn btn--primary" (click)="service.subscribeToAnnouncements()">
             <i class="pi pi-bell"></i> M'avertir des annonces
           </button>

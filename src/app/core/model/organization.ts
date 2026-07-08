@@ -31,6 +31,16 @@ export interface Organization {
   city: string;
   /** The description property. */
   description: string;
+  /** The formationType property. */
+  formationType?: string;
+  /** The concertDress property. */
+  concertDress?: string;
+  /** The logisticsInfo property. */
+  logisticsInfo?: string;
+  /** The rehearsalAddress property. */
+  rehearsalAddress?: string;
+  /** The rehearsalSchedule property. */
+  rehearsalSchedule?: string;
   /** The rehearsalSchedules property. */
   rehearsalSchedules: RehearsalSchedule[];
   /** The adminUsernames property. */
@@ -48,8 +58,8 @@ export interface Organization {
 export interface RehearsalManual {
   /** The id property. */
   id: number;
-  /** The date property. */
-  date: string;
+  /** The manualDate property. */
+  manualDate: string;
   /** The startTime property. */
   startTime: string;
   /** The endTime property. */

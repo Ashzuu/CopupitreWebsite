@@ -18,6 +18,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'organizations/edit/:id',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: 'materiel/create',
     renderMode: RenderMode.Client,
   },

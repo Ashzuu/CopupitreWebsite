@@ -1,10 +1,9 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, PLATFORM_ID, REQUEST, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../model/auth';
-import { environment } from '../../../environments/environment';
+import { AuthRepository } from '../repository/auth-repository';
 
 @Injectable({
   providedIn: 'root',
@@ -12,11 +11,11 @@ import { environment } from '../../../environments/environment';
 export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
-  private readonly http = inject(HttpClient);
+  private readonly authRepo = inject(AuthRepository);
   private readonly request = inject(REQUEST, { optional: true });
-  private readonly BASE_URL = environment.BASE_API_URL;
 
   private readonly tokenSignal = signal<string | null>(this.getInitialToken());
+  private readonly profileSignal = signal<{ firstName: string; lastName: string } | null>(null);
 
   readonly isAuthenticated = computed(() => !!this.tokenSignal());
   readonly currentUsername = computed(() => {
@@ -29,6 +28,34 @@ export class AuthService {
       return 'Utilisateur';
     }
   });
+
+  readonly currentUserFullName = computed(() => {
+    const profile = this.profileSignal();
+    if (profile) {
+      return `${profile.firstName} ${profile.lastName}`;
+    }
+    return '';
+  });
+
+  constructor() {
+    if (isPlatformBrowser(this.platformId) && this.tokenSignal()) {
+      // Use setTimeout to delay the request to the next event loop tick.
+      // This ensures AuthService is fully constructed before http interceptors try to inject it.
+      setTimeout(() => this.loadUserProfile(), 0);
+    }
+  }
+
+  private loadUserProfile() {
+    this.authRepo.getMe().subscribe({
+      next: (user) => {
+        this.profileSignal.set(user);
+      },
+      error: (err) => {
+        console.error('[AuthService] Error loading user profile:', err);
+        this.profileSignal.set(null);
+      }
+    });
+  }
 
   private getInitialToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
@@ -67,22 +94,23 @@ export class AuthService {
         this.setCookie('jwt_token', response.token, 7); // Keep connected for 7 days
       }
       this.tokenSignal.set(response.token);
+      this.loadUserProfile();
       this.router.navigate(['/dashboard']);
     }
   }
 
   /** Executes the login action. */
   login(request: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.BASE_URL + '/api/auth/login', request).pipe(
+    return this.authRepo.login(request).pipe(
       tap((res) => this.authenticate(res))
     );
   }
 
   /** Executes the register action. */
   register(request: RegisterRequest): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(this.BASE_URL + '/api/auth/register', request)
-      .pipe(tap((res) => this.authenticate(res)));
+    return this.authRepo.register(request).pipe(
+      tap((res) => this.authenticate(res))
+    );
   }
 
   /** Executes the logout action. */
@@ -91,6 +119,7 @@ export class AuthService {
       this.deleteCookie('jwt_token');
     }
     this.tokenSignal.set(null);
+    this.profileSignal.set(null);
     this.router.navigate(['/login']);
   }
 

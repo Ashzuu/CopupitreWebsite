@@ -1,8 +1,8 @@
 <copupitre-base-layout>
   <div class="container section create-page">
     <div class="card">
-      <h1><i class="pi pi-building"></i> Créer une organisation</h1>
-      <p class="subtitle">Référencez votre orchestre, harmonie ou ensemble sur Copupitre.</p>
+      <h1><i class="pi pi-building"></i> {{ isEditMode ? 'Modifier' : 'Créer' }} une organisation</h1>
+      <p class="subtitle">{{ isEditMode ? 'Mettez à jour les informations de votre organisation sur Copupitre.' : 'Référencez votre orchestre, harmonie ou ensemble sur Copupitre.' }}</p>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-layout">
         
@@ -10,6 +10,10 @@
           <div class="form-group">
             <label for="name">Nom de l'organisation <span class="required">*</span></label>
             <input type="text" id="name" formControlName="name" class="input-field" placeholder="Ex: Orchestre Symphonique...">
+          </div>
+          <div class="form-group">
+            <label for="city">Ville <span class="required">*</span></label>
+            <input type="text" id="city" formControlName="city" class="input-field" placeholder="Ex: Lyon">
           </div>
           <div class="form-group">
             <label for="musicianCount">Nombre de musiciens <span class="required">*</span></label>
@@ -22,12 +26,39 @@
           <textarea id="description" formControlName="description" class="input-field" rows="4" placeholder="Présentation de votre ensemble, répertoire..."></textarea>
         </div>
 
+        <div class="form-row">
+          <div class="form-group">
+            <label for="formationType">Type de formation</label>
+            <input type="text" id="formationType" formControlName="formationType" class="input-field" placeholder="Ex: Harmonie, Orchestre d'Harmonie, Brass Band">
+          </div>
+          <div class="form-group">
+            <label for="concertDress">Tenue de concert</label>
+            <input type="text" id="concertDress" formControlName="concertDress" class="input-field" placeholder="Ex: Tout en noir, Haut blanc - bas noir, ...">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rehearsalAddress">Adresse des répétitions</label>
+            <input type="text" id="rehearsalAddress" formControlName="rehearsalAddress" class="input-field" placeholder="Ex: 12 Rue de la Musique, Lyon">
+          </div>
+          <div class="form-group">
+            <label for="rehearsalSchedule">Note sur les horaires</label>
+            <input type="text" id="rehearsalSchedule" formControlName="rehearsalSchedule" class="input-field" placeholder="Ex: Hors vacances scolaires">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="logisticsInfo">Informations logistiques</label>
+          <textarea id="logisticsInfo" formControlName="logisticsInfo" class="input-field" rows="3" placeholder="Ex: Gros instruments à vent et percussions fournis..."></textarea>
+        </div>
+
         <div class="rehearsals-section">
           <h2>Répétitions Régulières</h2>
-          <p class="section-desc">Pour les répétitions qui ont lieu toutes les semaines (ex: Tous les lundis de 20h à 22h).</p>
+          <p class="section-desc">Pour les répétitions qui ont lieu toutes les semaines (ex: Tous les lundis de 20h à 22h). Saisissez les horaires au format 24h (ex: 20:00).</p>
           
-          <div formArrayName="regularRehearsals" class="manual-list">
-            @for (regularCtrl of regularRehearsals.controls; track $index) {
+          <div formArrayName="rehearsalSchedules" class="manual-list">
+            @for (regularCtrl of rehearsalSchedules.controls; track $index) {
               <div [formGroupName]="$index" class="manual-row">
                 <select formControlName="dayOfWeek" class="input-field" title="Jour de la semaine">
                   <option value="MONDAY">Lundi</option>
@@ -38,44 +69,44 @@
                   <option value="SATURDAY">Samedi</option>
                   <option value="SUNDAY">Dimanche</option>
                 </select>
-                <input type="time" formControlName="startTime" class="input-field" title="Heure de début">
-                <input type="time" formControlName="endTime" class="input-field" title="Heure de fin">
+                <input type="text" formControlName="startTime" class="input-field" placeholder="ex: 20:00" title="Heure de début">
+                <input type="text" formControlName="endTime" class="input-field" placeholder="ex: 22:00" title="Heure de fin">
                 <input type="text" formControlName="location" class="input-field" placeholder="Lieu (Ex: Conservatoire)">
-                <button type="button" class="btn btn--icon btn--danger" (click)="removeRegularRehearsal($index)">
+                <button type="button" class="btn btn--icon btn--danger" (click)="removeRehearsalSchedule($index)">
                   <i class="pi pi-trash"></i>
                 </button>
               </div>
             }
           </div>
-          <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addRegularRehearsal()">
+          <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addRehearsalSchedule()">
             <i class="pi pi-plus"></i> Ajouter une répétition régulière
           </button>
         </div>
 
         <div class="rehearsals-section">
-          <h2>Répétitions Irrégulières</h2>
-          <p class="section-desc">Pour les répétitions avec des dates précises, générales, raccords, etc.</p>
+          <h2>Répétitions Exceptionnelles</h2>
+          <p class="section-desc">Pour les répétitions avec des dates précises. Sélectionnez la date via le calendrier et saisissez les horaires au format 24h (ex: 20:00).</p>
 
-          <div formArrayName="manualRehearsals" class="manual-list">
-            @for (rehearsalCtrl of manualRehearsals.controls; track $index) {
+          <div formArrayName="rehearsalManuals" class="manual-list">
+            @for (rehearsalCtrl of rehearsalManuals.controls; track $index) {
               <div [formGroupName]="$index" class="manual-row">
-                <input type="date" formControlName="date" class="input-field" title="Date">
-                <input type="time" formControlName="startTime" class="input-field" title="Heure de début">
-                <input type="time" formControlName="endTime" class="input-field" title="Heure de fin">
+                <input type="date" formControlName="manualDate" class="input-field" title="Date">
+                <input type="text" formControlName="startTime" class="input-field" placeholder="ex: 20:00" title="Heure de début">
+                <input type="text" formControlName="endTime" class="input-field" placeholder="ex: 22:00" title="Heure de fin">
                 <input type="text" formControlName="location" class="input-field" placeholder="Lieu">
-                <button type="button" class="btn btn--icon btn--danger" (click)="removeManualRehearsal($index)">
+                <button type="button" class="btn btn--icon btn--danger" (click)="removeRehearsalManual($index)">
                   <i class="pi pi-trash"></i>
                 </button>
               </div>
             }
           </div>
-          <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addManualRehearsal()">
+          <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addRehearsalManual()">
             <i class="pi pi-plus"></i> Ajouter une date spécifique
           </button>
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn btn--primary">Créer l'organisation</button>
+          <button type="submit" class="btn btn--primary">{{ isEditMode ? 'Enregistrer les modifications' : 'Créer l\'organisation' }}</button>
         </div>
       </form>
     </div>

@@ -3,7 +3,7 @@ import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angul
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { ReinforcementAnnouncement } from '../../../core/model';
+import { Organization, ReinforcementAnnouncement } from '../../../core/model';
 import { BaseLayout } from '../../../layout/base-layout/base-layout';
 import { ReinforcementList } from '../../dashboard/components/reinforcement-list/reinforcement-list';
 import { ReinforcementsRepository } from '../../../core/repository/reinforcements-repository';
@@ -23,7 +23,12 @@ export class ReinforcementsListPage implements OnInit {
   private readonly orgRepo = inject(OrganizationRepository);
   readonly authService = inject(AuthService);
 
-  readonly hasAdminOrganization = signal(false);
+  readonly userOrganizations = signal<Organization[]>([]);
+  readonly hasAdminOrganization = computed(() => {
+    const fullName = this.authService.currentUserFullName();
+    if (!fullName) return false;
+    return this.userOrganizations().some((org) => org.adminUsernames?.includes(fullName));
+  });
 
   /** The announcements property. */
   announcements = signal<ReinforcementAnnouncement[]>([]);
@@ -57,13 +62,10 @@ export class ReinforcementsListPage implements OnInit {
       if (this.authService.isAuthenticated()) {
         this.orgRepo.getUserOrganizations().subscribe({
           next: (orgs) => {
-            const username = this.authService.currentUsername();
-            const isAdmin = orgs.some((org) => org.adminUsernames?.includes(username || ''));
-            this.hasAdminOrganization.set(isAdmin);
+            this.userOrganizations.set(orgs);
           },
           error: (err) => {
             console.error('Error fetching user organizations:', err);
-            this.hasAdminOrganization.set(false);
           },
         });
       }

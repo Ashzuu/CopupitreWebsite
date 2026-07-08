@@ -45,6 +45,9 @@
 
   &__actions {
     flex-shrink: 0;
+    display: flex;
+    gap: $spacing-sm;
+    align-items: center;
   }
 }
 

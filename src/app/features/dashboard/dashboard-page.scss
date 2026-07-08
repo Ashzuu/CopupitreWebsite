@@ -95,6 +95,18 @@
     border: 1px solid rgba($color-discrete, 0.2);
   }
 
+  &__section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-lg;
+    gap: $spacing-sm;
+
+    .dashboard__section-subtitle {
+      margin-bottom: 0;
+    }
+  }
+
   &__empty {
     text-align: center;
     padding: $spacing-2xl;

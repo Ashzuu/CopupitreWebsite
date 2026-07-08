@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { LoaderService } from '../../core/service/loader-service';
 import { BaseLayout } from '../../layout/base-layout/base-layout';
 import { DashboardStatCard } from './components/dashboard-stat-card/dashboard-stat-card';
@@ -17,6 +18,7 @@ import { DashboardService } from './data/dashboard-service';
     EquipmentRequestList,
     MyAnnouncementsPanel,
     DashboardStatCard,
+    RouterLink,
   ],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.scss',

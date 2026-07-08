@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Organization } from '../../../core/model';
 import { BaseLayout } from '../../../layout/base-layout/base-layout';
 import { NotifService } from '../../../core/service/notif-service';
+import { OrganizationRepository } from '../../../core/repository/organization-repository';
 
 @Component({
   selector: 'copupitre-reinforcement-create-page',
@@ -17,6 +18,7 @@ export class ReinforcementCreatePage implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
   private errorService = inject(NotifService);
+  private repo = inject(OrganizationRepository);
 
   /** The userOrganizations property. */
   userOrganizations = signal<Organization[]>([]);
@@ -35,7 +37,7 @@ export class ReinforcementCreatePage implements OnInit {
   }
 
   ngOnInit() {
-    this.http.get<Organization[]>('/api/users/me/organizations').subscribe((orgs) => {
+    this.repo.getUserOrganizations().subscribe((orgs) => {
       this.userOrganizations.set(orgs);
     });
   }

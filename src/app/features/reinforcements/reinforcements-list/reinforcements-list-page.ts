@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ReinforcementAnnouncement } from '../../../core/model';
 import { BaseLayout } from '../../../layout/base-layout/base-layout';
 import { ReinforcementList } from '../../dashboard/components/reinforcement-list/reinforcement-list';
+import { ReinforcementsRepository } from '../../../core/repository/reinforcements-repository';
 
 @Component({
   selector: 'copupitre-reinforcements-list-page',
@@ -15,6 +16,7 @@ import { ReinforcementList } from '../../dashboard/components/reinforcement-list
 export class ReinforcementsListPage implements OnInit {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
+  private readonly repo = inject(ReinforcementsRepository);
 
   /** The announcements property. */
   announcements = signal<ReinforcementAnnouncement[]>([]);
@@ -41,7 +43,7 @@ export class ReinforcementsListPage implements OnInit {
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
-      this.http.get<ReinforcementAnnouncement[]>('/api/reinforcements/all').subscribe((data) => {
+      this.repo.getAll().subscribe((data) => {
         this.announcements.set(data);
       });
     }

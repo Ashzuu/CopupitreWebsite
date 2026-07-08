@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Organization } from '../../../core/model';
 import { BaseLayout } from '../../../layout/base-layout/base-layout';
 import { NotifService } from '../../../core/service/notif-service';
+import { OrganizationRepository } from '../../../core/repository/organization-repository';
 
 @Component({
   selector: 'copupitre-equipment-request-create-page',
@@ -17,6 +18,7 @@ export class EquipmentRequestCreatePage implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
   private errorService = inject(NotifService);
+  private repo = inject(OrganizationRepository);
 
   /** The organizations property. */
   organizations: Organization[] = [];
@@ -32,7 +34,7 @@ export class EquipmentRequestCreatePage implements OnInit {
   });
 
   ngOnInit() {
-    this.http.get<Organization[]>('/api/users/me/organizations').subscribe((orgs) => {
+    this.repo.getUserOrganizations().subscribe((orgs) => {
       this.organizations = orgs;
       if (orgs.length > 0) {
         this.form.patchValue({ organizationId: orgs[0].id as any });

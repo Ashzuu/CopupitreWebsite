@@ -34,7 +34,10 @@
 
         <div class="dashboard__content-grid">
           <section class="dashboard__section">
-            <h3 class="dashboard__section-subtitle"><i class="pi pi-globe"></i> Offres de Renforts Publiques</h3>
+            <div class="dashboard__section-header">
+              <h3 class="dashboard__section-subtitle"><i class="pi pi-globe"></i> Offres de Renforts Publiques</h3>
+              <a class="btn btn--primary btn--small" routerLink="/annonces/create"><i class="pi pi-plus"></i> Ajouter</a>
+            </div>
             @if (service.allAnnouncements().length > 0) {
               <copupitre-reinforcement-list [announcements]="service.allAnnouncements()"></copupitre-reinforcement-list>
             } @else {
@@ -45,7 +48,10 @@
           </section>
 
           <section class="dashboard__section">
-            <h3 class="dashboard__section-subtitle"><i class="pi pi-box"></i> Demandes de Matériel Publiques</h3>
+            <div class="dashboard__section-header">
+              <h3 class="dashboard__section-subtitle"><i class="pi pi-box"></i> Demandes de Matériel Publiques</h3>
+              <a class="btn btn--primary btn--small" routerLink="/materiel/create"><i class="pi pi-plus"></i> Ajouter</a>
+            </div>
             @if (service.allEquipmentRequests().length > 0) {
               <copupitre-equipment-request-list [requests]="service.allEquipmentRequests()"></copupitre-equipment-request-list>
             } @else {

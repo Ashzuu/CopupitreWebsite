@@ -31,7 +31,7 @@ export class OrganizationDetailService {
       const msg = 'Impossible de charger les informations de cette organisation.';
       this.error.set(msg);
       this.errorService.showError(msg, 'Chargement échoué');
-      console.error('An error occurred while loading organization data.', e);
+      console.error('An error occurred while loading organization data.');
     }
   }
 

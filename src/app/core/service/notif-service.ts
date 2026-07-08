@@ -30,7 +30,7 @@ export class NotifService {
       return;
     }
 
-    const id = Math.random().toString(36).substring(2, 9);
+    const id = crypto.randomUUID();
     const newNotification: ErrorNotification = { id, title, message, type, duration };
 
     this.notifications.update((list) => [...list, newNotification]);

@@ -75,7 +75,6 @@ export class AuthService {
       }
       
       const token = this.parseCookie(cookieHeader, 'jwt_token');
-      console.log('[Auth] Server initial token:', token ? 'Found' : 'Not found', 'Cookie Header:', cookieHeader);
       return token;
     }
     console.log('[Auth] getInitialToken: no platform matched or no request.');
@@ -132,10 +131,21 @@ export class AuthService {
 
   private parseCookie(cookieString: string, name: string): string | null {
     if (!cookieString) return null;
-    const matches = cookieString.match(new RegExp(
-      "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-    ));
-    return matches ? decodeURIComponent(matches[1]) : null;
+    // Safe split-based parsing avoids dynamic RegExp construction (CWE-1333)
+    for (const part of cookieString.split(';')) {
+      const trimmed = part.trim();
+      const eqIndex = trimmed.indexOf('=');
+      if (eqIndex === -1) continue;
+      const key = trimmed.substring(0, eqIndex).trim();
+      if (key === name) {
+        try {
+          return decodeURIComponent(trimmed.substring(eqIndex + 1).trim());
+        } catch {
+          return null;
+        }
+      }
+    }
+    return null;
   }
 
   private setCookie(name: string, value: string, days: number) {

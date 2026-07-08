@@ -8,7 +8,7 @@ export class GlobalErrorHandler implements ErrorHandler {
   /** Handles the global runtime application errors. */
   handleError(error: any): void {
     // Log to console for debugging
-    console.error('Unhandled runtime error:', error);
+    console.error('Unhandled runtime error occurred.');
 
     let message = "Une erreur inattendue s'est produite dans l'application.";
     if (error instanceof Error) {

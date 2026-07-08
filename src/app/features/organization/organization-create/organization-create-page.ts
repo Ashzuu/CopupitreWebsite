@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BaseLayout } from '../../../layout/base-layout/base-layout';
+import { NotifService } from '../../../core/service/notif-service';
 
 @Component({
   selector: 'copupitre-organization-create-page',
@@ -14,6 +15,7 @@ export class OrganizationCreatePage {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
+  private errorService = inject(NotifService);
 
   /** The form property. */
   form = this.fb.group({
@@ -76,7 +78,7 @@ export class OrganizationCreatePage {
   onSubmit() {
     if (this.form.valid) {
       this.http.post('/api/organizations', this.form.getRawValue()).subscribe(() => {
-        alert('Organisation créée avec succès !');
+        this.errorService.showSuccess('Organisation créée avec succès !');
         this.router.navigate(['/']);
       });
     } else {

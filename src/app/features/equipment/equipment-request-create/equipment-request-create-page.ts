@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Organization } from '../../../core/model';
 import { BaseLayout } from '../../../layout/base-layout/base-layout';
+import { NotifService } from '../../../core/service/notif-service';
 
 @Component({
   selector: 'copupitre-equipment-request-create-page',
@@ -15,6 +16,7 @@ export class EquipmentRequestCreatePage implements OnInit {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
+  private errorService = inject(NotifService);
 
   /** The organizations property. */
   organizations: Organization[] = [];
@@ -42,7 +44,7 @@ export class EquipmentRequestCreatePage implements OnInit {
   onSubmit() {
     if (this.form.valid) {
       this.http.post('/api/equipment-requests', this.form.getRawValue()).subscribe(() => {
-        alert('Demande de matériel créée avec succès !');
+        this.errorService.showSuccess('Demande de matériel créée avec succès !');
         this.router.navigate(['/dashboard']);
       });
     } else {

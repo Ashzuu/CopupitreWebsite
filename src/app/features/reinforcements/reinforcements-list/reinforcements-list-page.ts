@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReinforcementAnnouncement } from '../../../core/model';
 import { BaseLayout } from '../../../layout/base-layout/base-layout';
@@ -13,6 +14,7 @@ import { ReinforcementList } from '../../dashboard/components/reinforcement-list
 })
 export class ReinforcementsListPage implements OnInit {
   private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
 
   /** The announcements property. */
   announcements = signal<ReinforcementAnnouncement[]>([]);
@@ -38,8 +40,10 @@ export class ReinforcementsListPage implements OnInit {
   });
 
   ngOnInit() {
-    this.http.get<ReinforcementAnnouncement[]>('/api/reinforcements/all').subscribe((data) => {
-      this.announcements.set(data);
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      this.http.get<ReinforcementAnnouncement[]>('/api/reinforcements/all').subscribe((data) => {
+        this.announcements.set(data);
+      });
+    }
   }
 }

@@ -1,11 +1,13 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Organization, ReinforcementAnnouncement } from '../../../../core/model';
-import { OrganizationDetailRepository } from './organization-detail.repository';
+import { OrganizationDetailRepository } from './organization-detail-repository';
+import { NotifService } from '../../../../core/service/notif-service';
 
 @Injectable()
 export class OrganizationDetailService {
   private readonly repo = inject(OrganizationDetailRepository);
+  private readonly errorService = inject(NotifService);
 
   /** The organization property. */
   readonly organization = signal<Organization | null>(null);
@@ -26,13 +28,18 @@ export class OrganizationDetailService {
       if (org) this.organization.set(org);
       if (announcements) this.announcements.set(announcements);
     } catch (e) {
-      this.error.set('Impossible de charger les informations de cette organisation.');
-      console.error('An error occurred while loading organization data.');
+      const msg = 'Impossible de charger les informations de cette organisation.';
+      this.error.set(msg);
+      this.errorService.showError(msg, 'Chargement échoué');
+      console.error('An error occurred while loading organization data.', e);
     }
   }
 
   /** Executes the subscribeToAnnouncements action. */
   subscribeToAnnouncements() {
-    alert('Vous serez désormais averti des nouvelles annonces de cette organisation !');
+    this.errorService.showSuccess(
+      'Vous serez désormais averti des nouvelles annonces de cette organisation !',
+      'Abonnement réussi'
+    );
   }
 }

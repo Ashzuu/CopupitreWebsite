@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { EquipmentRequest } from '../../../core/model';
 import { BaseLayout } from '../../../layout/base-layout/base-layout';
@@ -13,6 +14,7 @@ import { EquipmentRequestList } from '../../dashboard/components/equipment-reque
 })
 export class EquipmentRequestsListPage implements OnInit {
   private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
 
   /** The allRequests property. */
   allRequests = signal<EquipmentRequest[]>([]);
@@ -23,10 +25,12 @@ export class EquipmentRequestsListPage implements OnInit {
   searchCtrl = new FormControl('');
 
   ngOnInit() {
-    this.http.get<EquipmentRequest[]>('/api/equipment-requests').subscribe((data) => {
-      this.allRequests.set(data);
-      this.filteredRequests.set(data);
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      this.http.get<EquipmentRequest[]>('/api/equipment-requests').subscribe((data) => {
+        this.allRequests.set(data);
+        this.filteredRequests.set(data);
+      });
+    }
 
     this.searchCtrl.valueChanges.subscribe((term) => {
       if (!term) {

@@ -4,6 +4,7 @@ import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { Organization } from '../../../core/model';
 import { BaseLayout } from '../../../layout/base-layout/base-layout';
+import { NotifService } from '../../../core/service/notif-service';
 
 @Component({
   selector: 'copupitre-reinforcement-create-page',
@@ -15,6 +16,7 @@ export class ReinforcementCreatePage implements OnInit {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
+  private errorService = inject(NotifService);
 
   /** The userOrganizations property. */
   userOrganizations = signal<Organization[]>([]);
@@ -60,7 +62,7 @@ export class ReinforcementCreatePage implements OnInit {
   onSubmit() {
     if (this.form.valid) {
       this.http.post('/api/reinforcements', this.form.getRawValue()).subscribe(() => {
-        alert('Annonce créée avec succès !');
+        this.errorService.showSuccess('Annonce créée avec succès !');
         this.router.navigate(['/renforts']);
       });
     } else {

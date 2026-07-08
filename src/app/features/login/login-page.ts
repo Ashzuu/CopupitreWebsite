@@ -1,6 +1,6 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../core/service/auth.service';
+import { AuthService } from '../../core/service/auth-service';
 import { BaseLayout } from '../../layout/base-layout/base-layout';
 
 @Component({
@@ -45,6 +45,7 @@ export class LoginPage {
 
   /** Executes the onSubmitLogin action. */
   onSubmitLogin() {
+    this.errorMessage.set("");
     if (this.loginForm.valid) {
       const { identifier, password } = this.loginForm.getRawValue();
       this.authService.login({ username: identifier, password }).subscribe({

@@ -3,8 +3,8 @@ export interface Concert {
   id: number;
   /** The title property. */
   title: string;
-  /** The date property. */
-  date: string;
+  /** The eventDate property. */
+  eventDate: string;
   /** The location property. */
   location: string;
   /** The description property. */

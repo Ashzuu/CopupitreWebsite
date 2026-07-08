@@ -38,4 +38,8 @@ export class OrganizationRepository {
       this.BASE_API_URL + '/api/organizations/' + orgId + '/equipment-requests',
     );
   }
+
+  create(payload: any): Observable<Organization> {
+    return this.http.post<Organization>(`${this.BASE_API_URL}/api/organizations/save`, payload);
+  }
 }

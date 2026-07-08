@@ -12,8 +12,8 @@
           <input type="text" class="input-field" [ngModel]="filterOrg()" (ngModelChange)="filterOrg.set($event)" placeholder="Nom de l'orchestre...">
         </div>
         <div class="form-group">
-          <label>Date du concert</label>
-          <input type="date" class="input-field" [ngModel]="filterDate()" (ngModelChange)="filterDate.set($event)">
+          <label>Instrument recherché</label>
+          <input type="text" class="input-field" [ngModel]="filterInstrument()" (ngModelChange)="filterInstrument.set($event)">
         </div>
       </div>
     </div>
@@ -28,7 +28,11 @@
         }
       </div>
       @if (filteredAnnouncements().length > 0) {
-        <copupitre-reinforcement-list [announcements]="filteredAnnouncements()"></copupitre-reinforcement-list>
+        <copupitre-reinforcement-list
+          [announcements]="filteredAnnouncements()"
+          [adminOrgIds]="adminOrgIds()"
+          (deleteRequest)="onDeleteAnnouncement($event)">
+        </copupitre-reinforcement-list>
       } @else {
         <p class="empty-state">Aucune annonce ne correspond à vos critères.</p>
       }

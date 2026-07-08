@@ -46,8 +46,8 @@
                 @for (concert of org.concerts; track concert.id) {
                   <div class="concert-card">
                     <div class="concert-card__date">
-                      <span class="day">{{ concert.date | date:'dd' }}</span>
-                      <span class="month">{{ concert.date | date:'MMM' }}</span>
+                      <span class="day">{{ concert.eventDate | date:'dd' }}</span>
+                      <span class="month">{{ concert.eventDate | date:'MMM' }}</span>
                     </div>
                     <div class="concert-card__info">
                       <h3>{{ concert.title }}</h3>

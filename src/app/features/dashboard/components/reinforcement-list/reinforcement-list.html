@@ -9,10 +9,20 @@
         </div>
       </div>
       <div class="announcement-item__side">
-        <span class="status-badge" [class]="'status-badge--' + announcement.status | lowercase">
-          {{ translateStatus(announcement.status) }}
-        </span>
-        <span class="instrument-tag">{{ announcement.instrumentNeeded }}</span>
+        <div class="announcement-item__indicators">
+          <span class="status-badge" [class]="'status-badge--' + announcement.status | lowercase">
+            {{ translateStatus(announcement.status) }}
+          </span>
+            <span class="instrument-tag">{{ announcement.instrumentNeeded }}</span>
+        </div>
+        @if (canDelete(announcement)) {
+          <button
+            class="btn-delete"
+            title="Supprimer cette annonce"
+            (click)="onDelete(announcement.id)">
+            <i class="pi pi-trash"></i>
+          </button>
+        }
       </div>
     </div>
   }

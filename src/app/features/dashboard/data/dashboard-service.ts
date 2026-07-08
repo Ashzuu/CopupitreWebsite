@@ -23,13 +23,12 @@ export class DashboardService {
   /** The allEquipmentRequests property. */
   readonly allEquipmentRequests = signal<EquipmentRequest[]>([]);
 
+  readonly numberOfReinforcements = signal<number>(0);
+
   /** The orgBlocks property. */
   readonly orgBlocks = signal<OrgDashboardBlock[]>([]);
   /** The error property. */
   readonly error = signal<string | null>(null);
-
-  /** The hasOrganizations property. */
-  readonly hasOrganizations = computed(() => this.organizations().length > 0);
 
   /** Executes the loadDashboardData action. */
   async loadDashboardData(): Promise<void> {
@@ -41,8 +40,10 @@ export class DashboardService {
         firstValueFrom(this.repository.getAllEquipmentRequests()),
       ]);
       this.organizations.set(orgs);
-      this.allAnnouncements.set(allAnnouncements);
-      this.allEquipmentRequests.set(allEquipment);
+      this.allAnnouncements.set(allAnnouncements.slice(0,3));
+      this.allEquipmentRequests.set(allEquipment.slice(0, 3));
+
+      this.numberOfReinforcements.set(allAnnouncements.length);
 
       const blocks: OrgDashboardBlock[] = [];
 

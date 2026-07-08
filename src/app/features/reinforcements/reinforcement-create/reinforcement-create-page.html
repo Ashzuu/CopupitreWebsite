@@ -9,7 +9,6 @@
         <div class="form-group">
           <label for="org">Organisation <span class="required">*</span></label>
           <select id="org" formControlName="organizationId" class="input-field">
-            <option value="">Sélectionnez une organisation...</option>
             @for (org of userOrganizations(); track org.id) {
               <option [value]="org.id">{{ org.name }}</option>
             }

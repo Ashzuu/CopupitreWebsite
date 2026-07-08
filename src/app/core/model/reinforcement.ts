@@ -1,6 +1,8 @@
 export interface ReinforcementAnnouncement {
   /** The id property. */
   id: number;
+  /** The organizationId property. */
+  organizationId: number;
   /** The title property. */
   title: string;
   /** The organizationName property. */

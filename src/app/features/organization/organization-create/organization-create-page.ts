@@ -1,10 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BaseLayout } from '../../../layout/base-layout/base-layout';
 import { NotifService } from '../../../core/service/notif-service';
-import { environment } from '../../../../environments/environment';
 import { OrganizationRepository } from '../../../core/repository/organization-repository';
 import { Organization } from '../../../core/model';
 
@@ -16,7 +14,6 @@ import { Organization } from '../../../core/model';
 })
 export class OrganizationCreatePage implements OnInit {
   private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private orgRepo = inject(OrganizationRepository);
@@ -39,6 +36,7 @@ export class OrganizationCreatePage implements OnInit {
     rehearsalSchedule: [''],
     rehearsalSchedules: this.fb.array([]),
     rehearsalManuals: this.fb.array([]),
+    concerts: this.fb.array([]),
   });
 
   ngOnInit() {
@@ -107,6 +105,26 @@ export class OrganizationCreatePage implements OnInit {
         );
       });
     }
+
+    // Populate concerts FormArray
+    this.concerts.clear();
+    if (org.concerts) {
+      org.concerts.forEach((c) => {
+        let formattedDate = '';
+        if (c.eventDate) {
+          formattedDate = new Date(c.eventDate).toISOString().substring(0, 10);
+        }
+        this.concerts.push(
+          this.fb.group({
+            id: [c.id],
+            title: [c.title, Validators.required],
+            eventDate: [formattedDate, Validators.required],
+            location: [c.location, Validators.required],
+            description: [c.description, Validators.required],
+          })
+        );
+      });
+    }
   }
 
   get rehearsalSchedules() {
@@ -115,6 +133,10 @@ export class OrganizationCreatePage implements OnInit {
 
   get rehearsalManuals() {
     return this.form.get('rehearsalManuals') as FormArray;
+  }
+
+  get concerts() {
+    return this.form.get('concerts') as FormArray;
   }
 
   /** Executes the createRehearsalSchedule action. */
@@ -159,10 +181,40 @@ export class OrganizationCreatePage implements OnInit {
     this.rehearsalManuals.removeAt(index);
   }
 
+  /** Executes the createConcert action. */
+  createConcert() {
+    return this.fb.group({
+      id: [null as number | null],
+      title: ['', Validators.required],
+      eventDate: ['', Validators.required],
+      location: ['', Validators.required],
+      description: ['', Validators.required],
+    });
+  }
+
+  /** Executes the addConcert action. */
+  addConcert() {
+    this.concerts.push(this.createConcert());
+  }
+
+  /** Executes the removeConcert action. */
+  removeConcert(index: number) {
+    this.concerts.removeAt(index);
+  }
+
   /** Executes the onSubmit action. */
   onSubmit() {
     if (this.form.valid) {
-      this.http.post(`${environment.BASE_API_URL}/api/organizations/save`, this.form.getRawValue()).subscribe(() => {
+      const rawValue = this.form.getRawValue();
+      const payload = {
+        ...rawValue,
+        concerts: (rawValue.concerts || []).map((c: any) => ({
+          ...c,
+          eventDate: c.eventDate ? new Date(c.eventDate).toISOString() : null
+        }))
+      };
+
+      this.orgRepo.create(payload).subscribe(() => {
         this.errorService.showSuccess(this.isEditMode ? 'Organisation modifiée avec succès !' : 'Organisation créée avec succès !');
         this.router.navigate(['/dashboard']);
       });

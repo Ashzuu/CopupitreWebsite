@@ -1,11 +1,30 @@
 @use '../../../styles/variables' as *;
 
 .create-page {
-  max-width: 800px;
+  max-width: 1200px;
 }
 
 textarea {
   resize: none;
+}
+
+.create-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-xl;
+
+  @media (min-width: $breakpoint-lg) {
+    grid-template-columns: 1.4fr 1fr;
+    align-items: start;
+  }
+}
+
+.side-column {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+  position: sticky;
+  top: 1.5rem;
 }
 
 .card {
@@ -89,15 +108,63 @@ textarea {
   margin-top: $spacing-md;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: $spacing-xl;
-  padding-top: $spacing-xl;
-  border-top: 1px solid rgba($color-discrete, 0.2);
-}
-
 .input-field.ng-invalid.ng-touched {
   border-color: #e74c3c;
   box-shadow: 0 0 0 3px rgba(#e74c3c, 0.1);
+}
+
+// Concerts styling
+.concerts-card {
+  h2 {
+    font-size: $font-size-xl;
+    color: $color-secondary;
+    margin-bottom: $spacing-xs;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    i {
+      color: $color-primary;
+    }
+  }
+
+  .section-desc {
+    color: $color-text-light;
+    font-size: $font-size-sm;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.concert-item-card {
+  background: $color-background-alt;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba($color-discrete, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.concert-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba($color-discrete, 0.1);
+  padding-bottom: $spacing-xs;
+  margin-bottom: $spacing-xs;
+
+  h3 {
+    font-size: $font-size-base;
+    color: $color-primary-dark;
+    margin: 0;
+  }
+}
+
+.action-card {
+  padding: $spacing-lg;
+}
+
+.full-width-btn {
+  width: 100%;
 }

@@ -30,4 +30,12 @@ export class ReinforcementsRepository {
       this.BASE_API_URL + '/api/reinforcements/' + announcementId + '/responses',
     );
   }
+
+  createAnnouncement(data:any){
+    return this.client.post(this.BASE_API_URL + '/api/reinforcements/save', data);
+  }
+
+  deleteAnnouncement(id: number) {
+    return this.client.delete(`${this.BASE_API_URL}/api/reinforcements/${id}`);
+  }
 }

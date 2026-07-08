@@ -64,3 +64,41 @@
   padding: 2px 8px;
   border-radius: $border-radius-sm;
 }
+
+.btn-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: $border-radius-sm;
+  background: rgba($color-error, 0.1);
+  color: $color-error;
+  cursor: pointer;
+  transition: background $transition-fast, transform $transition-fast;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba($color-error, 0.2);
+    transform: scale(1.1);
+  }
+
+  i {
+    font-size: 12px;
+  }
+}
+.announcement-item__indicators {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: end;
+}
+
+.announcement-item__side {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+}

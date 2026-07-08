@@ -12,6 +12,14 @@ export class OrganizationRepository {
   private readonly http = inject(HttpClient);
   private readonly BASE_API_URL = environment.BASE_API_URL;
 
+  getAllOrganizations(): Observable<Organization[]> {
+    return this.http.get<Organization[]>(`${this.BASE_API_URL}/api/organizations/all`);
+  }
+
+  getById(orgId: number): Observable<Organization> {
+    return this.http.get<Organization>(`${this.BASE_API_URL}/api/organizations/${orgId}`);
+  }
+
   /** Executes the getUserOrganizations action. */
   getUserOrganizations(): Observable<Organization[]> {
     return this.http.get<Organization[]>(this.BASE_API_URL + '/api/organizations/me');

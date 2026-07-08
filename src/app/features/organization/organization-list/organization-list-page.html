@@ -1,0 +1,134 @@
+<copupitre-base-layout>
+  <div class="container section org-list-page">
+    <div class="org-list-layout">
+      <!-- SIDEBAR FILTERS -->
+      <aside class="org-filters">
+        <div class="filters-card">
+          <div class="filters-header">
+            <h2><i class="pi pi-filter"></i> Filtres</h2>
+            <button class="btn-reset" (click)="resetFilters()">Réinitialiser</button>
+          </div>
+
+          <!-- Filter by City (Multiple Selection) -->
+          <div class="filter-group">
+            <h3>Villes</h3>
+            <div class="checkbox-list">
+              @if (cityOptions().length > 0) {
+                @for (opt of cityOptions(); track opt.label) {
+                  <label class="checkbox-label">
+                    <input type="checkbox" [checked]="opt.checked" (change)="onCityChange(opt.label, !opt.checked)">
+                    <span>{{ opt.label }}</span>
+                  </label>
+                }
+              } @else {
+                <p class="empty-filter">Aucune ville disponible</p>
+              }
+            </div>
+          </div>
+
+          <!-- Filter by Size (Multiple Selection) -->
+          <div class="filter-group">
+            <h3>Taille de l'ensemble</h3>
+            <div class="checkbox-list">
+              @for (opt of sizeOptions(); track opt.label) {
+                <label class="checkbox-label">
+                  <input type="checkbox" [checked]="opt.checked" (change)="onSizeChange(opt.label, !opt.checked)">
+                  <span>{{ opt.label }} musiciens</span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <!-- Filter by Rehearsal Day (Multiple Selection) -->
+          <div class="filter-group">
+            <h3>Jour de répétition</h3>
+            <div class="checkbox-list">
+              @for (opt of dayOptions(); track opt.value) {
+                <label class="checkbox-label">
+                  <input type="checkbox" [checked]="opt.checked" (change)="onDayChange(opt.value, !opt.checked)">
+                  <span>{{ opt.label }}</span>
+                </label>
+              }
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RESULTS SECTION -->
+      <main class="org-results">
+        <div class="search-bar-card">
+          <div class="search-input-wrapper">
+            <i class="pi pi-search search-icon"></i>
+            <input type="text" class="input-field search-input" [ngModel]="searchName()" (ngModelChange)="searchName.set($event)" placeholder="Rechercher un orchestre par son nom...">
+          </div>
+        </div>
+
+        <div class="results-header">
+          <h2><i class="pi pi-building"></i> Orchestres partenaires ({{ filteredOrganizations().length }})</h2>
+          @if (authService.isAuthenticated()) {
+            <a routerLink="/organizations/create" class="btn btn--primary btn--small">
+              <i class="pi pi-plus"></i> Créer une organisation
+            </a>
+          }
+        </div>
+
+        @if (filteredOrganizations().length > 0) {
+          <div class="org-grid">
+            @for (org of filteredOrganizations(); track org.id) {
+              <div class="org-card" [routerLink]="['/organization', org.id]">
+                <div>
+                  <div class="org-card__header">
+                    <div class="org-card__icon-wrapper">
+                      <i class="pi pi-users org-icon"></i>
+                    </div>
+                    <div class="org-card__title-area">
+                      <h3 class="org-card__name">{{ org.name }}</h3>
+                      <span class="org-card__city"><i class="pi pi-map-marker"></i> {{ org.city || 'Ville non spécifiée' }}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="org-card__body">
+                    <p class="org-card__description">{{ org.description || 'Aucune description fournie.' }}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="org-card__details">
+                    @if (org.musicianCount) {
+                      <div class="org-card__detail-item">
+                        <i class="pi pi-user-plus"></i>
+                        <span><strong>{{ org.musicianCount }}</strong> musiciens</span>
+                      </div>
+                    }
+                    
+                    @if (org.rehearsalSchedules && org.rehearsalSchedules.length > 0) {
+                      <div class="org-card__detail-item">
+                        <i class="pi pi-calendar"></i>
+                        <span>
+                          Répétition : 
+                          @for (s of org.rehearsalSchedules; track s.id; let last = $last) {
+                            <strong>{{ s.dayOfWeek | titlecase }}</strong>{{ last ? '' : ', ' }}
+                          }
+                        </span>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="org-card__footer">
+                    <span class="btn-more">Voir les détails <i class="pi pi-arrow-right"></i></span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <i class="pi pi-search-minus empty-icon"></i>
+            <p>Aucune organisation ne correspond à vos critères de recherche.</p>
+            <button class="btn btn--secondary" (click)="resetFilters()">Réinitialiser les filtres</button>
+          </div>
+        }
+      </main>
+    </div>
+  </div>
+</copupitre-base-layout>

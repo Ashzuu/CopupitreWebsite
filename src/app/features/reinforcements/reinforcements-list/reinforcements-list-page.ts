@@ -2,14 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ReinforcementAnnouncement } from '../../../core/model';
 import { BaseLayout } from '../../../layout/base-layout/base-layout';
 import { ReinforcementList } from '../../dashboard/components/reinforcement-list/reinforcement-list';
 import { ReinforcementsRepository } from '../../../core/repository/reinforcements-repository';
+import { OrganizationRepository } from '../../../core/repository/organization-repository';
+import { AuthService } from '../../../core/service/auth-service';
 
 @Component({
   selector: 'copupitre-reinforcements-list-page',
-  imports: [BaseLayout, ReinforcementList, FormsModule],
+  imports: [BaseLayout, ReinforcementList, FormsModule, RouterLink],
   templateUrl: './reinforcements-list-page.html',
   styleUrl: './reinforcements-list-page.scss',
 })
@@ -17,6 +20,10 @@ export class ReinforcementsListPage implements OnInit {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
   private readonly repo = inject(ReinforcementsRepository);
+  private readonly orgRepo = inject(OrganizationRepository);
+  readonly authService = inject(AuthService);
+
+  readonly hasAdminOrganization = signal(false);
 
   /** The announcements property. */
   announcements = signal<ReinforcementAnnouncement[]>([]);
@@ -46,6 +53,20 @@ export class ReinforcementsListPage implements OnInit {
       this.repo.getAll().subscribe((data) => {
         this.announcements.set(data);
       });
+
+      if (this.authService.isAuthenticated()) {
+        this.orgRepo.getUserOrganizations().subscribe({
+          next: (orgs) => {
+            const username = this.authService.currentUsername();
+            const isAdmin = orgs.some((org) => org.adminUsernames?.includes(username || ''));
+            this.hasAdminOrganization.set(isAdmin);
+          },
+          error: (err) => {
+            console.error('Error fetching user organizations:', err);
+            this.hasAdminOrganization.set(false);
+          },
+        });
+      }
     }
   }
 }

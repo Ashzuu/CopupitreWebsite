@@ -19,7 +19,14 @@
     </div>
 
     <div class="results-section">
-      <h2><i class="pi pi-list"></i> Annonces disponibles ({{ filteredAnnouncements().length }})</h2>
+      <div class="results-header">
+        <h2><i class="pi pi-list"></i> Annonces disponibles ({{ filteredAnnouncements().length }})</h2>
+        @if (hasAdminOrganization()) {
+          <a routerLink="/annonces/create" class="btn btn--primary btn--small">
+            <i class="pi pi-plus"></i> Créer une annonce
+          </a>
+        }
+      </div>
       @if (filteredAnnouncements().length > 0) {
         <copupitre-reinforcement-list [announcements]="filteredAnnouncements()"></copupitre-reinforcement-list>
       } @else {

@@ -17,6 +17,14 @@ export const routes: Routes = [
     canActivate: [guestGuard],
   },
   {
+    path: 'organisations',
+    loadComponent: () =>
+      import('../features/organization/organization-list/organization-list-page').then(
+        (m) => m.OrganizationListPage,
+      ),
+    title: 'Orchestres Partenaires - Copupitre',
+  },
+  {
     path: 'organization/:id',
     loadComponent: () =>
       import('../features/organization/organization-detail/organization-detail-page').then(

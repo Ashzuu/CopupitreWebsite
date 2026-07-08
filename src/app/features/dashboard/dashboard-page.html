@@ -12,7 +12,6 @@
         <button class="btn btn--primary" (click)="service.loadDashboardData()">Réessayer</button>
       </div>
     } @else {
-      <!-- ESPACE PERSONNEL -->
       <section class="dashboard__personal">
         <h2 class="dashboard__section-title"><i class="pi pi-user"></i> Espace Personnel</h2>
         
@@ -36,7 +35,9 @@
           <section class="dashboard__section">
             <div class="dashboard__section-header">
               <h3 class="dashboard__section-subtitle"><i class="pi pi-globe"></i> Offres de Renforts Publiques</h3>
-              <a class="btn btn--primary btn--small" routerLink="/annonces/create"><i class="pi pi-plus"></i> Ajouter</a>
+              @if(service.organizations().length > 0){
+                <a class="btn btn--primary btn--small" routerLink="/annonces/create"><i class="pi pi-plus"></i> Ajouter</a>
+              }
             </div>
             @if (service.allAnnouncements().length > 0) {
               <copupitre-reinforcement-list [announcements]="service.allAnnouncements()"></copupitre-reinforcement-list>
@@ -50,7 +51,9 @@
           <section class="dashboard__section">
             <div class="dashboard__section-header">
               <h3 class="dashboard__section-subtitle"><i class="pi pi-box"></i> Demandes de Matériel Publiques</h3>
-              <a class="btn btn--primary btn--small" routerLink="/materiel/create"><i class="pi pi-plus"></i> Ajouter</a>
+              @if(service.organizations().length > 0){
+                <a class="btn btn--primary btn--small" routerLink="/materiel/create"><i class="pi pi-plus"></i> Ajouter</a>
+              }
             </div>
             @if (service.allEquipmentRequests().length > 0) {
               <copupitre-equipment-request-list [requests]="service.allEquipmentRequests()"></copupitre-equipment-request-list>
@@ -63,7 +66,6 @@
         </div>
       </section>
 
-      <!-- ESPACE ORGANISATIONS -->
       <section class="dashboard__organizations">
         <h2 class="dashboard__section-title"><i class="pi pi-building"></i> Mes Organisations</h2>
         
@@ -118,7 +120,7 @@
         } @else {
           <div class="dashboard__empty">
             <p>Vous n'avez pas encore d'organisation.</p>
-            <button class="btn btn--secondary btn--sm">Créer une organisation</button>
+            <a routerLink="/organizations/create" class="btn btn--secondary btn--small">Créer une organisation</a>
           </div>
         }
       </section>

@@ -1,0 +1,41 @@
+<copupitre-base-layout>
+  <div class="container section reinforcements-page">
+    <div class="filters-card">
+      <h2><i class="pi pi-filter"></i> Filtrer les annonces</h2>
+      <div class="filters-grid">
+        <div class="form-group">
+          <label>Ville</label>
+          <input type="text" class="input-field" [ngModel]="filterCity()" (ngModelChange)="filterCity.set($event)" placeholder="Ex: Lyon, Paris...">
+        </div>
+        <div class="form-group">
+          <label>Organisation</label>
+          <input type="text" class="input-field" [ngModel]="filterOrg()" (ngModelChange)="filterOrg.set($event)" placeholder="Nom de l'orchestre...">
+        </div>
+        <div class="form-group">
+          <label>Instrument recherché</label>
+          <input type="text" class="input-field" [ngModel]="filterInstrument()" (ngModelChange)="filterInstrument.set($event)">
+        </div>
+      </div>
+    </div>
+
+    <div class="results-section">
+      <div class="results-header">
+        <h2><i class="pi pi-list"></i> Annonces disponibles ({{ filteredAnnouncements().length }})</h2>
+        @if (hasAdminOrganization()) {
+          <a routerLink="/annonces/create" class="btn btn--primary btn--small">
+            <i class="pi pi-plus"></i> Créer une annonce
+          </a>
+        }
+      </div>
+      @if (filteredAnnouncements().length > 0) {
+        <copupitre-reinforcement-list
+          [announcements]="filteredAnnouncements()"
+          [adminOrgIds]="adminOrgIds()"
+          (deleteRequest)="onDeleteAnnouncement($event)">
+        </copupitre-reinforcement-list>
+      } @else {
+        <p class="empty-state">Aucune annonce ne correspond à vos critères.</p>
+      }
+    </div>
+  </div>
+</copupitre-base-layout>

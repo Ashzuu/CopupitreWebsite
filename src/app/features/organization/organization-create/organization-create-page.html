@@ -1,0 +1,175 @@
+<copupitre-base-layout>
+  <div class="container section create-page">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="create-grid">
+        
+        <!-- LEFT COLUMN: Organization Info -->
+        <div class="card">
+          <h1><i class="pi pi-building"></i> {{ isEditMode ? 'Modifier' : 'Créer' }} une organisation</h1>
+          <p class="subtitle">{{ isEditMode ? 'Mettez à jour les informations de votre organisation sur Copupitre.' : 'Référencez votre orchestre, harmonie ou ensemble sur Copupitre.' }}</p>
+          
+          <div class="form-layout">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Nom de l'organisation <span class="required">*</span></label>
+                <input type="text" id="name" formControlName="name" class="input-field" placeholder="Ex: Orchestre Symphonique...">
+              </div>
+              <div class="form-group">
+                <label for="city">Ville <span class="required">*</span></label>
+                <input type="text" id="city" formControlName="city" class="input-field" placeholder="Ex: Lyon">
+              </div>
+              <div class="form-group">
+                <label for="musicianCount">Nombre de musiciens <span class="required">*</span></label>
+                <input type="number" id="musicianCount" formControlName="musicianCount" class="input-field" min="1" placeholder="Ex: 50">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="description">Description <span class="required">*</span></label>
+              <textarea id="description" formControlName="description" class="input-field" rows="4" placeholder="Présentation de votre ensemble, répertoire..."></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="formationType">Type de formation</label>
+                <input type="text" id="formationType" formControlName="formationType" class="input-field" placeholder="Ex: Harmonie, Orchestre d'Harmonie, Brass Band">
+              </div>
+              <div class="form-group">
+                <label for="concertDress">Tenue de concert</label>
+                <input type="text" id="concertDress" formControlName="concertDress" class="input-field" placeholder="Ex: Tout en noir, Haut blanc - bas noir, ...">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="rehearsalAddress">Adresse des répétitions</label>
+                <input type="text" id="rehearsalAddress" formControlName="rehearsalAddress" class="input-field" placeholder="Ex: 12 Rue de la Musique, Lyon">
+              </div>
+              <div class="form-group">
+                <label for="rehearsalSchedule">Note sur les horaires</label>
+                <input type="text" id="rehearsalSchedule" formControlName="rehearsalSchedule" class="input-field" placeholder="Ex: Hors vacances scolaires">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="logisticsInfo">Informations logistiques</label>
+              <textarea id="logisticsInfo" formControlName="logisticsInfo" class="input-field" rows="3" placeholder="Ex: Gros instruments à vent et percussions fournis..."></textarea>
+            </div>
+
+            <div class="rehearsals-section">
+              <h2>Répétitions Régulières</h2>
+              <p class="section-desc">Pour les répétitions qui ont lieu toutes les semaines (ex: Tous les lundis de 20h à 22h). Saisissez les horaires au format 24h (ex: 20:00).</p>
+              
+              <div formArrayName="rehearsalSchedules" class="manual-list">
+                @for (regularCtrl of rehearsalSchedules.controls; track $index) {
+                  <div [formGroupName]="$index" class="manual-row">
+                    <select formControlName="dayOfWeek" class="input-field" title="Jour de la semaine">
+                      <option value="MONDAY">Lundi</option>
+                      <option value="TUESDAY">Mardi</option>
+                      <option value="WEDNESDAY">Mercredi</option>
+                      <option value="THURSDAY">Jeudi</option>
+                      <option value="FRIDAY">Vendredi</option>
+                      <option value="SATURDAY">Samedi</option>
+                      <option value="SUNDAY">Dimanche</option>
+                    </select>
+                    <input type="text" formControlName="startTime" class="input-field" placeholder="ex: 20:00" title="Heure de début">
+                    <input type="text" formControlName="endTime" class="input-field" placeholder="ex: 22:00" title="Heure de fin">
+                    <input type="text" formControlName="location" class="input-field" placeholder="Lieu (Ex: Conservatoire)">
+                    <button type="button" class="btn btn--icon btn--danger" (click)="removeRehearsalSchedule($index)">
+                      <i class="pi pi-trash"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+              <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addRehearsalSchedule()">
+                <i class="pi pi-plus"></i> Ajouter une répétition régulière
+              </button>
+            </div>
+
+            <div class="rehearsals-section">
+              <h2>Répétitions Exceptionnelles</h2>
+              <p class="section-desc">Pour les répétitions avec des dates précises. Sélectionnez la date via le calendrier et saisissez les horaires au format 24h (ex: 20:00).</p>
+
+              <div formArrayName="rehearsalManuals" class="manual-list">
+                @for (rehearsalCtrl of rehearsalManuals.controls; track $index) {
+                  <div [formGroupName]="$index" class="manual-row">
+                    <input type="date" formControlName="manualDate" class="input-field" title="Date">
+                    <input type="text" formControlName="startTime" class="input-field" placeholder="ex: 20:00" title="Heure de début">
+                    <input type="text" formControlName="endTime" class="input-field" placeholder="ex: 22:00" title="Heure de fin">
+                    <input type="text" formControlName="location" class="input-field" placeholder="Lieu">
+                    <button type="button" class="btn btn--icon btn--danger" (click)="removeRehearsalManual($index)">
+                      <i class="pi pi-trash"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+              <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addRehearsalManual()">
+                <i class="pi pi-plus"></i> Ajouter une date spécifique
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Concerts & Submit Action -->
+        <div class="side-column">
+          
+          <!-- Concerts Card -->
+          <div class="card concerts-card">
+            <h2><i class="pi pi-ticket"></i> Concerts programmés</h2>
+            <p class="section-desc">Gérez les prochains concerts de votre ensemble musical.</p>
+
+            <div formArrayName="concerts" class="manual-list">
+              @for (concertCtrl of concerts.controls; track $index) {
+                <div [formGroupName]="$index" class="concert-item-card">
+                  <div class="concert-item-header">
+                    <h3>Concert #{{ $index + 1 }}</h3>
+                    <button type="button" class="btn btn--icon btn--danger btn--small" (click)="removeConcert($index)">
+                      <i class="pi pi-trash"></i>
+                    </button>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Titre <span class="required">*</span></label>
+                    <input type="text" formControlName="title" class="input-field" placeholder="Ex: Concert de Printemps">
+                  </div>
+                  
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Date <span class="required">*</span></label>
+                      <input type="date" formControlName="eventDate" class="input-field">
+                    </div>
+                    <div class="form-group">
+                      <label>Lieu <span class="required">*</span></label>
+                      <input type="text" formControlName="location" class="input-field" placeholder="Ex: Salle des fêtes">
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Description <span class="required">*</span></label>
+                    <textarea formControlName="description" class="input-field" rows="2" placeholder="Ex: Programme romantique, entrée libre..."></textarea>
+                  </div>
+                </div>
+              } @empty {
+                <p class="empty-state">Aucun concert programmé pour le moment.</p>
+              }
+            </div>
+
+            <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addConcert()">
+              <i class="pi pi-plus"></i> Ajouter un concert
+            </button>
+          </div>
+
+          <!-- Action/Submit Card -->
+          <div class="card action-card">
+            <button type="submit" class="btn btn--primary btn--lg full-width-btn">
+              {{ isEditMode ? 'Enregistrer les modifications' : 'Créer l\'organisation' }}
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </form>
+  </div>
+</copupitre-base-layout>

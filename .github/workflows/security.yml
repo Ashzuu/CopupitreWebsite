@@ -1,0 +1,25 @@
+name: security.yml
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: read
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run security checks
+        run: npm audit
+
+      - name: Run Bearer
+        id: report
+        uses: bearer/bearer-action@v2

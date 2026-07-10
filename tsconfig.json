@@ -3,6 +3,18 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@style": ["src/styles/variables.scss"],
+      "@services/*": ["src/app/core/service/*"],
+      "@repositories/*": ["src/app/core/repository/*"],
+      "@layouts/*": ["src/app/layout/*"],
+      "@models/*": ["src/app/core/model/*"],
+      "@guards/*": ["src/app/core/guards/*"],
+      "@interceptors/*": ["src/app/core/interceptors/*"],
+      "@pages/*": ["src/app/features/*"],
+      "@environments/*": ["src/environments/*"],
+    },
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

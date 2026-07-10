@@ -1,0 +1,31 @@
+<div class="my-announcements">
+  @for (announcement of announcements(); track announcement.id) {
+    <div class="announcement-card">
+      <div class="announcement-card__header">
+        <h4>{{ announcement.title }}</h4>
+        <span class="count-badge">{{ announcement.validatedCount }} / {{ announcement.requiredCount }} validés</span>
+      </div>
+      
+      <div class="responses-section">
+        <h5>Réponses reçues :</h5>
+        @if (announcement.responses && announcement.responses.length > 0) {
+          <ul class="responses-list">
+            @for (resp of announcement.responses; track resp.id) {
+              <li class="response-item">
+                <div class="response-item__info">
+                  <i class="pi pi-user"></i>
+                  <strong>{{ resp.respondentUsername }}</strong> a postulé.
+                </div>
+                <span class="response-status" [class]="'response-status--' + resp.status | lowercase">
+                  {{ translateStatus(resp.status) }}
+                </span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="no-responses">Aucune réponse pour le moment.</p>
+        }
+      </div>
+    </div>
+  }
+</div>

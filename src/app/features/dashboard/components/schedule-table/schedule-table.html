@@ -1,0 +1,22 @@
+<div class="table-container">
+  <table class="schedule-table">
+    <thead>
+      <tr>
+        <th>Organisation</th>
+        <th>Jour</th>
+        <th>Horaires</th>
+        <th>Lieu</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (schedule of schedules(); track schedule.id) {
+        <tr>
+          <td><strong>{{ schedule.organizationName }}</strong></td>
+          <td><span class="badge">{{ translateDay(schedule.dayOfWeek) }}</span></td>
+          <td>{{ schedule.startTime }} - {{ schedule.endTime }}</td>
+          <td>{{ schedule.location }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,218 @@
+@use '../../styles/variables' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard {
+  &__header {
+    margin-bottom: $spacing-2xl;
+  }
+
+  &__title {
+    font-size: $font-size-3xl;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__subtitle {
+    color: $color-text-light;
+    font-size: $font-size-lg;
+  }
+
+  &__loading, &__error {
+    text-align: center;
+    padding: $spacing-4xl;
+    background: $color-background-alt;
+    border-radius: $border-radius-xl;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-md;
+
+    i { font-size: 2.5rem; }
+  }
+
+  &__error { color: $color-error; }
+
+  &__personal {
+    margin-bottom: $spacing-3xl;
+  }
+
+  &__organizations {
+    margin-bottom: $spacing-3xl;
+  }
+
+  &__section-title {
+    font-size: $font-size-2xl;
+    color: $color-primary-dark;
+    border-bottom: 3px solid $color-primary;
+    padding-bottom: $spacing-sm;
+    margin-bottom: $spacing-xl;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  &__section-subtitle {
+    font-size: $font-size-xl;
+    margin-bottom: $spacing-lg;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    i { color: $color-primary; }
+  }
+
+  &__stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+    margin-bottom: $spacing-2xl;
+
+    @media (min-width: $breakpoint-md) {
+      flex-direction: row;
+      > * { flex: 1; }
+    }
+  }
+
+  &__content-grid {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2xl;
+
+    @media (min-width: $breakpoint-lg) {
+      flex-direction: row;
+      > * { flex: 1; }
+    }
+  }
+
+  &__section {
+    background: $color-background;
+    border-radius: $border-radius-xl;
+    box-shadow: $shadow-sm;
+    padding: $spacing-xl;
+    border: 1px solid rgba($color-discrete, 0.2);
+  }
+
+  &__section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-lg;
+    gap: $spacing-sm;
+
+    .dashboard__section-subtitle {
+      margin-bottom: 0;
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $spacing-2xl;
+    background: $color-background-alt;
+    border-radius: $border-radius-lg;
+    color: $color-text-light;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-md;
+  }
+}
+
+.org-dashboard-block {
+  background: $color-background;
+  border-radius: $border-radius-xl;
+  box-shadow: $shadow-md;
+  margin-bottom: $spacing-2xl;
+  overflow: hidden;
+  border: 1px solid rgba($color-discrete, 0.2);
+
+  &__header {
+    background: $color-secondary;
+    color: $color-text-inverse;
+    padding: $spacing-lg $spacing-xl;
+    
+    h3 {
+      font-size: $font-size-xl;
+      margin: 0;
+      color: $color-text-inverse;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xl;
+    padding: $spacing-xl;
+
+    @media (min-width: $breakpoint-lg) {
+      flex-direction: row;
+      > * { flex: 1; min-width: 0; }
+    }
+  }
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    background: $color-background-alt;
+    padding: $spacing-md;
+    border-radius: $border-radius-md;
+    border: 1px solid rgba($color-discrete, 0.1);
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  &__subtitle {
+    font-size: $font-size-lg;
+    color: $color-primary-dark;
+    margin: 0 0 $spacing-sm 0;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    border-bottom: 2px solid rgba($color-primary, 0.2);
+    padding-bottom: $spacing-xs;
+  }
+}
+
+.empty-text {
+  color: $color-text-light;
+  font-style: italic;
+  font-size: $font-size-sm;
+  margin: 0;
+}
+
+.equipment-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.equipment-card {
+  background: $color-background;
+  border: 1px solid rgba($color-discrete, 0.3);
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+
+  h5 {
+    margin: 0 0 $spacing-xs 0;
+    font-size: $font-size-base;
+  }
+  
+  .badge {
+    display: inline-block;
+    background: rgba($color-primary, 0.1);
+    color: $color-primary-dark;
+    font-size: $font-size-xs;
+    padding: 2px 6px;
+    border-radius: $border-radius-sm;
+    margin-bottom: $spacing-xs;
+  }
+
+  p {
+    font-size: $font-size-sm;
+    color: $color-text;
+    margin: 0;
+  }
+}

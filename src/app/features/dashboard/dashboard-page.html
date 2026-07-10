@@ -1,0 +1,130 @@
+<copupitre-base-layout [Footer]="false">
+  <div class="dashboard container section">
+    <div class="dashboard__header">
+      <h1 class="dashboard__title">Tableau de bord</h1>
+      <p class="dashboard__subtitle">Gérez vos organisations, vos annonces et répondez aux besoins des autres orchestres.</p>
+    </div>
+
+    @if (service.error()) {
+      <div class="dashboard__error">
+        <i class="pi pi-exclamation-triangle"></i>
+        <p>{{ service.error() }}</p>
+        <button class="btn btn--primary" (click)="service.loadDashboardData()">Réessayer</button>
+      </div>
+    } @else {
+      <section class="dashboard__personal">
+        <h2 class="dashboard__section-title"><i class="pi pi-user"></i> Espace Personnel</h2>
+        
+        <div class="dashboard__stats-grid">
+          <copupitre-dashboard-stat-card
+            label="Mes organisations"
+            [value]="service.organizations().length.toString()"
+            icon="pi-users"
+            accentColor="#4F5D75">
+          </copupitre-dashboard-stat-card>
+
+          <copupitre-dashboard-stat-card
+            label="Demandes de Renforts"
+            [value]="service.numberOfReinforcements().toString()"
+            icon="pi-megaphone"
+            accentColor="#EF8354">
+          </copupitre-dashboard-stat-card>
+        </div>
+
+        <div class="dashboard__content-grid">
+          <section class="dashboard__section">
+            <div class="dashboard__section-header">
+              <h3 class="dashboard__section-subtitle"><i class="pi pi-globe"></i> Offres de Renforts Publiques</h3>
+              @if(service.organizations().length > 0){
+                <a class="btn btn--primary btn--small" routerLink="/annonces/create"><i class="pi pi-plus"></i> Ajouter</a>
+              }
+            </div>
+            @if (service.allAnnouncements().length > 0) {
+              <copupitre-reinforcement-list [announcements]="service.allAnnouncements()"></copupitre-reinforcement-list>
+            } @else {
+              <div class="dashboard__empty">
+                <p>Aucune annonce de renfort actuellement.</p>
+              </div>
+            }
+          </section>
+
+          <section class="dashboard__section">
+            <div class="dashboard__section-header">
+              <h3 class="dashboard__section-subtitle"><i class="pi pi-box"></i> Demandes de Matériel Publiques</h3>
+              @if(service.organizations().length > 0){
+                <a class="btn btn--primary btn--small" routerLink="/materiel/create"><i class="pi pi-plus"></i> Ajouter</a>
+              }
+            </div>
+            @if (service.allEquipmentRequests().length > 0) {
+              <copupitre-equipment-request-list [requests]="service.allEquipmentRequests()"></copupitre-equipment-request-list>
+            } @else {
+              <div class="dashboard__empty">
+                <p>Aucune demande de matériel actuellement.</p>
+              </div>
+            }
+          </section>
+        </div>
+      </section>
+
+      <section class="dashboard__organizations">
+        <h2 class="dashboard__section-title"><i class="pi pi-building"></i> Mes Organisations</h2>
+        
+        @if (service.orgBlocks().length > 0) {
+          @for (block of service.orgBlocks(); track block.organization.id) {
+            <div class="org-dashboard-block">
+              <div class="org-dashboard-block__header">
+                <h3>{{ block.organization.name }}</h3>
+              </div>
+
+              <div class="org-dashboard-block__content">
+                <!-- Prochaines répétitions -->
+                <div class="org-dashboard-block__col">
+                  <h4 class="org-dashboard-block__subtitle"><i class="pi pi-calendar"></i> Répétitions</h4>
+                  @if (block.organization.rehearsalSchedules.length > 0) {
+                    <copupitre-schedule-table [schedules]="block.organization.rehearsalSchedules"></copupitre-schedule-table>
+                  } @else {
+                    <p class="empty-text">Aucune répétition définie.</p>
+                  }
+                </div>
+
+                <!-- Annonces de renforts & Réponses -->
+                <div class="org-dashboard-block__col">
+                  <h4 class="org-dashboard-block__subtitle"><i class="pi pi-users"></i> Renforts demandés</h4>
+                  @if (block.announcements.length > 0) {
+                    <copupitre-my-announcements-panel [announcements]="block.announcements"></copupitre-my-announcements-panel>
+                  } @else {
+                    <p class="empty-text">Aucune annonce de renfort pour cette organisation.</p>
+                  }
+                </div>
+
+                <!-- Demandes de matériel -->
+                <div class="org-dashboard-block__col">
+                  <h4 class="org-dashboard-block__subtitle"><i class="pi pi-box"></i> Demandes de matériel</h4>
+                  @if (block.equipmentRequests.length > 0) {
+                    <div class="equipment-list">
+                      @for (req of block.equipmentRequests; track req.id) {
+                        <div class="equipment-card">
+                          <h5>{{ req.equipmentName }}</h5>
+                          <span class="badge">{{ req.duration }}</span>
+                          <p>{{ req.description }}</p>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <p class="empty-text">Aucune demande de matériel.</p>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="dashboard__empty">
+            <p>Vous n'avez pas encore d'organisation.</p>
+            <a routerLink="/organizations/create" class="btn btn--secondary btn--small">Créer une organisation</a>
+          </div>
+        }
+      </section>
+
+    }
+  </div>
+</copupitre-base-layout>

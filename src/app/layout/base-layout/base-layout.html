@@ -1,0 +1,9 @@
+@if (this.Header()){
+  <copupitre-header></copupitre-header>
+}
+<main class="main-content">
+  <ng-content/>
+</main>
+@if (this.Footer()) {
+  <copupitre-footer></copupitre-footer>
+}

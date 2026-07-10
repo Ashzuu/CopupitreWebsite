@@ -69,7 +69,7 @@ export class ReinforcementsListPage implements OnInit {
             this.userOrganizations.set(orgs);
           },
           error: (err) => {
-            console.error('Error fetching user organizations:', err);
+            console.error('[ReinforcementListPage] Error fetching user organizations:');
           },
         });
       }
@@ -91,7 +91,7 @@ export class ReinforcementsListPage implements OnInit {
         this.loadAnnouncements();
       },
       error: (err) => {
-        console.error('Error deleting announcement:', err);
+        console.error('[ReinforcementListPage] Error deleting announcement:');
         this.notifService.showError("Impossible de supprimer l'annonce.");
       },
     });

@@ -94,7 +94,7 @@ export class ReinforcementCreatePage implements OnInit {
           this.router.navigate(['/renforts']);
         },
         error: (err) => {
-          console.error('[ReinforcementCreatePage] Error saving reinforcement requests:', err);
+          console.error('[ReinforcementCreatePage] Error saving reinforcement requests:');
           this.errorService.showError("Impossible de publier l'annonce de renfort.");
         }
       });

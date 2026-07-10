@@ -51,7 +51,7 @@ export class AuthService {
         this.profileSignal.set(user);
       },
       error: (err) => {
-        console.error('[AuthService] Error loading user profile:', err);
+        console.error('[AuthService] Error loading user profile:');
         this.profileSignal.set(null);
       }
     });
@@ -64,7 +64,7 @@ export class AuthService {
       return token;
     } else if (isPlatformServer(this.platformId) && this.request) {
       let cookieHeader = '';
-      
+
       if (this.request.headers) {
         if (typeof this.request.headers.get === 'function') {
           cookieHeader = this.request.headers.get('cookie') || '';
@@ -73,7 +73,7 @@ export class AuthService {
           cookieHeader = rawHeaders['cookie'] || rawHeaders['Cookie'] || '';
         }
       }
-      
+
       const token = this.parseCookie(cookieHeader, 'jwt_token');
       return token;
     }

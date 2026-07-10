@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
@@ -6,11 +5,10 @@ import {
   Organization,
   ReinforcementAnnouncement,
   ReinforcementResponse,
-} from '../../../core/model';
-import { environment } from '../../../../environments/environment';
-import { EquipmentRepository } from '../../../core/repository/equipment-repository';
-import { OrganizationRepository } from '../../../core/repository/organization-repository';
-import { ReinforcementsRepository } from '../../../core/repository/reinforcements-repository';
+} from '@models/index';
+import { EquipmentRepository } from '@repositories/equipment-repository';
+import { OrganizationRepository } from '@repositories/organization-repository';
+import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardRepository {

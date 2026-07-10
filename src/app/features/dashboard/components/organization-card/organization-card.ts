@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { Organization } from '../../../../core/model';
+import { Organization } from '@models/organization';
 
 @Component({
   selector: 'copupitre-organization-card',

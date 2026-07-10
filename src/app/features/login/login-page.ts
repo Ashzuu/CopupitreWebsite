@@ -1,7 +1,7 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../core/service/auth-service';
-import { BaseLayout } from '../../layout/base-layout/base-layout';
+import { AuthService } from '@services/auth-service';
+import { BaseLayout } from '@layouts/base-layout/base-layout';
 
 @Component({
   selector: 'copupitre-login-page',

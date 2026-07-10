@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { EquipmentRepository } from './equipment-repository';
 import { Observable } from 'rxjs';
 import { EquipmentRequest, Organization, ReinforcementAnnouncement } from '../model';
-import { environment } from '../../../environments/environment';
+import { environment } from '@environments/environment';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({

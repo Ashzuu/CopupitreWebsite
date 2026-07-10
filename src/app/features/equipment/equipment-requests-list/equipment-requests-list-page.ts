@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { EquipmentRequest } from '../../../core/model';
-import { BaseLayout } from '../../../layout/base-layout/base-layout';
-import { EquipmentRequestList } from '../../dashboard/components/equipment-request-list/equipment-request-list';
-import { EquipmentRepository } from '../../../core/repository/equipment-repository';
+import { EquipmentRequest } from '@models/equipment-request';
+import { BaseLayout } from '@layouts/base-layout/base-layout';
+import { EquipmentRequestList } from '@pages/dashboard/components/equipment-request-list/equipment-request-list';
+import { EquipmentRepository } from '@repositories/equipment-repository';
 
 @Component({
   selector: 'copupitre-equipment-requests-list-page',

@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { RehearsalSchedule } from '../../../../core/model';
+import { RehearsalSchedule } from '@models/organization';
 
 @Component({
   selector: 'copupitre-schedule-table',

@@ -1,6 +1,6 @@
 import { LowerCasePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { ReinforcementAnnouncement } from '../../../../core/model';
+import { ReinforcementAnnouncement } from '@models/reinforcement';
 
 @Component({
   selector: 'copupitre-my-announcements-panel',

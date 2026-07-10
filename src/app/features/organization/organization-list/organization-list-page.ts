@@ -1,12 +1,11 @@
 import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser, TitleCasePipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Organization } from '../../../core/model';
-import { BaseLayout } from '../../../layout/base-layout/base-layout';
+import { Organization } from '@models/organization';
+import { BaseLayout } from '@layouts/base-layout/base-layout';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { OrganizationRepository } from '../../../core/repository/organization-repository';
-import { AuthService } from '../../../core/service/auth-service';
+import { OrganizationRepository } from '@repositories/organization-repository';
+import { AuthService } from '@services/auth-service';
 
 export interface SizeRangeOption {
   label: string;

@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
-import { Footer } from '../components/footer/footer';
-import { Header } from '../components/header/header';
+import { Footer } from '@layouts/components/footer/footer';
+import { Header } from '@layouts/components/header/header';
 
 /**
  * Base of the layout for all pages

@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest } from '../model/auth';
+import { environment } from '@environments/environment';
+import { AuthResponse, LoginRequest, RegisterRequest } from '@models/auth';
 
 export interface UserProfile {
   id?: number;

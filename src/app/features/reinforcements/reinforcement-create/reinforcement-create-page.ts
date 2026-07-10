@@ -2,11 +2,11 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { Organization } from '../../../core/model';
-import { BaseLayout } from '../../../layout/base-layout/base-layout';
-import { NotifService } from '../../../core/service/notif-service';
-import { OrganizationRepository } from '../../../core/repository/organization-repository';
-import { ReinforcementsRepository } from '../../../core/repository/reinforcements-repository';
+import { Organization } from '@models/index';
+import { BaseLayout } from '@layouts/base-layout/base-layout';
+import { NotifService } from '@services/notif-service';
+import { OrganizationRepository } from '@repositories/organization-repository';
+import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 
 @Component({
   selector: 'copupitre-reinforcement-create-page',

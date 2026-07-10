@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { NotifService } from '../../../core/service/notif-service';
+import { NotifService } from '@services/notif-service';
 
 @Component({
   selector: 'copupitre-global-errors',

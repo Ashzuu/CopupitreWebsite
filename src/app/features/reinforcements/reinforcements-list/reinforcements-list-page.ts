@@ -2,13 +2,13 @@ import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angul
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Organization, ReinforcementAnnouncement } from '../../../core/model';
-import { BaseLayout } from '../../../layout/base-layout/base-layout';
-import { ReinforcementList } from '../../dashboard/components/reinforcement-list/reinforcement-list';
-import { ReinforcementsRepository } from '../../../core/repository/reinforcements-repository';
-import { OrganizationRepository } from '../../../core/repository/organization-repository';
-import { AuthService } from '../../../core/service/auth-service';
-import { NotifService } from '../../../core/service/notif-service';
+import { Organization, ReinforcementAnnouncement } from '@models/index';
+import { BaseLayout } from '@layouts/base-layout/base-layout';
+import { ReinforcementList } from '@pages/dashboard/components/reinforcement-list/reinforcement-list';
+import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
+import { OrganizationRepository } from '@repositories/organization-repository';
+import { AuthService } from '@services/auth-service';
+import { NotifService } from '@services/notif-service';
 
 @Component({
   selector: 'copupitre-reinforcements-list-page',

@@ -1,8 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { Organization, ReinforcementAnnouncement } from '../../../../core/model';
+import { Organization, ReinforcementAnnouncement } from '@models/index';
 import { OrganizationDetailRepository } from './organization-detail-repository';
-import { NotifService } from '../../../../core/service/notif-service';
+import { NotifService } from '@services/notif-service';
 
 @Injectable()
 export class OrganizationDetailService {

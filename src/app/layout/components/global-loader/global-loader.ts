@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { LoaderService } from '../../../core/service/loader-service';
+import { LoaderService } from '@services/loader-service';
 
 @Component({
   selector: 'copupitre-global-loader',

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { GlobalLoader } from './layout/components/global-loader/global-loader';
-import { GlobalErrors } from './layout/components/global-errors/global-errors';
+import { GlobalLoader } from '@layouts/components/global-loader/global-loader';
+import { GlobalErrors } from '@layouts/components/global-errors/global-errors';
 
 @Component({
   selector: 'app-root',

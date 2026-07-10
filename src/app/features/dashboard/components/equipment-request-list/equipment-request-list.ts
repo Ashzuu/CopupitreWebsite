@@ -1,6 +1,6 @@
 import { LowerCasePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { EquipmentRequest } from '../../../../core/model';
+import { EquipmentRequest } from '@models/equipment-request';
 
 @Component({
   selector: 'copupitre-equipment-request-list',

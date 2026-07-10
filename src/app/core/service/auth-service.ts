@@ -2,8 +2,8 @@ import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { computed, inject, Injectable, PLATFORM_ID, REQUEST, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse, LoginRequest, RegisterRequest } from '../model/auth';
-import { AuthRepository } from '../repository/auth-repository';
+import { AuthResponse, LoginRequest, RegisterRequest } from '@models/auth';
+import { AuthRepository } from '@repositories/auth-repository';
 
 @Injectable({
   providedIn: 'root',

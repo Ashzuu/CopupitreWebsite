@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Organization } from '../../../core/model';
-import { BaseLayout } from '../../../layout/base-layout/base-layout';
-import { NotifService } from '../../../core/service/notif-service';
-import { OrganizationRepository } from '../../../core/repository/organization-repository';
+import { Organization } from '@models/index';
+import { BaseLayout } from '@layouts/base-layout/base-layout';
+import { NotifService } from '@services/notif-service';
+import { OrganizationRepository } from '@repositories/organization-repository';
 
 @Component({
   selector: 'copupitre-equipment-request-create-page',

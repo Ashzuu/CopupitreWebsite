@@ -1,7 +1,7 @@
 import { DatePipe, LowerCasePipe } from '@angular/common';
 import { Component, inject, input, output } from '@angular/core';
-import { ReinforcementAnnouncement } from '../../../../core/model';
-import { AuthService } from '../../../../core/service/auth-service';
+import { ReinforcementAnnouncement } from '@models/reinforcement';
+import { AuthService } from '@services/auth-service';
 
 @Component({
   selector: 'copupitre-reinforcement-list',

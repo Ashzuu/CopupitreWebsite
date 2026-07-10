@@ -1,6 +1,6 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { EquipmentRequest, Organization, ReinforcementAnnouncement } from '../../../core/model';
+import { EquipmentRequest, Organization, ReinforcementAnnouncement } from '@models/index';
 import { DashboardRepository } from './dashboard-repository';
 
 export interface OrgDashboardBlock {

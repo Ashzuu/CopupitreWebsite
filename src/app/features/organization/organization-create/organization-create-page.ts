@@ -1,10 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BaseLayout } from '../../../layout/base-layout/base-layout';
-import { NotifService } from '../../../core/service/notif-service';
-import { OrganizationRepository } from '../../../core/repository/organization-repository';
-import { Organization } from '../../../core/model';
+import { BaseLayout } from '@layouts/base-layout/base-layout';
+import { NotifService } from '@services/notif-service';
+import { OrganizationRepository } from '@repositories/organization-repository';
+import { Organization } from '@models/organization';
 
 @Component({
   selector: 'copupitre-organization-create-page',

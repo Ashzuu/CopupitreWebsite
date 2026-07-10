@@ -1,7 +1,7 @@
 import { HttpContextToken, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { NotifService } from '../service/notif-service';
+import { NotifService } from '@services/notif-service';
 
 /** Use this token in HttpClient requests to bypass global error notifications. */
 export const BYPASS_GLOBAL_ERROR = new HttpContextToken<boolean>(() => false);
@@ -23,7 +23,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         message = 'Impossible de contacter le serveur. Veuillez vérifier votre connexion internet.';
       } else {
         title = `Erreur ${error.status}`;
-        
+
         // Extract message from response payload if present
         if (error.error && typeof error.error === 'object') {
           // Can be error.error.message, error.error.error, etc.

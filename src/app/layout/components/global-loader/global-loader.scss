@@ -1,41 +1,71 @@
 @use '../../../styles/variables' as *;
 
-.global-loader-overlay {
+/* Top Progress Bar (non-bloquante et sans voile blanc) */
+.global-loader-bar {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(4px);
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  user-select: none;
-  pointer-events: all;
+  right: 0;
+  height: 3px;
+  background-color: rgba($color-primary, 0.2);
+  z-index: 10001;
+  pointer-events: none;
+  overflow: hidden;
+
+  &__indicator {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, $color-primary, $color-primary-light, transparent);
+    animation: loaderIndeterminate 1.5s infinite ease-in-out;
+  }
 }
 
-.global-loader-content {
-  background: $color-background;
-  padding: $spacing-xl $spacing-3xl;
-  border-radius: $border-radius-lg;
-  box-shadow: $shadow-xl;
-  display: flex;
-  flex-direction: column;
+/* Floating status pill (non-bloquant, conserve la visibilité totale de la page) */
+.global-loader-pill {
+  position: fixed;
+  bottom: $spacing-xl;
+  right: $spacing-xl;
+  z-index: 10000;
+  pointer-events: none;
+  background-color: rgba($color-secondary, 0.92);
+  backdrop-filter: blur(8px);
+  color: $color-text-inverse;
+  padding: $spacing-xs $spacing-md;
+  border-radius: $border-radius-full;
+  box-shadow: $shadow-lg;
+  display: inline-flex;
   align-items: center;
-  gap: $spacing-md;
+  gap: $spacing-xs;
+  font-size: $font-size-xs;
+  font-weight: 500;
+  border: 1px solid rgba($color-primary, 0.3);
+  animation: loaderFadeIn 200ms ease;
 
   i {
-    font-size: 3rem;
     color: $color-primary;
+    font-size: 0.9rem;
   }
+}
 
-  p {
-    font-family: $font-family-heading;
-    font-size: $font-size-lg;
-    color: $color-secondary;
-    font-weight: 600;
-    margin: 0;
+@keyframes loaderIndeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(20%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes loaderFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

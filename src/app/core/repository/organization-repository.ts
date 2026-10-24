@@ -1,5 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { EquipmentRepository } from './equipment-repository';
 import { Observable } from 'rxjs';
 import { EquipmentRequest, Organization, ReinforcementAnnouncement } from '../model';
 import { environment } from '@environments/environment';
@@ -41,5 +40,15 @@ export class OrganizationRepository {
 
   create(payload: any): Observable<Organization> {
     return this.http.post<Organization>(`${this.BASE_API_URL}/api/organizations/save`, payload);
+  }
+
+  /** Adds an administrator to an organization. */
+  addAdmin(orgId: number, username: string): Observable<Organization> {
+    return this.http.post<Organization>(`${this.BASE_API_URL}/api/organizations/${orgId}/admins`, { username });
+  }
+
+  /** Removes an administrator from an organization. */
+  removeAdmin(orgId: number, username: string): Observable<Organization> {
+    return this.http.delete<Organization>(`${this.BASE_API_URL}/api/organizations/${orgId}/admins/${username}`);
   }
 }

@@ -33,7 +33,13 @@ export class ReinforcementsListPage implements OnInit {
   readonly hasAdminOrganization = computed(() => {
     const fullName = this.authService.currentUserFullName();
     if (!fullName) return false;
-    return this.userOrganizations().some((org) => org.adminUsernames?.includes(fullName));
+    const username = this.authService.currentUsername();
+    return this.userOrganizations().some(
+      (org) =>
+        (!!username && org.adminUsernames?.includes(username)) ||
+        (!!fullName && org.adminUsernames?.includes(fullName)) ||
+        (!!fullName && (org.adminDisplayNames?.includes(fullName) ?? false)),
+    );
   });
 
   /** The announcements property. */

@@ -51,6 +51,62 @@
   }
 }
 
+/* Organisation Tabs (US-ORG-08) */
+.org-tabs {
+  display: flex;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-xl;
+  border-bottom: 2px solid rgba($color-discrete, 0.2);
+}
+
+.org-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-lg;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: $color-text-light;
+  font-family: inherit;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: -2px;
+  transition: all $transition-fast;
+
+  i {
+    font-size: 1.1rem;
+  }
+
+  &__badge {
+    background: rgba($color-discrete, 0.3);
+    color: $color-secondary;
+    font-size: $font-size-xs;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: $border-radius-full;
+  }
+
+  &:hover {
+    color: $color-primary;
+  }
+
+  &--active {
+    color: $color-primary;
+    border-bottom-color: $color-primary;
+
+    .org-tab__badge {
+      background: rgba($color-primary, 0.15);
+      color: $color-primary-dark;
+    }
+  }
+}
+
+.org-admin-panel {
+  max-width: 800px;
+}
+
 .org-grid {
   display: flex;
   flex-direction: column;
@@ -215,6 +271,78 @@
     font-size: $font-size-sm;
     color: $color-text;
     margin: 0;
+  }
+}
+
+/* Admins Section (US-ORG-08) */
+.org-section--admins {
+  border-top: 3px solid $color-primary;
+}
+
+.admins-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  background: $color-background-alt;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba($color-discrete, 0.2);
+
+  &__name {
+    font-weight: 500;
+    color: $color-secondary;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    i {
+      color: $color-discrete-secondary;
+    }
+
+    .admin-badge--current {
+      background: rgba($color-primary, 0.15);
+      color: $color-primary;
+      border: 1px solid rgba($color-primary, 0.3);
+      font-size: $font-size-xs;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: $border-radius-full;
+      margin-left: $spacing-xs;
+    }
+  }
+
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.admin-add-form {
+  margin-top: $spacing-sm;
+}
+
+.admin-add-group {
+  display: flex;
+  gap: $spacing-sm;
+  align-items: center;
+
+  .input-field {
+    flex: 1;
+    font-size: $font-size-sm;
+  }
+
+  .btn {
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 }
 

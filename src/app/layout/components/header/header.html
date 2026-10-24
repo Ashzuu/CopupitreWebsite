@@ -1,11 +1,11 @@
 <header class="header">
   <div class="container header__inner">
     <a routerLink="/dashboard" class="header__logo">
-      <i class="pi pi-music"></i>
+      <i class="pi pi-music" aria-hidden="true"></i>
       <span>Copupitre</span>
     </a>
 
-    <button class="header__mobile-toggle" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()">
+    <button class="header__mobile-toggle" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()" aria-label="Menu principal">
       <i class="pi" [class]="menuOpen() ? 'pi-times' : 'pi-bars'"></i>
     </button>
 
@@ -19,12 +19,19 @@
 
       <div class="header__actions">
         @if (authService.isAuthenticated()) {
-          <a routerLink="/profile" class="header__profile-badge" (click)="closeMenu()" title="Consulter mon profil">
-            <i class="pi pi-user"></i>
+          <button
+            type="button"
+            class="header__profile-badge"
+            (click)="toggleProfileMenu()"
+            [attr.aria-expanded]="profileMenuOpen()"
+            aria-haspopup="dialog"
+            title="Ouvrir le menu de profil"
+          >
+            <i class="pi pi-user" aria-hidden="true"></i>
             <span>{{ authService.currentUserFullName() || authService.currentUsername() || 'Mon Profil' }}</span>
-          </a>
-          <a routerLink="/dashboard" class="btn btn--primary" (click)="closeMenu()">Tableau de bord</a>
-          <button class="btn btn--secondary" (click)="logout()">Déconnexion</button>
+            <i class="pi pi-chevron-down profile-badge__chevron" [class.profile-badge__chevron--open]="profileMenuOpen()" aria-hidden="true"></i>
+          </button>
+          <a routerLink="/dashboard" class="btn btn--primary" (click)="closeAllMenus()">Tableau de bord</a>
         } @else {
           <a routerLink="/login" class="btn btn--secondary" (click)="closeMenu()">Connexion</a>
           <a routerLink="/login" class="btn btn--primary" (click)="closeMenu()">Inscription</a>
@@ -33,3 +40,71 @@
     </nav>
   </div>
 </header>
+
+@if (authService.isAuthenticated() && profileMenuOpen()) {
+  <div class="profile-drawer-backdrop" (click)="closeProfileMenu()" aria-hidden="true"></div>
+  <aside
+    class="profile-drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Menu du profil"
+  >
+    <div class="profile-drawer__header">
+      <div class="profile-drawer__user">
+        <div class="profile-drawer__avatar">
+          <i class="pi pi-user" aria-hidden="true"></i>
+        </div>
+        <div class="profile-drawer__details">
+          <strong class="profile-drawer__name">{{ authService.currentUserFullName() || authService.currentUsername() || 'Musicien' }}</strong>
+          @if (authService.currentUsername()) {
+            <span class="profile-drawer__username">&#64;{{ authService.currentUsername() }}</span>
+          }
+        </div>
+      </div>
+      <button
+        type="button"
+        class="profile-drawer__close"
+        (click)="closeProfileMenu()"
+        aria-label="Fermer le menu profil"
+      >
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <nav class="profile-drawer__nav">
+      <ul class="profile-drawer__list">
+        <li>
+          <a
+            routerLink="/profile"
+            class="profile-drawer__link"
+            (click)="closeAllMenus()"
+          >
+            <i class="pi pi-user-edit" aria-hidden="true"></i>
+            <span>Mon profil</span>
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/dashboard"
+            class="profile-drawer__link"
+            (click)="closeAllMenus()"
+          >
+            <i class="pi pi-th-large" aria-hidden="true"></i>
+            <span>Tableau de bord</span>
+          </a>
+        </li>
+        <li class="profile-drawer__separator" role="separator"></li>
+        <li>
+          <button
+            type="button"
+            class="profile-drawer__link profile-drawer__link--danger"
+            (click)="logout()"
+          >
+            <i class="pi pi-sign-out" aria-hidden="true"></i>
+            <span>Déconnexion</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+}

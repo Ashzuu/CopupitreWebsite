@@ -113,6 +113,56 @@ textarea {
   box-shadow: 0 0 0 3px rgba(#e74c3c, 0.1);
 }
 
+// Annual needs styling
+.annual-needs-section {
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    i {
+      color: $color-primary;
+    }
+  }
+}
+
+.annual-need-row {
+  background: $color-background;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba($color-discrete, 0.2);
+  margin-bottom: $spacing-sm;
+
+  .form-row {
+    align-items: flex-end;
+  }
+
+  .delete-action-cell {
+    padding-bottom: $spacing-md;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto !important;
+  }
+}
+
+.flex-1 {
+  flex: 1 1 120px !important;
+}
+
+.flex-2 {
+  flex: 2 1 200px !important;
+}
+
+.empty-state {
+  color: $color-discrete;
+  font-style: italic;
+  font-size: $font-size-sm;
+  padding: $spacing-md;
+  text-align: center;
+  background: $color-background-alt;
+  border-radius: $border-radius-md;
+}
+
 // Concerts styling
 .concerts-card {
   h2 {

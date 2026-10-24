@@ -5,7 +5,7 @@
         
         <!-- LEFT COLUMN: Organization Info -->
         <div class="card">
-          <h1><i class="pi pi-building"></i> {{ isEditMode ? 'Modifier' : 'Créer' }} une organisation</h1>
+          <h1><i class="pi pi-building" aria-hidden="true"></i> {{ isEditMode ? 'Modifier' : 'Créer' }} une organisation</h1>
           <p class="subtitle">{{ isEditMode ? 'Mettez à jour les informations de votre organisation sur Copupitre.' : 'Référencez votre orchestre, harmonie ou ensemble sur Copupitre.' }}</p>
           
           <div class="form-layout">
@@ -63,7 +63,7 @@
               <div formArrayName="rehearsalSchedules" class="manual-list">
                 @for (regularCtrl of rehearsalSchedules.controls; track $index) {
                   <div [formGroupName]="$index" class="manual-row">
-                    <select formControlName="dayOfWeek" class="input-field" title="Jour de la semaine">
+                    <select formControlName="dayOfWeek" class="input-field" title="Jour de la semaine" aria-label="Jour de la semaine">
                       <option value="MONDAY">Lundi</option>
                       <option value="TUESDAY">Mardi</option>
                       <option value="WEDNESDAY">Mercredi</option>
@@ -72,17 +72,17 @@
                       <option value="SATURDAY">Samedi</option>
                       <option value="SUNDAY">Dimanche</option>
                     </select>
-                    <input type="text" formControlName="startTime" class="input-field" placeholder="ex: 20:00" title="Heure de début">
-                    <input type="text" formControlName="endTime" class="input-field" placeholder="ex: 22:00" title="Heure de fin">
-                    <input type="text" formControlName="location" class="input-field" placeholder="Lieu (Ex: Conservatoire)">
-                    <button type="button" class="btn btn--icon btn--danger" (click)="removeRehearsalSchedule($index)">
-                      <i class="pi pi-trash"></i>
+                    <input type="text" formControlName="startTime" class="input-field" placeholder="ex: 20:00" title="Heure de début" aria-label="Heure de début">
+                    <input type="text" formControlName="endTime" class="input-field" placeholder="ex: 22:00" title="Heure de fin" aria-label="Heure de fin">
+                    <input type="text" formControlName="location" class="input-field" placeholder="Lieu (Ex: Conservatoire)" aria-label="Lieu">
+                    <button type="button" class="btn btn--icon btn--danger" (click)="removeRehearsalSchedule($index)" [attr.aria-label]="'Supprimer la répétition régulière n°' + ($index + 1)">
+                      <i class="pi pi-trash" aria-hidden="true"></i>
                     </button>
                   </div>
                 }
               </div>
               <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addRehearsalSchedule()">
-                <i class="pi pi-plus"></i> Ajouter une répétition régulière
+                <i class="pi pi-plus" aria-hidden="true"></i> Ajouter une répétition régulière
               </button>
             </div>
 
@@ -93,18 +93,80 @@
               <div formArrayName="rehearsalManuals" class="manual-list">
                 @for (rehearsalCtrl of rehearsalManuals.controls; track $index) {
                   <div [formGroupName]="$index" class="manual-row">
-                    <input type="date" formControlName="manualDate" class="input-field" title="Date">
-                    <input type="text" formControlName="startTime" class="input-field" placeholder="ex: 20:00" title="Heure de début">
-                    <input type="text" formControlName="endTime" class="input-field" placeholder="ex: 22:00" title="Heure de fin">
-                    <input type="text" formControlName="location" class="input-field" placeholder="Lieu">
-                    <button type="button" class="btn btn--icon btn--danger" (click)="removeRehearsalManual($index)">
-                      <i class="pi pi-trash"></i>
+                    <input type="date" formControlName="manualDate" class="input-field" title="Date" aria-label="Date">
+                    <input type="text" formControlName="startTime" class="input-field" placeholder="ex: 20:00" title="Heure de début" aria-label="Heure de début">
+                    <input type="text" formControlName="endTime" class="input-field" placeholder="ex: 22:00" title="Heure de fin" aria-label="Heure de fin">
+                    <input type="text" formControlName="location" class="input-field" placeholder="Lieu" aria-label="Lieu">
+                    <button type="button" class="btn btn--icon btn--danger" (click)="removeRehearsalManual($index)" [attr.aria-label]="'Supprimer la répétition exceptionnelle n°' + ($index + 1)">
+                      <i class="pi pi-trash" aria-hidden="true"></i>
                     </button>
                   </div>
                 }
               </div>
               <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addRehearsalManual()">
-                <i class="pi pi-plus"></i> Ajouter une date spécifique
+                <i class="pi pi-plus" aria-hidden="true"></i> Ajouter une date spécifique
+              </button>
+            </div>
+
+            <!-- US-ORG-04: Besoins Annuels de Recrutement -->
+            <div class="rehearsals-section annual-needs-section">
+              <h2><i class="pi pi-users" aria-hidden="true"></i> Besoins Annuels de Recrutement</h2>
+              <p class="section-desc">Renseignez les pupitres recherchés pour intégrer l'ensemble sur la saison (ex: 2 Trompettes, 1 Basson).</p>
+
+              <div formArrayName="annualNeeds" class="manual-list">
+                @for (needCtrl of annualNeeds.controls; track $index) {
+                  <div [formGroupName]="$index" class="annual-need-row">
+                    <div class="form-row">
+                      <div class="form-group flex-2">
+                        <label [for]="'need-instrument-' + $index">Instrument <span class="required">*</span></label>
+                        <input
+                          type="text"
+                          [id]="'need-instrument-' + $index"
+                          formControlName="instrument"
+                          class="input-field"
+                          placeholder="Ex: Trompette, Cor d'harmonie..."
+                        />
+                      </div>
+                      <div class="form-group flex-1">
+                        <label [for]="'need-count-' + $index">Nombre souhaité <span class="required">*</span></label>
+                        <input
+                          type="number"
+                          [id]="'need-count-' + $index"
+                          formControlName="requiredCount"
+                          class="input-field"
+                          min="1"
+                          placeholder="Ex: 2"
+                        />
+                      </div>
+                      <div class="delete-action-cell">
+                        <button
+                          type="button"
+                          class="btn btn--icon btn--danger"
+                          (click)="removeAnnualNeed($index)"
+                          [attr.aria-label]="'Supprimer le besoin annuel n°' + ($index + 1)"
+                          title="Supprimer ce besoin"
+                        >
+                          <i class="pi pi-trash" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label [for]="'need-desc-' + $index">Description / Niveau attendu</label>
+                      <input
+                        type="text"
+                        [id]="'need-desc-' + $index"
+                        formControlName="description"
+                        class="input-field"
+                        placeholder="Ex: Minimum 2nd cycle, bonne assiduité..."
+                      />
+                    </div>
+                  </div>
+                } @empty {
+                  <p class="empty-state">Aucun besoin annuel configuré pour le moment.</p>
+                }
+              </div>
+              <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addAnnualNeed()">
+                <i class="pi pi-plus" aria-hidden="true"></i> Ajouter un besoin annuel
               </button>
             </div>
 
@@ -116,7 +178,7 @@
           
           <!-- Concerts Card -->
           <div class="card concerts-card">
-            <h2><i class="pi pi-ticket"></i> Concerts programmés</h2>
+            <h2><i class="pi pi-ticket" aria-hidden="true"></i> Concerts programmés</h2>
             <p class="section-desc">Gérez les prochains concerts de votre ensemble musical.</p>
 
             <div formArrayName="concerts" class="manual-list">
@@ -124,30 +186,30 @@
                 <div [formGroupName]="$index" class="concert-item-card">
                   <div class="concert-item-header">
                     <h3>Concert #{{ $index + 1 }}</h3>
-                    <button type="button" class="btn btn--icon btn--danger btn--small" (click)="removeConcert($index)">
-                      <i class="pi pi-trash"></i>
+                    <button type="button" class="btn btn--icon btn--danger btn--small" (click)="removeConcert($index)" [attr.aria-label]="'Supprimer le concert n°' + ($index + 1)">
+                      <i class="pi pi-trash" aria-hidden="true"></i>
                     </button>
                   </div>
                   
                   <div class="form-group">
-                    <label>Titre <span class="required">*</span></label>
-                    <input type="text" formControlName="title" class="input-field" placeholder="Ex: Concert de Printemps">
+                    <label [for]="'concert-title-' + $index">Titre <span class="required">*</span></label>
+                    <input type="text" [id]="'concert-title-' + $index" formControlName="title" class="input-field" placeholder="Ex: Concert de Printemps">
                   </div>
                   
                   <div class="form-row">
                     <div class="form-group">
-                      <label>Date <span class="required">*</span></label>
-                      <input type="date" formControlName="eventDate" class="input-field">
+                      <label [for]="'concert-date-' + $index">Date <span class="required">*</span></label>
+                      <input type="date" [id]="'concert-date-' + $index" formControlName="eventDate" class="input-field">
                     </div>
                     <div class="form-group">
-                      <label>Lieu <span class="required">*</span></label>
-                      <input type="text" formControlName="location" class="input-field" placeholder="Ex: Salle des fêtes">
+                      <label [for]="'concert-loc-' + $index">Lieu <span class="required">*</span></label>
+                      <input type="text" [id]="'concert-loc-' + $index" formControlName="location" class="input-field" placeholder="Ex: Salle des fêtes">
                     </div>
                   </div>
                   
                   <div class="form-group">
-                    <label>Description <span class="required">*</span></label>
-                    <textarea formControlName="description" class="input-field" rows="2" placeholder="Ex: Programme romantique, entrée libre..."></textarea>
+                    <label [for]="'concert-desc-' + $index">Description <span class="required">*</span></label>
+                    <textarea [id]="'concert-desc-' + $index" formControlName="description" class="input-field" rows="2" placeholder="Ex: Programme romantique, entrée libre..."></textarea>
                   </div>
                 </div>
               } @empty {
@@ -156,7 +218,7 @@
             </div>
 
             <button type="button" class="btn btn--secondary btn--small add-btn" (click)="addConcert()">
-              <i class="pi pi-plus"></i> Ajouter un concert
+              <i class="pi pi-plus" aria-hidden="true"></i> Ajouter un concert
             </button>
           </div>
 

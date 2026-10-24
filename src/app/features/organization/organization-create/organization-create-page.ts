@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BaseLayout } from '@layouts/base-layout/base-layout';
 import { NotifService } from '@services/notif-service';
 import { OrganizationRepository } from '@repositories/organization-repository';
-import { Organization } from '@models/organization';
+import { AnnualNeed, Organization } from '@models/organization';
 
 @Component({
   selector: 'copupitre-organization-create-page',
@@ -36,6 +36,7 @@ export class OrganizationCreatePage implements OnInit {
     rehearsalSchedule: [''],
     rehearsalSchedules: this.fb.array([]),
     rehearsalManuals: this.fb.array([]),
+    annualNeeds: this.fb.array([]),
     concerts: this.fb.array([]),
   });
 
@@ -53,10 +54,10 @@ export class OrganizationCreatePage implements OnInit {
       next: (org) => {
         this.patchForm(org);
       },
-      error: (err) => {
+      error: () => {
         this.errorService.showError("Impossible de charger les informations de l'organisation.");
         this.router.navigate(['/dashboard']);
-      }
+      },
     });
   }
 
@@ -106,6 +107,14 @@ export class OrganizationCreatePage implements OnInit {
       });
     }
 
+    // Populate annual needs FormArray
+    this.annualNeeds.clear();
+    if (org.annualNeeds) {
+      org.annualNeeds.forEach((n) => {
+        this.annualNeeds.push(this.createAnnualNeed(n));
+      });
+    }
+
     // Populate concerts FormArray
     this.concerts.clear();
     if (org.concerts) {
@@ -137,6 +146,10 @@ export class OrganizationCreatePage implements OnInit {
 
   get concerts() {
     return this.form.get('concerts') as FormArray;
+  }
+
+  get annualNeeds() {
+    return this.form.get('annualNeeds') as FormArray;
   }
 
   /** Executes the createRehearsalSchedule action. */
@@ -202,21 +215,56 @@ export class OrganizationCreatePage implements OnInit {
     this.concerts.removeAt(index);
   }
 
+  /** Creates an annual need FormGroup. */
+  createAnnualNeed(need?: AnnualNeed) {
+    return this.fb.group({
+      id: [need?.id ?? (null as number | null)],
+      instrument: [need?.instrument ?? '', Validators.required],
+      requiredCount: [need?.requiredCount ?? need?.count ?? 1, [Validators.required, Validators.min(1)]],
+      description: [need?.description ?? ''],
+    });
+  }
+
+  /** Executes the addAnnualNeed action. */
+  addAnnualNeed() {
+    this.annualNeeds.push(this.createAnnualNeed());
+  }
+
+  /** Executes the removeAnnualNeed action. */
+  removeAnnualNeed(index: number) {
+    this.annualNeeds.removeAt(index);
+  }
+
   /** Executes the onSubmit action. */
   onSubmit() {
     if (this.form.valid) {
       const rawValue = this.form.getRawValue();
       const payload = {
         ...rawValue,
+        annualNeeds: (rawValue.annualNeeds || []).map((n: any) => ({
+          id: n.id ?? null,
+          instrument: n.instrument,
+          count: n.requiredCount,
+          requiredCount: n.requiredCount,
+          description: n.description ?? '',
+        })),
         concerts: (rawValue.concerts || []).map((c: any) => ({
           ...c,
-          eventDate: c.eventDate ? new Date(c.eventDate).toISOString() : null
-        }))
+          eventDate: c.eventDate ? new Date(c.eventDate).toISOString() : null,
+        })),
       };
 
-      this.orgRepo.create(payload).subscribe(() => {
-        this.errorService.showSuccess(this.isEditMode ? 'Organisation modifiée avec succès !' : 'Organisation créée avec succès !');
-        this.router.navigate(['/dashboard']);
+      this.orgRepo.create(payload).subscribe({
+        next: () => {
+          this.errorService.showSuccess(
+            this.isEditMode ? 'Organisation modifiée avec succès !' : 'Organisation créée avec succès !',
+          );
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err) => {
+          const msg = err?.error?.message || "Une erreur est survenue lors de l'enregistrement de l'organisation.";
+          this.errorService.showError(msg);
+        },
       });
     } else {
       this.form.markAllAsTouched();

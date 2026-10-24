@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth-service';
 
@@ -11,12 +11,17 @@ import { AuthService } from '@services/auth-service';
 export class Header {
   /** The authService property. */
   readonly authService = inject(AuthService);
-  /** The menuOpen property. */
+  /** The mobile navigation menuOpen property. */
   readonly menuOpen = signal(false);
+  /** Side profile drawer menu state. */
+  readonly profileMenuOpen = signal(false);
 
   /** Executes the toggleMenu action. */
   toggleMenu() {
     this.menuOpen.update((v) => !v);
+    if (this.menuOpen()) {
+      this.profileMenuOpen.set(false);
+    }
   }
 
   /** Executes the closeMenu action. */
@@ -24,10 +29,40 @@ export class Header {
     this.menuOpen.set(false);
   }
 
+  /** Toggles the profile side menu. */
+  toggleProfileMenu() {
+    this.profileMenuOpen.update((v) => !v);
+    if (this.profileMenuOpen()) {
+      this.menuOpen.set(false);
+    }
+  }
+
+  /** Closes the profile side menu. */
+  closeProfileMenu() {
+    this.profileMenuOpen.set(false);
+  }
+
+  /** Closes all open menus. */
+  closeAllMenus() {
+    this.menuOpen.set(false);
+    this.profileMenuOpen.set(false);
+  }
+
   /** Executes the logout action. */
   logout() {
     this.authService.logout();
+    this.closeProfileMenu();
     this.closeMenu();
   }
 
+  /** Closes any open drawer on Escape key press. */
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    if (this.profileMenuOpen()) {
+      this.closeProfileMenu();
+    }
+    if (this.menuOpen()) {
+      this.closeMenu();
+    }
+  }
 }

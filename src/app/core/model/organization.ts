@@ -13,13 +13,15 @@ export interface Concert {
 
 export interface AnnualNeed {
   /** The id property. */
-  id: number;
+  id?: number;
   /** The instrument property. */
   instrument: string;
   /** The count property. */
-  count: number;
+  count?: number;
+  /** The requiredCount property. */
+  requiredCount?: number;
   /** The description property. */
-  description: string;
+  description?: string;
 }
 
 export interface Organization {
@@ -45,6 +47,8 @@ export interface Organization {
   rehearsalSchedules: RehearsalSchedule[];
   /** The adminUsernames property. */
   adminUsernames: string[];
+  /** The adminDisplayNames property. */
+  adminDisplayNames?: string[];
   /** The concerts property. */
   concerts?: Concert[];
   /** The annualNeeds property. */

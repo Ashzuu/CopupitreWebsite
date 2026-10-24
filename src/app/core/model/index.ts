@@ -1,3 +1,4 @@
+export * from './auth';
 export * from './equipment-request';
 export * from './organization';
 export * from './reinforcement';

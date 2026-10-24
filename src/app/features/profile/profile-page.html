@@ -1,0 +1,309 @@
+<copupitre-base-layout [Header]="true" [Footer]="true">
+  <div class="profile-page section">
+    <div class="container">
+
+      <!-- Fil d'ariane & Bouton retour -->
+      <div class="profile-nav">
+        <a routerLink="/dashboard" class="profile-nav__back">
+          <i class="pi pi-arrow-left"></i>
+          <span>Retour au tableau de bord</span>
+        </a>
+      </div>
+
+      <!-- Alerte de protection RGPD -->
+      <div class="rgpd-notice" role="note" aria-label="Informations RGPD">
+        <i class="pi pi-shield rgpd-notice__icon"></i>
+        <div class="rgpd-notice__content">
+          <strong>Protection de vos données (RGPD) :</strong>
+          <span>
+            Votre adresse email demeure strictement privée et n'est jamais divulguée aux autres musiciens ou visiteurs. Seuls vos prénom, nom, pseudo et compétences musicales sont visibles.
+          </span>
+        </div>
+      </div>
+
+      @if (isLoading() && !profile()) {
+        <div class="profile-loading" role="status" aria-live="polite">
+          <i class="pi pi-spin pi-spinner profile-loading__spinner"></i>
+          <p>Chargement de votre profil musical...</p>
+        </div>
+      } @else if (profile()) {
+
+        <!-- HEADER DU PROFIL (Présentation générale) -->
+        <div class="profile-card profile-card--header">
+          <div class="profile-header">
+            <div class="profile-header__avatar">
+              <span class="profile-header__initials">{{ initials() }}</span>
+            </div>
+
+            <div class="profile-header__info">
+              <div class="profile-header__title-row">
+                <h1 class="profile-header__name">{{ profile()?.firstName }} {{ profile()?.lastName }}</h1>
+                <span class="profile-header__username">&#64;{{ profile()?.username }}</span>
+              </div>
+
+              <div class="profile-header__meta">
+                <span class="badge badge--primary">
+                  <i class="pi pi-music"></i>
+                  <span>{{ profile()?.mainInstrument }}</span>
+                </span>
+
+                @if (profile()?.yearsOfPractice !== null && profile()?.yearsOfPractice !== undefined) {
+                  <span class="badge badge--secondary">
+                    <i class="pi pi-calendar"></i>
+                    <span>{{ profile()?.yearsOfPractice }} {{ profile()?.yearsOfPractice! > 1 ? "ans d'expérience" : "an d'expérience" }}</span>
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div class="profile-header__actions">
+              @if (!isEditing()) {
+                <button type="button" class="btn btn--primary" (click)="enableEdit()">
+                  <i class="pi pi-pencil"></i>
+                  <span>Modifier mon profil</span>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTENU DU PROFIL : MODE VUE vs MODE ÉDITION -->
+        @if (!isEditing()) {
+
+          <!-- VUE CONSULTATION -->
+          <div class="profile-grid">
+            <!-- Bloc Compétences Musicales -->
+            <div class="profile-card">
+              <h2 class="profile-card__title">
+                <i class="pi pi-star"></i>
+                <span>Compétences musicales</span>
+              </h2>
+
+              <dl class="profile-details">
+                <div class="profile-details__item">
+                  <dt class="profile-details__term">Instrument principal</dt>
+                  <dd class="profile-details__value">
+                    <span class="instrument-tag instrument-tag--main">
+                      <i class="pi pi-music"></i>
+                      {{ profile()?.mainInstrument }}
+                    </span>
+                  </dd>
+                </div>
+
+                <div class="profile-details__item">
+                  <dt class="profile-details__term">Instruments secondaires</dt>
+                  <dd class="profile-details__value">
+                    @if (secondaryInstrumentsList().length > 0) {
+                      <div class="instrument-tags">
+                        @for (inst of secondaryInstrumentsList(); track inst) {
+                          <span class="instrument-tag">
+                            <i class="pi pi-tag"></i>
+                            {{ inst }}
+                          </span>
+                        }
+                      </div>
+                    } @else {
+                      <span class="profile-details__empty">Aucun instrument secondaire renseigné.</span>
+                    }
+                  </dd>
+                </div>
+
+                <div class="profile-details__item">
+                  <dt class="profile-details__term">Années de pratique</dt>
+                  <dd class="profile-details__value">
+                    @if (profile()?.yearsOfPractice !== null && profile()?.yearsOfPractice !== undefined) {
+                      <span>{{ profile()?.yearsOfPractice }} {{ profile()?.yearsOfPractice! > 1 ? "années de pratique" : "année de pratique" }}</span>
+                    } @else {
+                      <span class="profile-details__empty">Non renseigné</span>
+                    }
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- Bloc Parcours Musical -->
+            <div class="profile-card">
+              <h2 class="profile-card__title">
+                <i class="pi pi-book"></i>
+                <span>Parcours musical & Présentation</span>
+              </h2>
+
+              <div class="profile-description">
+                @if (profile()?.musicalDescription) {
+                  <p class="profile-description__text">{{ profile()?.musicalDescription }}</p>
+                } @else {
+                  <p class="profile-description__empty">
+                    Vous n'avez pas encore rédigé de présentation de votre parcours. Cliquez sur "Modifier mon profil" pour vous présenter aux formations musicales !
+                  </p>
+                }
+              </div>
+            </div>
+          </div>
+
+        } @else {
+
+          <!-- MODE ÉDITION DU PROFIL (Formulaire Réactif) -->
+          <div class="profile-card profile-card--edit">
+            <div class="profile-card__edit-header">
+              <h2 class="profile-card__title">
+                <i class="pi pi-pencil"></i>
+                <span>Modifier mes informations de profil</span>
+              </h2>
+              <p class="profile-card__subtitle">
+                Mettez à jour vos compétences pour que les orchestres et ensembles puissent mieux vous identifier.
+              </p>
+            </div>
+
+            <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="firstName">
+                    Prénom <span class="required" aria-hidden="true">*</span>
+                  </label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    formControlName="firstName"
+                    class="input-field"
+                    [class.input-field--error]="profileForm.controls.firstName.touched && profileForm.controls.firstName.invalid"
+                    placeholder="Votre prénom"
+                    autocomplete="given-name"
+                  />
+                  @if (profileForm.controls.firstName.touched && profileForm.controls.firstName.invalid) {
+                    <span class="error-msg" role="alert">Le prénom est obligatoire.</span>
+                  }
+                </div>
+
+                <div class="form-group">
+                  <label for="lastName">
+                    Nom <span class="required" aria-hidden="true">*</span>
+                  </label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    formControlName="lastName"
+                    class="input-field"
+                    [class.input-field--error]="profileForm.controls.lastName.touched && profileForm.controls.lastName.invalid"
+                    placeholder="Votre nom"
+                    autocomplete="family-name"
+                  />
+                  @if (profileForm.controls.lastName.touched && profileForm.controls.lastName.invalid) {
+                    <span class="error-msg" role="alert">Le nom est obligatoire.</span>
+                  }
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="mainInstrument">
+                  Instrument principal <span class="required" aria-hidden="true">*</span>
+                </label>
+                <input
+                  id="mainInstrument"
+                  type="text"
+                  formControlName="mainInstrument"
+                  class="input-field"
+                  [class.input-field--error]="profileForm.controls.mainInstrument.touched && profileForm.controls.mainInstrument.invalid"
+                  placeholder="Ex: Clarinette, Violon, Trompette, Flûte traversière..."
+                />
+                @if (profileForm.controls.mainInstrument.touched && profileForm.controls.mainInstrument.invalid) {
+                  <span class="error-msg" role="alert">L'instrument principal est obligatoire.</span>
+                }
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="secondaryInstruments">
+                    Instruments secondaires
+                    <span class="label-hint">(Optionnel, séparés par des virgules)</span>
+                  </label>
+                  <input
+                    id="secondaryInstruments"
+                    type="text"
+                    formControlName="secondaryInstruments"
+                    class="input-field"
+                    placeholder="Ex: Piano, Flûte, Alto"
+                  />
+                  <small class="field-help">Séparez vos instruments par des virgules.</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="yearsOfPractice">
+                    Années de pratique
+                    <span class="label-hint">(Optionnel)</span>
+                  </label>
+                  <input
+                    id="yearsOfPractice"
+                    type="number"
+                    min="0"
+                    max="100"
+                    formControlName="yearsOfPractice"
+                    class="input-field"
+                    [class.input-field--error]="profileForm.controls.yearsOfPractice.touched && profileForm.controls.yearsOfPractice.invalid"
+                    placeholder="Ex: 8"
+                  />
+                  @if (profileForm.controls.yearsOfPractice.touched && profileForm.controls.yearsOfPractice.invalid) {
+                    <span class="error-msg" role="alert">Le nombre d'années doit être positif.</span>
+                  }
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="musicalDescription">
+                  Description & Parcours musical
+                  <span class="label-hint">(Optionnel)</span>
+                </label>
+                <textarea
+                  id="musicalDescription"
+                  formControlName="musicalDescription"
+                  rows="4"
+                  class="input-field input-field--textarea"
+                  placeholder="Présentez votre parcours, vos expériences en orchestre ou musique de chambre, votre niveau de déchiffrage..."
+                ></textarea>
+                <small class="field-help">Maximum 1000 caractères.</small>
+              </div>
+
+              <!-- Actions du formulaire -->
+              <div class="profile-form__actions">
+                <button
+                  type="submit"
+                  class="btn btn--primary"
+                  [disabled]="isSaving()"
+                >
+                  @if (isSaving()) {
+                    <i class="pi pi-spin pi-spinner"></i>
+                    <span>Enregistrement en cours...</span>
+                  } @else {
+                    <i class="pi pi-check"></i>
+                    <span>Enregistrer les modifications</span>
+                  }
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn--secondary"
+                  (click)="cancelEdit()"
+                  [disabled]="isSaving()"
+                >
+                  <i class="pi pi-times"></i>
+                  <span>Annuler</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+        }
+
+      } @else {
+        <div class="profile-error" role="alert">
+          <i class="pi pi-exclamation-triangle"></i>
+          <p>Impossible d'accéder aux données du profil utilisateur.</p>
+          <button type="button" class="btn btn--primary" (click)="loadProfileData()">
+            <i class="pi pi-refresh"></i>
+            <span>Réessayer</span>
+          </button>
+        </div>
+      }
+
+    </div>
+  </div>
+</copupitre-base-layout>

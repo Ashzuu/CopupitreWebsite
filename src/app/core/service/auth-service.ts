@@ -3,6 +3,7 @@ import { computed, inject, Injectable, PLATFORM_ID, REQUEST, signal } from '@ang
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { AuthResponse, LoginRequest, RegisterRequest } from '@models/auth';
+import { UserProfile } from '@models/user';
 import { AuthRepository } from '@repositories/auth-repository';
 
 @Injectable({
@@ -15,9 +16,10 @@ export class AuthService {
   private readonly request = inject(REQUEST, { optional: true });
 
   private readonly tokenSignal = signal<string | null>(this.getInitialToken());
-  private readonly profileSignal = signal<{ firstName: string; lastName: string } | null>(null);
+  private readonly profileSignal = signal<UserProfile | null>(null);
 
   readonly isAuthenticated = computed(() => !!this.tokenSignal());
+  readonly currentUserProfile = computed(() => this.profileSignal());
   readonly currentUsername = computed(() => {
     const token = this.tokenSignal();
     if (!token) return null;
@@ -32,7 +34,7 @@ export class AuthService {
   readonly currentUserFullName = computed(() => {
     const profile = this.profileSignal();
     if (profile) {
-      return `${profile.firstName} ${profile.lastName}`;
+      return `${profile.firstName} ${profile.lastName}`.trim();
     }
     return '';
   });
@@ -45,15 +47,22 @@ export class AuthService {
     }
   }
 
+  /**
+   * Met à jour manuellement le cache local du profil utilisateur.
+   */
+  updateProfileCache(profile: UserProfile): void {
+    this.profileSignal.set(profile);
+  }
+
   private loadUserProfile() {
     this.authRepo.getMe().subscribe({
       next: (user) => {
         this.profileSignal.set(user);
       },
-      error: (err) => {
-        console.error('[AuthService] Error loading user profile:');
+      error: () => {
+        console.error('[AuthService] Error loading user profile');
         this.profileSignal.set(null);
-      }
+      },
     });
   }
 

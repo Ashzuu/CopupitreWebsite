@@ -19,6 +19,10 @@
 
       <div class="header__actions">
         @if (authService.isAuthenticated()) {
+          <a routerLink="/profile" class="header__profile-badge" (click)="closeMenu()" title="Consulter mon profil">
+            <i class="pi pi-user"></i>
+            <span>{{ authService.currentUserFullName() || authService.currentUsername() || 'Mon Profil' }}</span>
+          </a>
           <a routerLink="/dashboard" class="btn btn--primary" (click)="closeMenu()">Tableau de bord</a>
           <button class="btn btn--secondary" (click)="logout()">Déconnexion</button>
         } @else {

@@ -1,18 +1,27 @@
 export interface UserProfile {
-  /** The id property. */
-  id: number;
-  /** The username property. */
-  username: string;
-  /** The firstName property. */
+  /** Identifiant unique en base de données. */
+  id?: number;
+  /** Nom d'utilisateur (pseudo unique). */
+  username?: string;
+  /** Prénom du musicien. */
   firstName: string;
-  /** The lastName property. */
+  /** Nom du musicien. */
   lastName: string;
-  /** The mainInstrument property. */
+  /** Instrument principal pratiqué. */
   mainInstrument: string;
-  /** The secondaryInstruments property. */
+  /** Instruments secondaires optionnels. */
   secondaryInstruments?: string[];
-  /** The musicalDescription property. */
+  /** Description ou parcours musical du musicien. */
   musicalDescription?: string;
-  /** The yearsOfPractice property. */
-  yearsOfPractice?: number;
+  /** Nombre d'années de pratique musicale. */
+  yearsOfPractice?: number | null;
+}
+
+export interface UpdateProfileRequest {
+  firstName: string;
+  lastName: string;
+  mainInstrument: string;
+  secondaryInstruments?: string[];
+  musicalDescription?: string;
+  yearsOfPractice?: number | null;
 }

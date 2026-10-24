@@ -11,6 +11,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'profile',
+    loadComponent: () =>
+      import('../features/profile/profile-page').then((m) => m.ProfilePage),
+    title: 'Mon Profil — Copupitre',
+    canActivate: [authGuard],
+  },
+  {
     path: 'login',
     loadComponent: () => import('../features/login/login-page').then((m) => m.LoginPage),
     title: 'Connexion - Copupitre',

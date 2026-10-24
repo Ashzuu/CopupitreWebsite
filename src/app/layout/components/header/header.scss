@@ -104,6 +104,37 @@
       }
     }
   }
+
+  &__profile-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs $spacing-md;
+    border-radius: $border-radius-sm;
+    background-color: rgba($color-background, 0.12);
+    border: 1px solid rgba($color-discrete, 0.3);
+    color: $color-text-inverse;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    transition: all $transition-fast;
+
+    i {
+      color: $color-primary;
+      font-size: 0.95rem;
+    }
+
+    &:hover, &:focus-visible {
+      background-color: rgba($color-primary, 0.2);
+      border-color: $color-primary;
+      color: $color-text-inverse;
+    }
+
+    @media (max-width: $breakpoint-md - 1) {
+      width: 100%;
+      justify-content: center;
+      padding: $spacing-sm;
+    }
+  }
   
   &__welcome {
     font-size: $font-size-sm;

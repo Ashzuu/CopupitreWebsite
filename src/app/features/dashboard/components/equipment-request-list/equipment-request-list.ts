@@ -1,5 +1,5 @@
 import { LowerCasePipe } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { EquipmentRequest } from '@models/equipment-request';
 
 @Component({
@@ -9,18 +9,32 @@ import { EquipmentRequest } from '@models/equipment-request';
   styleUrl: './equipment-request-list.scss',
 })
 export class EquipmentRequestList {
-  /** The requests property. */
+  /** Liste des demandes de matériel */
   requests = input.required<EquipmentRequest[]>();
+  /** Autorise les actions administrateur (changement de statut, suppression) */
+  allowActions = input<boolean>(false);
 
-  /** Executes the translateStatus action. */
+  /** Événement émis lors d'un changement de statut */
+  statusChanged = output<{ request: EquipmentRequest; status: 'OPEN' | 'MET' | 'CLOSED' }>();
+  /** Événement émis lors d'une suppression */
+  requestDeleted = output<EquipmentRequest>();
+
+  onUpdateStatus(request: EquipmentRequest, status: 'OPEN' | 'MET' | 'CLOSED') {
+    this.statusChanged.emit({ request, status });
+  }
+
+  onDelete(request: EquipmentRequest) {
+    this.requestDeleted.emit(request);
+  }
+
   translateStatus(status: string): string {
     switch (status) {
       case 'OPEN':
-        return 'Ouvert';
+        return 'En recherche';
       case 'MET':
         return 'Trouvé';
       case 'CLOSED':
-        return 'Fermé';
+        return 'Clôturé';
       default:
         return status;
     }

@@ -1,51 +1,123 @@
 <copupitre-base-layout>
   <div class="container section create-page">
     <div class="card">
-      <h1><i class="pi pi-box"></i> Demander du matériel</h1>
-      <p class="subtitle">Publiez une annonce pour emprunter des instruments ou du matériel.</p>
+      <header class="create-header">
+        <h1><i class="pi pi-box" aria-hidden="true"></i> Demander du matériel</h1>
+        <p class="subtitle">Publiez une annonce d'emprunt pour trouver des instruments ou équipements auprès d'orchestres partenaires.</p>
+      </header>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-layout">
-        
-        <div class="form-group">
-          <label for="organizationId">Pour quelle organisation ? <span class="required">*</span></label>
-          <select id="organizationId" formControlName="organizationId" class="input-field">
-            @for (org of organizations; track org.id) {
-              <option [value]="org.id">{{ org.name }}</option>
+      @if (organizations().length === 0) {
+        <div class="empty-org-warning" role="alert">
+          <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+          <div>
+            <h3>Aucune organisation administrée</h3>
+            <p>Pour publier une demande de matériel, vous devez être administrateur d'au moins un ensemble musical.</p>
+            <a routerLink="/organizations/create" class="btn btn--secondary btn--small">Créer une organisation</a>
+          </div>
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-layout" novalidate>
+          
+          <div class="form-group">
+            <label for="organizationId">Pour quelle organisation ? <span class="required" aria-hidden="true">*</span></label>
+            <select id="organizationId" formControlName="organizationId" class="input-field" required>
+              @for (org of organizations(); track org.id) {
+                <option [value]="org.id">{{ org.name }} ({{ org.city }})</option>
+              }
+            </select>
+            @if (form.get('organizationId')?.touched && form.get('organizationId')?.hasError('required')) {
+              <small class="field-error" role="alert">Veuillez sélectionner une organisation.</small>
             }
-          </select>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="title">Titre de l'annonce <span class="required">*</span></label>
-            <input type="text" id="title" formControlName="title" class="input-field" placeholder="Ex: Prêt de timbales pour concert">
           </div>
-          <div class="form-group">
-            <label for="equipmentName">Matériel recherché <span class="required">*</span></label>
-            <input type="text" id="equipmentName" formControlName="equipmentName" class="input-field" placeholder="Ex: Jeu de 4 timbales">
-          </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="duration">Durée de l'emprunt <span class="required">*</span></label>
-            <input type="text" id="duration" formControlName="duration" class="input-field" placeholder="Ex: 1 semaine, 2 jours...">
-          </div>
-          <div class="form-group">
-            <label for="eventDates">Dates des concerts/répétitions</label>
-            <input type="text" id="eventDates" formControlName="eventDates" class="input-field" placeholder="Séparées par une virgule">
-          </div>
-        </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="title">Titre de l'annonce <span class="required" aria-hidden="true">*</span></label>
+              <input
+                type="text"
+                id="title"
+                formControlName="title"
+                class="input-field"
+                placeholder="Ex: Prêt de timbales pour concert de printemps"
+                required
+              />
+              @if (form.get('title')?.touched && form.get('title')?.hasError('required')) {
+                <small class="field-error" role="alert">Le titre de l'annonce est obligatoire.</small>
+              }
+            </div>
 
-        <div class="form-group">
-          <label for="description">Description et modalités</label>
-          <textarea id="description" formControlName="description" class="input-field" rows="4" placeholder="Précisez le lieu, si vous pouvez vous déplacer, etc."></textarea>
-        </div>
+            <div class="form-group">
+              <label for="equipmentName">Matériel recherché <span class="required" aria-hidden="true">*</span></label>
+              <input
+                type="text"
+                id="equipmentName"
+                formControlName="equipmentName"
+                class="input-field"
+                placeholder="Ex: Jeu de 4 timbales symphoniques"
+                required
+              />
+              @if (form.get('equipmentName')?.touched && form.get('equipmentName')?.hasError('required')) {
+                <small class="field-error" role="alert">Le nom du matériel recherché est obligatoire.</small>
+              }
+            </div>
+          </div>
 
-        <div class="form-actions">
-          <button type="submit" class="btn btn--primary">Créer la demande</button>
-        </div>
-      </form>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="duration">Durée estimée de l'emprunt <span class="required" aria-hidden="true">*</span></label>
+              <input
+                type="text"
+                id="duration"
+                formControlName="duration"
+                class="input-field"
+                placeholder="Ex: 1 week-end, 3 jours, 1 mois..."
+                required
+              />
+              @if (form.get('duration')?.touched && form.get('duration')?.hasError('required')) {
+                <small class="field-error" role="alert">La durée de l'emprunt est obligatoire.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="eventDates">Dates d'utilisation (optionnel)</label>
+              <input
+                type="text"
+                id="eventDates"
+                formControlName="eventDates"
+                class="input-field"
+                placeholder="Ex: 15/11/2026, 17/11/2026"
+              />
+              <small class="field-hint">Séparez plusieurs dates par des virgules (ex: JJ/MM/AAAA ou AAAA-MM-JJ).</small>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Modalités logistiques & Description</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              class="input-field"
+              rows="4"
+              placeholder="Précisez le lieu de retrait souhaité, si vous assurez le transport, une caution éventuelle, les répétitions concernées..."
+            ></textarea>
+          </div>
+
+          <div class="form-actions">
+            <a routerLink="/materiels" class="btn btn--secondary">Annuler</a>
+            <button
+              type="submit"
+              class="btn btn--primary"
+              [disabled]="isSubmitting() || form.invalid"
+            >
+              @if (isSubmitting()) {
+                <i class="pi pi-spin pi-spinner" aria-hidden="true"></i> Publication...
+              } @else {
+                <i class="pi pi-check" aria-hidden="true"></i> Publier la demande
+              }
+            </button>
+          </div>
+        </form>
+      }
     </div>
   </div>
 </copupitre-base-layout>

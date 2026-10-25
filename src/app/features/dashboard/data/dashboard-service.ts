@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { EquipmentRequest, Organization, PermanentAnnouncement, ReinforcementAnnouncement } from '@models/index';
 import { DashboardRepository } from './dashboard-repository';
 
@@ -47,11 +47,9 @@ export class DashboardService {
       // Exclure les annonces des organisations administrées du panel des offres publiques
       const userOrgIds = new Set(orgs.map((o) => o.id));
       const publicAnnouncements = allAnnouncements.filter((a) => !userOrgIds.has(a.organizationId));
-
-      this.allAnnouncements.set(publicAnnouncements.slice(0, 3));
-      this.allEquipmentRequests.set(allEquipment.slice(0, 3));
-
-      this.numberOfReinforcements.set(publicAnnouncements.length);
+      const publicEquipment = allEquipment.filter((e) => !userOrgIds.has(e.organizationId));
+      this.allAnnouncements.set(publicAnnouncements);
+      this.allEquipmentRequests.set(publicEquipment);
 
       const blocks: OrgDashboardBlock[] = [];
 
@@ -85,5 +83,15 @@ export class DashboardService {
       this.error.set('Une erreur est survenue lors du chargement des données.');
       console.error('Dashboard data loading error', e);
     }
+  }
+
+  /** Met à jour le statut d'une demande de matériel */
+  updateEquipmentStatus(requestId: number, status: 'OPEN' | 'MET' | 'CLOSED'): Observable<EquipmentRequest> {
+    return this.repository.updateEquipmentStatus(requestId, status);
+  }
+
+  /** Supprime une demande de matériel */
+  deleteEquipmentRequest(requestId: number): Observable<void> {
+    return this.repository.deleteEquipmentRequest(requestId);
   }
 }

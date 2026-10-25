@@ -110,18 +110,15 @@
                 <!-- Demandes de matériel -->
                 <div class="org-dashboard-block__col">
                   <h4 class="org-dashboard-block__subtitle"><i class="pi pi-box"></i> Demandes de matériel</h4>
-                  @if (block.equipmentRequests.length > 0) {
-                    <div class="equipment-list">
-                      @for (req of block.equipmentRequests; track req.id) {
-                        <div class="equipment-card">
-                          <h5>{{ req.equipmentName }}</h5>
-                          <span class="badge">{{ req.duration }}</span>
-                          <p>{{ req.description }}</p>
-                        </div>
-                      }
-                    </div>
+                  @if (block.equipmentRequests && block.equipmentRequests.length > 0) {
+                    <copupitre-equipment-request-list
+                      [requests]="block.equipmentRequests"
+                      [allowActions]="true"
+                      (statusChanged)="onEquipmentStatusChanged($event)"
+                      (requestDeleted)="onEquipmentDeleted($event)"
+                    ></copupitre-equipment-request-list>
                   } @else {
-                    <p class="empty-text">Aucune demande de matériel.</p>
+                    <p class="empty-text">Aucune demande de matériel pour cette organisation.</p>
                   }
                 </div>
               </div>

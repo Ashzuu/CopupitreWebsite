@@ -31,7 +31,7 @@ describe('Header', () => {
     await TestBed.configureTestingModule({
       imports: [Header],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: 'login', component: class {} as any }]),
         provideHttpClient(),
         { provide: AuthService, useValue: mockAuthService },
       ],

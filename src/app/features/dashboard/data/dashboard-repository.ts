@@ -63,4 +63,14 @@ export class DashboardRepository {
   getOrganizationEquipmentRequests(orgId: number): Observable<EquipmentRequest[]> {
     return this.organizationRepo.getOrganizationEquipmentRequests(orgId);
   }
+
+  /** Met à jour le statut d'une demande de matériel. */
+  updateEquipmentStatus(id: number, status: 'OPEN' | 'MET' | 'CLOSED'): Observable<EquipmentRequest> {
+    return this.equipmentRepo.updateStatus(id, status);
+  }
+
+  /** Supprime une demande de matériel. */
+  deleteEquipmentRequest(id: number): Observable<void> {
+    return this.equipmentRepo.deleteRequest(id);
+  }
 }

@@ -1,22 +1,263 @@
 <copupitre-base-layout>
-  <div class="container section">
-    <div class="header-section">
-      <h1><i class="pi pi-box"></i> Demandes de matériel</h1>
-      <p class="subtitle">Aidez d'autres orchestres en leur prêtant du matériel ou des instruments.</p>
-    </div>
-
-    <div class="filters-section">
-      <input type="text" [formControl]="searchCtrl" class="input-field" placeholder="Rechercher un instrument, une organisation...">
-    </div>
-
-    <div class="results-section">
-      @if (filteredRequests().length > 0) {
-        <copupitre-equipment-request-list [requests]="filteredRequests()"></copupitre-equipment-request-list>
-      } @else {
-        <div class="empty-state">
-          <p>Aucune demande de matériel trouvée.</p>
+  <div class="container section equipment-page">
+    <!-- En-tête -->
+    <header class="equipment-header">
+      <div class="equipment-header__text">
+        <h1><i class="pi pi-box" aria-hidden="true"></i> Bourse de Prêt de Matériel</h1>
+        <p class="subtitle">
+          Mutualisez instruments encombrants, percussions et équipements de scène entre orchestres associatifs.
+        </p>
+      </div>
+      @if (authService.isAuthenticated()) {
+        <div class="equipment-header__action">
+          <a routerLink="/materiel/create" class="btn btn--primary">
+            <i class="pi pi-plus" aria-hidden="true"></i> Demander du matériel
+          </a>
         </div>
       }
-    </div>
+    </header>
+
+    <!-- Système d'onglets (si l'utilisateur est admin d'organisations) -->
+    @if (authService.isAuthenticated() && hasUserOrgs()) {
+      <nav class="equipment-tabs" role="tablist" aria-label="Catégories des demandes de matériel">
+        <button
+          type="button"
+          role="tab"
+          id="tab-public"
+          class="equipment-tab"
+          [class.equipment-tab--active]="activeTab() === 'public'"
+          [attr.aria-selected]="activeTab() === 'public'"
+          aria-controls="panel-equipment"
+          (click)="setTab('public')"
+        >
+          <i class="pi pi-globe" aria-hidden="true"></i> Demandes publiques
+          <span class="equipment-tab__badge">{{ publicRequests().length }}</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          id="tab-my"
+          class="equipment-tab"
+          [class.equipment-tab--active]="activeTab() === 'my'"
+          [attr.aria-selected]="activeTab() === 'my'"
+          aria-controls="panel-equipment"
+          (click)="setTab('my')"
+        >
+          <i class="pi pi-shield" aria-hidden="true"></i> Mes demandes (Mes orchestres)
+          <span class="equipment-tab__badge">{{ myRequests().length }}</span>
+        </button>
+      </nav>
+    }
+
+    <!-- Barre de filtres de recherche -->
+    <section class="filters-card" aria-label="Filtres de recherche de matériel">
+      <div class="filters-card__search">
+        <i class="pi pi-search search-icon" aria-hidden="true"></i>
+        <label for="equipment-search-input" class="sr-only">Rechercher du matériel, un titre ou un orchestre</label>
+        <input
+          id="equipment-search-input"
+          type="search"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+          class="search-input"
+          placeholder="Rechercher par instrument, matériel, orchestre ou titre..."
+        />
+        @if (searchTerm()) {
+          <button
+            type="button"
+            class="clear-btn"
+            (click)="searchTerm.set('')"
+            aria-label="Effacer la recherche"
+          >
+            <i class="pi pi-times" aria-hidden="true"></i>
+          </button>
+        }
+      </div>
+
+      <div class="filters-card__status">
+        <span class="status-filter-label"><i class="pi pi-filter" aria-hidden="true"></i> Statut :</span>
+        <div class="status-pills" role="radiogroup" aria-label="Filtrer par statut">
+          <button
+            type="button"
+            class="status-pill"
+            [class.status-pill--active]="statusFilter() === 'ALL'"
+            (click)="setStatusFilter('ALL')"
+          >
+            Tous
+          </button>
+          <button
+            type="button"
+            class="status-pill status-pill--open"
+            [class.status-pill--active]="statusFilter() === 'OPEN'"
+            (click)="setStatusFilter('OPEN')"
+          >
+            En recherche
+          </button>
+          <button
+            type="button"
+            class="status-pill status-pill--met"
+            [class.status-pill--active]="statusFilter() === 'MET'"
+            (click)="setStatusFilter('MET')"
+          >
+            Trouvé
+          </button>
+          <button
+            type="button"
+            class="status-pill status-pill--closed"
+            [class.status-pill--active]="statusFilter() === 'CLOSED'"
+            (click)="setStatusFilter('CLOSED')"
+          >
+            Clôturé
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grille des résultats -->
+    <main id="panel-equipment" role="tabpanel" [attr.aria-labelledby]="activeTab() === 'public' ? 'tab-public' : 'tab-my'" class="equipment-results">
+      @if (displayedRequests().length > 0) {
+        <div class="equipment-grid">
+          @for (req of displayedRequests(); track req.id) {
+            <article class="equipment-card" [class.equipment-card--admin]="isAdminOfOrg(req)">
+              <header class="equipment-card__header">
+                <div class="equipment-card__title-group">
+                  <span class="equipment-tag">
+                    <i class="pi pi-box" aria-hidden="true"></i> {{ req.equipmentName }}
+                  </span>
+                  <h2 class="equipment-card__title">{{ req.title }}</h2>
+                </div>
+                <span class="status-badge" [class]="'status-badge--' + (req.status | lowercase)">
+                  {{ translateStatus(req.status) }}
+                </span>
+              </header>
+
+              <div class="equipment-card__body">
+                <div class="info-row">
+                  <span class="info-item">
+                    <i class="pi pi-building" aria-hidden="true"></i>
+                    @if (req.organizationId) {
+                      <a [routerLink]="['/organization', req.organizationId]" class="org-link" title="Consulter la fiche de cet ensemble">
+                        {{ req.organizationName || 'Ensemble demandeur' }}
+                      </a>
+                    } @else {
+                      <span>{{ req.organizationName || 'Ensemble demandeur' }}</span>
+                    }
+                  </span>
+                  <span class="info-item">
+                    <i class="pi pi-clock" aria-hidden="true"></i> Durée : <strong>{{ req.duration }}</strong>
+                  </span>
+                </div>
+
+                <div class="info-row info-row--dates">
+                  <span class="info-item">
+                    <i class="pi pi-calendar" aria-hidden="true"></i>
+                    <span>{{ formatEventDates(req.eventDates) }}</span>
+                  </span>
+                </div>
+
+                @if (req.description) {
+                  <p class="equipment-card__desc">
+                    {{ req.description }}
+                  </p>
+                }
+              </div>
+
+              <footer class="equipment-card__footer">
+                @if (isAdminOfOrg(req)) {
+                  <!-- Actions administrateur pour gérer le cycle de vie du prêt -->
+                  <div class="admin-actions">
+                    @if (req.status === 'OPEN') {
+                      <button
+                        type="button"
+                        class="btn btn--small btn--met"
+                        (click)="updateStatus(req, 'MET')"
+                        title="Marquer que le matériel a été trouvé auprès d'un partenaire"
+                      >
+                        <i class="pi pi-check-circle" aria-hidden="true"></i> Matériel trouvé
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn--small btn--secondary"
+                        (click)="updateStatus(req, 'CLOSED')"
+                        title="Clôturer la demande"
+                      >
+                        <i class="pi pi-lock" aria-hidden="true"></i> Clôturer
+                      </button>
+                    } @else if (req.status === 'MET') {
+                      <button
+                        type="button"
+                        class="btn btn--small btn--secondary"
+                        (click)="updateStatus(req, 'CLOSED')"
+                        title="Clôturer la demande"
+                      >
+                        <i class="pi pi-lock" aria-hidden="true"></i> Clôturer
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn--small btn--outline"
+                        (click)="updateStatus(req, 'OPEN')"
+                        title="Réouvrir la demande"
+                      >
+                        <i class="pi pi-refresh" aria-hidden="true"></i> Réouvrir
+                      </button>
+                    } @else {
+                      <button
+                        type="button"
+                        class="btn btn--small btn--outline"
+                        (click)="updateStatus(req, 'OPEN')"
+                        title="Réouvrir la demande"
+                      >
+                        <i class="pi pi-refresh" aria-hidden="true"></i> Réouvrir
+                      </button>
+                    }
+
+                    <button
+                      type="button"
+                      class="btn btn--small btn--icon btn--danger"
+                      (click)="deleteRequest(req)"
+                      title="Supprimer cette demande de matériel"
+                      aria-label="Supprimer la demande de matériel"
+                    >
+                      <i class="pi pi-trash" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                } @else {
+                  <!-- Contact / Consultation pour les autres ensembles -->
+                  @if (req.organizationId) {
+                    <a [routerLink]="['/organization', req.organizationId]" class="btn btn--secondary btn--small">
+                      <i class="pi pi-arrow-right" aria-hidden="true"></i> Proposer un prêt
+                    </a>
+                  }
+                }
+              </footer>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <i class="pi pi-box empty-state__icon" aria-hidden="true"></i>
+          <h3>Aucune demande de matériel trouvée</h3>
+          <p>
+            @if (searchTerm() || statusFilter() !== 'ALL') {
+              Aucune demande ne correspond à vos critères de recherche actuels.
+            } @else if (activeTab() === 'my') {
+              Vos ensembles musicaux n'ont aucune demande de matériel enregistrée pour le moment.
+            } @else {
+              Il n'y a actuellement aucune demande de matériel active sur la plateforme.
+            }
+          </p>
+          @if (searchTerm() || statusFilter() !== 'ALL') {
+            <button type="button" class="btn btn--secondary btn--small" (click)="resetFilters()">
+              <i class="pi pi-refresh" aria-hidden="true"></i> Réinitialiser les filtres
+            </button>
+          } @else if (authService.isAuthenticated()) {
+            <a routerLink="/materiel/create" class="btn btn--primary btn--small">
+              <i class="pi pi-plus" aria-hidden="true"></i> Créer une demande
+            </a>
+          }
+        </div>
+      }
+    </main>
   </div>
 </copupitre-base-layout>

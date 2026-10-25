@@ -23,6 +23,7 @@ export class InAppNotificationService {
 
   /**
    * Charge la liste des notifications de l'utilisateur connecté.
+   * Normalise systématiquement isRead pour garantir la cohérence d'état.
    */
   async loadNotifications(): Promise<void> {
     if (!this.authService.isAuthenticated()) {
@@ -34,8 +35,12 @@ export class InAppNotificationService {
     this.isLoading.set(true);
     try {
       const notifs = await firstValueFrom(this.notificationRepo.getMyNotifications());
-      this.notifications.set(notifs || []);
-      const unread = (notifs || []).filter((n) => !n.isRead).length;
+      const normalized: InAppNotification[] = (notifs || []).map((n: any) => ({
+        ...n,
+        isRead: Boolean(n.isRead ?? n.read ?? false),
+      }));
+      this.notifications.set(normalized);
+      const unread = normalized.filter((n) => !n.isRead).length;
       this.unreadCount.set(unread);
     } catch (err) {
       this.logger.error('Failed to load in-app notifications', 'InAppNotificationService', err);
@@ -77,34 +82,44 @@ export class InAppNotificationService {
   }
 
   /**
-   * Marque une notification spécifique comme lue.
+   * Marque une notification spécifique comme lue de façon définitive.
+   * Effectue une mise à jour optimiste immédiate puis persiste côté serveur.
    */
   async markAsRead(notification: InAppNotification): Promise<void> {
-    if (notification.isRead) return;
+    const currentIsRead = Boolean(notification.isRead ?? (notification as any).read ?? false);
+    if (currentIsRead) return;
+
+    // Mise à jour optimiste immédiate dans l'état local
+    this.notifications.update((list) =>
+      list.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n)),
+    );
+    this.unreadCount.update((count) => Math.max(0, count - 1));
 
     try {
       await firstValueFrom(this.notificationRepo.markAsRead(notification.id));
-      this.notifications.update((list) =>
-        list.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n)),
-      );
-      this.unreadCount.update((count) => Math.max(0, count - 1));
     } catch (err) {
       this.logger.error('Failed to mark notification as read', 'InAppNotificationService', err);
+      // En cas d'échec réseau, recharger l'état réel pour éviter une désynchronisation
+      this.loadNotifications();
     }
   }
 
   /**
    * Marque l'ensemble des notifications comme lues.
+   * Effectue une mise à jour optimiste immédiate puis persiste côté serveur.
    */
   async markAllAsRead(): Promise<void> {
+    // Mise à jour optimiste immédiate
+    this.notifications.update((list) =>
+      list.map((n) => ({ ...n, isRead: true })),
+    );
+    this.unreadCount.set(0);
+
     try {
       await firstValueFrom(this.notificationRepo.markAllAsRead());
-      this.notifications.update((list) =>
-        list.map((n) => ({ ...n, isRead: true })),
-      );
-      this.unreadCount.set(0);
     } catch (err) {
       this.logger.error('Failed to mark all notifications as read', 'InAppNotificationService', err);
+      this.loadNotifications();
     }
   }
 }

@@ -1,7 +1,7 @@
 import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EquipmentRequest, Organization } from '@models/index';
 import { BaseLayout } from '@layouts/base-layout/base-layout';
 import { EquipmentRepository } from '@repositories/equipment-repository';
@@ -27,6 +27,7 @@ export class EquipmentRequestsListPage implements OnInit {
   readonly authService = inject(AuthService);
   private readonly notifService = inject(NotifService);
   private readonly logger = inject(LoggerService);
+  private readonly route = inject(ActivatedRoute);
 
   /** Active conversation modal for equipment loans (US-COM-04). */
   activeConversationRequest = signal<EquipmentRequest | null>(null);
@@ -117,6 +118,7 @@ export class EquipmentRequestsListPage implements OnInit {
     this.equipmentRepo.getAllRequests().subscribe({
       next: (data) => {
         this.allRequests.set(data || []);
+        this.checkQueryParams(data || []);
       },
       error: (err) => {
         this.logger.error('Erreur chargement matériel', 'EquipmentRequestsListPage', err);
@@ -125,6 +127,17 @@ export class EquipmentRequestsListPage implements OnInit {
         }
       },
     });
+  }
+
+  private checkQueryParams(requests: EquipmentRequest[]) {
+    const params = this.route.snapshot.queryParams;
+    if (params['contextType'] === 'EQUIPMENT' && params['contextId']) {
+      const targetId = Number(params['contextId']);
+      const match = requests.find((r) => r.id === targetId);
+      if (match) {
+        this.openConversation(match);
+      }
+    }
   }
 
   loadUserOrganizations() {

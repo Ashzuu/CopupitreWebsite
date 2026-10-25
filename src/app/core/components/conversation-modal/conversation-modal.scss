@@ -19,7 +19,7 @@
   height: 620px;
   max-height: 90vh;
   background-color: $color-background;
-  border-radius: $border-radius-lg;
+  border-radius: $border-radius-sm;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
   z-index: 1210;
   display: flex;
@@ -197,7 +197,7 @@
   .message-bubble {
     max-width: 80%;
     padding: $spacing-sm $spacing-md;
-    border-radius: $border-radius-md;
+    border-radius: $border-radius-sm;
     word-break: break-word;
 
     .message-meta {
@@ -215,7 +215,7 @@
         font-size: 0.65rem;
         font-weight: 600;
         padding: 1px 6px;
-        border-radius: $border-radius-full;
+        border-radius: $border-radius-sm;
         text-transform: uppercase;
         letter-spacing: 0.03em;
       }

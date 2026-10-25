@@ -100,6 +100,22 @@ describe('InAppNotificationService', () => {
     expect(service.unreadCount()).toBe(5);
   });
 
+  it('devrait normaliser la propriété read reçue du backend vers isRead', async () => {
+    // Cas où le backend sérialise read au lieu de isRead
+    const rawBackendNotifs = [
+      { id: 10, type: 'NEW_APPLICATION', title: 'Test 1', content: '...', read: true },
+      { id: 11, type: 'NEW_MESSAGE', title: 'Test 2', content: '...', read: false },
+    ];
+    mockRepo.getMyNotifications.mockReturnValue(of(rawBackendNotifs));
+
+    await service.loadNotifications();
+
+    expect(service.notifications().length).toBe(2);
+    expect(service.notifications()[0].isRead).toBe(true);
+    expect(service.notifications()[1].isRead).toBe(false);
+    expect(service.unreadCount()).toBe(1);
+  });
+
   it('devrait basculer l\'ouverture du panneau', () => {
     mockRepo.getMyNotifications.mockReturnValue(of([]));
 

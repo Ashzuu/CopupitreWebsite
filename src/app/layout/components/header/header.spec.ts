@@ -143,5 +143,58 @@ describe('Header', () => {
       component.closeNotificationPanel();
       expect(mockNotifService.closePanel).toHaveBeenCalled();
     });
+
+    it('devrait marquer la notification comme lue et ouvrir la conversation liée au clic', async () => {
+      const openSpy = vi.spyOn(component.conversationService, 'open');
+      const navigateSpy = vi.spyOn(component.router, 'navigateByUrl').mockResolvedValue(true);
+
+      const notif = {
+        id: 1,
+        type: 'NEW_MESSAGE',
+        title: 'Nouveau message de Julien',
+        content: 'Je suis disponible',
+        contextType: 'APPLICATION',
+        contextId: 10,
+        isRead: false,
+        createdAt: '2026-10-25T15:00:00Z',
+        link: '/mes-candidatures?contextType=APPLICATION&contextId=10',
+      };
+
+      await component.onNotificationClick(notif);
+
+      expect(mockNotifService.markAsRead).toHaveBeenCalledWith(notif);
+      expect(openSpy).toHaveBeenCalledWith({
+        contextType: 'APPLICATION',
+        contextId: 10,
+        title: 'Nouveau message de Julien',
+        subtitle: 'Je suis disponible',
+      });
+      expect(navigateSpy).toHaveBeenCalledWith('/mes-candidatures?contextType=APPLICATION&contextId=10');
+    });
+
+    it('devrait extraire contextType et contextId depuis le link si absents de l\'objet', async () => {
+      const openSpy = vi.spyOn(component.conversationService, 'open');
+      vi.spyOn(component.router, 'navigateByUrl').mockResolvedValue(true);
+
+      const notif = {
+        id: 2,
+        type: 'NEW_MESSAGE',
+        title: 'Message prêt',
+        content: 'Disponible pour prêt',
+        isRead: false,
+        createdAt: '2026-10-25T15:00:00Z',
+        link: '/materiels?contextType=EQUIPMENT&contextId=55',
+      };
+
+      await component.onNotificationClick(notif);
+
+      expect(mockNotifService.markAsRead).toHaveBeenCalledWith(notif);
+      expect(openSpy).toHaveBeenCalledWith({
+        contextType: 'EQUIPMENT',
+        contextId: 55,
+        title: 'Message prêt',
+        subtitle: 'Disponible pour prêt',
+      });
+    });
   });
 });

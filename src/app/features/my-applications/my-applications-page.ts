@@ -1,12 +1,13 @@
 import { DatePipe, LowerCasePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { BaseLayout } from '@layouts/base-layout/base-layout';
 import { ReinforcementResponse, ResponseStatus } from '@models/reinforcement';
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
 import { NotifService } from '@services/notif-service';
 import { LoggerService } from '@services/logger-service';
+import { ConversationService } from '@services/conversation-service';
 import { ConversationModal } from '../../core/components/conversation-modal/conversation-modal';
 import { forkJoin } from 'rxjs';
 
@@ -23,6 +24,8 @@ export class MyApplicationsPage implements OnInit {
   private readonly permanentRepo = inject(PermanentRecruitmentsRepository);
   private readonly notifService = inject(NotifService);
   private readonly logger = inject(LoggerService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly conversationService = inject(ConversationService);
 
   /** Loading indicator. */
   loading = signal<boolean>(true);
@@ -87,6 +90,7 @@ export class MyApplicationsPage implements OnInit {
         this.reinforcementApplications.set(reinforcements || []);
         this.permanentApplications.set(permanents || []);
         this.loading.set(false);
+        this.checkQueryParams();
       },
       error: (err) => {
         this.logger.error('Erreur lors du chargement des candidatures', 'MyApplicationsPage', err);
@@ -96,6 +100,27 @@ export class MyApplicationsPage implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  private checkQueryParams(): void {
+    const params = this.route.snapshot.queryParams;
+    const type = params['contextType'];
+    const id = params['contextId'];
+    if (type && id) {
+      const targetId = Number(id);
+      const isPerm = type === 'ANNUAL_APPLICATION';
+      const list = isPerm ? this.permanentApplications() : this.reinforcementApplications();
+      const match = list.find((a) => a.id === targetId);
+      if (match) {
+        this.openConversation(match);
+      } else {
+        this.conversationService.open({
+          contextType: type,
+          contextId: targetId,
+          title: 'Fil de discussion',
+        });
+      }
+    }
   }
 
   setTab(tab: ApplicationFilterTab): void {

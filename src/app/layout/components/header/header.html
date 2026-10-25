@@ -229,3 +229,15 @@
     </nav>
   </aside>
 }
+
+<!-- Modale de messagerie contextuelle globale (US-COM-03 & US-COM-04) -->
+@if (authService.isAuthenticated()) {
+  <copupitre-conversation-modal
+    [isOpen]="conversationService.isOpen()"
+    [contextType]="conversationService.contextType()"
+    [contextId]="conversationService.contextId()"
+    [title]="conversationService.title()"
+    [subtitle]="conversationService.subtitle()"
+    (closed)="conversationService.close()"
+  />
+}

@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { Organization } from '@models/index';
 import { BaseLayout } from '@layouts/base-layout/base-layout';
 import { NotifService } from '@services/notif-service';
+import { LoggerService } from '@services/logger-service';
 import { OrganizationRepository } from '@repositories/organization-repository';
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 
@@ -18,6 +19,7 @@ export class ReinforcementCreatePage implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private errorService = inject(NotifService);
+  private logger = inject(LoggerService);
   private repo = inject(OrganizationRepository);
   private reinforcementRepo = inject(ReinforcementsRepository);
 
@@ -97,7 +99,7 @@ export class ReinforcementCreatePage implements OnInit {
           this.router.navigate(['/renforts']);
         },
         error: (err) => {
-          console.error('[ReinforcementCreatePage] Error saving reinforcement requests:', err);
+          this.logger.error('Error saving reinforcement requests', 'ReinforcementCreatePage', err);
           if (!err?._notificationShown) {
             const msg = err?.error?.message || err?.error?.error || "Impossible de publier l'annonce de renfort.";
             this.errorService.showError(msg);

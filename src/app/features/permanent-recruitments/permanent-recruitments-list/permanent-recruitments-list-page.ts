@@ -8,6 +8,7 @@ import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruit
 import { OrganizationRepository } from '@repositories/organization-repository';
 import { AuthService } from '@services/auth-service';
 import { NotifService } from '@services/notif-service';
+import { LoggerService } from '@services/logger-service';
 import { ManageApplicationsModal } from '@pages/dashboard/components/manage-applications-modal/manage-applications-modal';
 
 export type PermanentTab = 'public' | 'my';
@@ -23,6 +24,7 @@ export class PermanentRecruitmentsListPage implements OnInit {
   private readonly repo = inject(PermanentRecruitmentsRepository);
   private readonly orgRepo = inject(OrganizationRepository);
   private readonly notifService = inject(NotifService);
+  private readonly logger = inject(LoggerService);
   readonly authService = inject(AuthService);
 
   readonly userOrganizations = signal<Organization[]>([]);
@@ -130,7 +132,7 @@ export class PermanentRecruitmentsListPage implements OnInit {
         this.announcements.set(data || []);
       },
       error: (err) => {
-        console.error('[PermanentRecruitmentsListPage] Error loading announcements:', err);
+        this.logger.error('Error loading announcements', 'PermanentRecruitmentsListPage', err);
         if (!err?._notificationShown) {
           this.notifService.showError('Impossible de charger les annonces de recrutement permanent.');
         }
@@ -144,7 +146,7 @@ export class PermanentRecruitmentsListPage implements OnInit {
         this.userOrganizations.set(orgs || []);
       },
       error: (err) => {
-        console.error('[PermanentRecruitmentsListPage] Error loading user orgs:', err);
+        this.logger.error('Error loading user orgs', 'PermanentRecruitmentsListPage', err);
       },
     });
   }
@@ -155,7 +157,7 @@ export class PermanentRecruitmentsListPage implements OnInit {
         this.userApplications.set(apps || []);
       },
       error: (err) => {
-        console.error('[PermanentRecruitmentsListPage] Error loading user applications:', err);
+        this.logger.error('Error loading user applications', 'PermanentRecruitmentsListPage', err);
       },
     });
   }
@@ -237,7 +239,7 @@ export class PermanentRecruitmentsListPage implements OnInit {
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        console.error('[PermanentRecruitmentsListPage] Error applying:', err);
+        this.logger.error('Error applying', 'PermanentRecruitmentsListPage', err);
         if (!err?._notificationShown) {
           const message = err?.error?.message || err?.error?.error || "Impossible d'envoyer la candidature.";
           this.notifService.showError(message);

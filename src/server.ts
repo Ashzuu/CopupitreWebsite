@@ -61,7 +61,7 @@ if (isMainModule(import.meta.url) || process.env['pm_id']) {
       throw error;
     }
 
-    console.log('Node Express server started');
+    process.stdout.write('Node Express server started\n');
   });
 }
 

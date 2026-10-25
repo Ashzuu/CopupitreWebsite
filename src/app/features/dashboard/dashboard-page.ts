@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LoaderService } from '@services/loader-service';
 import { NotifService } from '@services/notif-service';
+import { LoggerService } from '@services/logger-service';
 import { BaseLayout } from '@layouts/base-layout/base-layout';
 import { DashboardStatCard } from './components/dashboard-stat-card/dashboard-stat-card';
 import { EquipmentRequestList } from './components/equipment-request-list/equipment-request-list';
@@ -31,6 +32,7 @@ export class DashboardPage implements OnInit {
   /** The loaderService property. */
   readonly loaderService: LoaderService = inject(LoaderService);
   private readonly notifService: NotifService = inject(NotifService);
+  private readonly logger: LoggerService = inject(LoggerService);
 
   ngOnInit() {
     this.service.loadDashboardData();
@@ -56,7 +58,7 @@ export class DashboardPage implements OnInit {
         this.notifService.showSuccess(msg);
       },
       error: (err) => {
-        console.error('[DashboardPage] Error updating equipment status:', err);
+        this.logger.error('Error updating equipment status', 'DashboardPage', err);
         if (!err?._notificationShown) {
           const message = err?.error?.message || err?.error?.error || 'Impossible de mettre à jour le statut du matériel.';
           this.notifService.showError(message);
@@ -81,7 +83,7 @@ export class DashboardPage implements OnInit {
         this.notifService.showSuccess('Demande de matériel supprimée.');
       },
       error: (err) => {
-        console.error('[DashboardPage] Error deleting equipment request:', err);
+        this.logger.error('Error deleting equipment request', 'DashboardPage', err);
         if (!err?._notificationShown) {
           const message = err?.error?.message || err?.error?.error || 'Impossible de supprimer la demande de matériel.';
           this.notifService.showError(message);

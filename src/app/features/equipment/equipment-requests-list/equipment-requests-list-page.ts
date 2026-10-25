@@ -8,6 +8,7 @@ import { EquipmentRepository } from '@repositories/equipment-repository';
 import { OrganizationRepository } from '@repositories/organization-repository';
 import { AuthService } from '@services/auth-service';
 import { NotifService } from '@services/notif-service';
+import { LoggerService } from '@services/logger-service';
 
 export type EquipmentTab = 'public' | 'my';
 export type EquipmentStatusFilter = 'ALL' | 'OPEN' | 'MET' | 'CLOSED';
@@ -24,6 +25,7 @@ export class EquipmentRequestsListPage implements OnInit {
   private readonly orgRepo = inject(OrganizationRepository);
   readonly authService = inject(AuthService);
   private readonly notifService = inject(NotifService);
+  private readonly logger = inject(LoggerService);
 
   /** Toutes les demandes de matériel chargées */
   allRequests = signal<EquipmentRequest[]>([]);
@@ -98,7 +100,7 @@ export class EquipmentRequestsListPage implements OnInit {
         this.allRequests.set(data || []);
       },
       error: (err) => {
-        console.error('[EquipmentRequestsListPage] Erreur chargement matériel:', err);
+        this.logger.error('Erreur chargement matériel', 'EquipmentRequestsListPage', err);
         if (!err?._notificationShown) {
           this.notifService.showError('Impossible de charger les demandes de matériel.');
         }
@@ -112,7 +114,7 @@ export class EquipmentRequestsListPage implements OnInit {
         this.userOrganizations.set(orgs || []);
       },
       error: (err) => {
-        console.error('[EquipmentRequestsListPage] Erreur chargement organisations:', err);
+        this.logger.error('Erreur chargement organisations', 'EquipmentRequestsListPage', err);
       },
     });
   }
@@ -151,7 +153,7 @@ export class EquipmentRequestsListPage implements OnInit {
         this.notifService.showSuccess(msg);
       },
       error: (err) => {
-        console.error('[EquipmentRequestsListPage] Erreur mise à jour statut:', err);
+        this.logger.error('Erreur mise à jour statut', 'EquipmentRequestsListPage', err);
         if (!err?._notificationShown) {
           const message = err?.error?.message || err?.error?.error || 'Impossible de mettre à jour le statut.';
           this.notifService.showError(message);
@@ -173,7 +175,7 @@ export class EquipmentRequestsListPage implements OnInit {
         this.notifService.showSuccess('Demande de matériel supprimée avec succès.');
       },
       error: (err) => {
-        console.error('[EquipmentRequestsListPage] Erreur suppression demande:', err);
+        this.logger.error('Erreur suppression demande', 'EquipmentRequestsListPage', err);
         if (!err?._notificationShown) {
           const message = err?.error?.message || err?.error?.error || 'Impossible de supprimer la demande.';
           this.notifService.showError(message);

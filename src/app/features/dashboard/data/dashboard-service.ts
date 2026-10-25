@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom, Observable } from 'rxjs';
 import { EquipmentRequest, Organization, PermanentAnnouncement, ReinforcementAnnouncement } from '@models/index';
+import { LoggerService } from '@services/logger-service';
 import { DashboardRepository } from './dashboard-repository';
 
 export interface OrgDashboardBlock {
@@ -17,6 +18,7 @@ export interface OrgDashboardBlock {
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private readonly repository = inject(DashboardRepository);
+  private readonly logger = inject(LoggerService);
 
   /** The organizations property. */
   readonly organizations = signal<Organization[]>([]);
@@ -81,7 +83,7 @@ export class DashboardService {
       this.orgBlocks.set(blocks);
     } catch (e) {
       this.error.set('Une erreur est survenue lors du chargement des données.');
-      console.error('Dashboard data loading error', e);
+      this.logger.error('Dashboard data loading error', 'DashboardService', e);
     }
   }
 

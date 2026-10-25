@@ -6,6 +6,7 @@ import { ReinforcementResponse, ResponseStatus } from '@models/reinforcement';
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
 import { NotifService } from '@services/notif-service';
+import { LoggerService } from '@services/logger-service';
 import { forkJoin } from 'rxjs';
 
 export type ApplicationFilterTab = 'ALL' | 'RENFORT' | 'PERMANENT';
@@ -20,6 +21,7 @@ export class MyApplicationsPage implements OnInit {
   private readonly reinforcementsRepo = inject(ReinforcementsRepository);
   private readonly permanentRepo = inject(PermanentRecruitmentsRepository);
   private readonly notifService = inject(NotifService);
+  private readonly logger = inject(LoggerService);
 
   /** Loading indicator. */
   loading = signal<boolean>(true);
@@ -75,7 +77,7 @@ export class MyApplicationsPage implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('[MyApplicationsPage] Erreur lors du chargement des candidatures:', err);
+        this.logger.error('Erreur lors du chargement des candidatures', 'MyApplicationsPage', err);
         if (!err?._notificationShown) {
           this.notifService.showError('Impossible de charger vos candidatures.');
         }

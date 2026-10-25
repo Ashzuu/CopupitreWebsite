@@ -4,12 +4,14 @@ import { Organization, PermanentAnnouncement, ReinforcementAnnouncement } from '
 import { OrganizationDetailRepository } from './organization-detail-repository';
 import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
 import { NotifService } from '@services/notif-service';
+import { LoggerService } from '@services/logger-service';
 
 @Injectable()
 export class OrganizationDetailService {
   private readonly repo = inject(OrganizationDetailRepository);
   private readonly permanentRepo = inject(PermanentRecruitmentsRepository);
   private readonly errorService = inject(NotifService);
+  private readonly logger = inject(LoggerService);
 
   /** The organization property. */
   readonly organization = signal<Organization | null>(null);
@@ -39,7 +41,7 @@ export class OrganizationDetailService {
       const msg = 'Impossible de charger les informations de cette organisation.';
       this.error.set(msg);
       this.errorService.showError(msg, 'Chargement échoué');
-      console.error('An error occurred while loading organization data.');
+      this.logger.error('An error occurred while loading organization data.', 'OrganizationDetailService', e);
     }
   }
 

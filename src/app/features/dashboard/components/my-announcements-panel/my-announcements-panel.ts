@@ -5,6 +5,7 @@ import { PermanentAnnouncement } from '@models/permanent-recruitment';
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
 import { NotifService } from '@services/notif-service';
+import { LoggerService } from '@services/logger-service';
 
 export type AnnouncementItem = (ReinforcementAnnouncement | PermanentAnnouncement) & {
   title?: string;
@@ -21,6 +22,7 @@ export class MyAnnouncementsPanel {
   private readonly repo = inject(ReinforcementsRepository);
   private readonly permanentRepo = inject(PermanentRecruitmentsRepository);
   private readonly notifService = inject(NotifService);
+  private readonly logger = inject(LoggerService);
 
   /** Type of announcement: 'RENFORT' (ponctuel) or 'PERMANENT' (annuel). */
   announcementType = input<'RENFORT' | 'PERMANENT'>('RENFORT');
@@ -114,7 +116,7 @@ export class MyAnnouncementsPanel {
         this.updatingAppIds.update((ids) => ids.filter((id) => id !== response.id));
       },
       error: (err) => {
-        console.error('[MyAnnouncementsPanel] Error updating application status:', err);
+        this.logger.error('Error updating application status', 'MyAnnouncementsPanel', err);
         if (!err?._notificationShown) {
           const msg = err?.error?.message || err?.error?.error || 'Impossible de mettre à jour la candidature.';
           this.notifService.showError(msg);

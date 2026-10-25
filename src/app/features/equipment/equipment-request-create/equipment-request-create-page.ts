@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Organization } from '@models/index';
 import { BaseLayout } from '@layouts/base-layout/base-layout';
 import { NotifService } from '@services/notif-service';
+import { LoggerService } from '@services/logger-service';
 import { OrganizationRepository } from '@repositories/organization-repository';
 import { EquipmentRepository } from '@repositories/equipment-repository';
 
@@ -17,6 +18,7 @@ export class EquipmentRequestCreatePage implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private notifService = inject(NotifService);
+  private logger = inject(LoggerService);
   private orgRepo = inject(OrganizationRepository);
   private equipmentRepo = inject(EquipmentRepository);
 
@@ -44,7 +46,7 @@ export class EquipmentRequestCreatePage implements OnInit {
         }
       },
       error: (err) => {
-        console.error('[EquipmentRequestCreatePage] Erreur chargement organisations:', err);
+        this.logger.error('Erreur chargement organisations', 'EquipmentRequestCreatePage', err);
       },
     });
   }
@@ -104,7 +106,7 @@ export class EquipmentRequestCreatePage implements OnInit {
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        console.error('[EquipmentRequestCreatePage] Erreur enregistrement matériel:', err);
+        this.logger.error('Erreur enregistrement matériel', 'EquipmentRequestCreatePage', err);
         if (!err?._notificationShown) {
           const message =
             err?.error?.message ||

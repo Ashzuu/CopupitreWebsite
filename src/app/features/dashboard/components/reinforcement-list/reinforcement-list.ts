@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { ReinforcementAnnouncement, ReinforcementResponse } from '@models/reinforcement';
 import { AuthService } from '@services/auth-service';
 import { NotifService } from '@services/notif-service';
+import { LoggerService } from '@services/logger-service';
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 import { ManageApplicationsModal } from '../manage-applications-modal/manage-applications-modal';
 
@@ -18,6 +19,7 @@ export class ReinforcementList {
   readonly authService = inject(AuthService);
   private readonly repo = inject(ReinforcementsRepository);
   private readonly notifService = inject(NotifService);
+  private readonly logger = inject(LoggerService);
 
   /** The announcements property. */
   announcements = input.required<ReinforcementAnnouncement[]>();
@@ -126,7 +128,7 @@ export class ReinforcementList {
         this.isSubmitting.set(false);
       },
       error: (err) => {
-        console.error('[ReinforcementList] Error applying to announcement:', err);
+        this.logger.error('Error applying to announcement', 'ReinforcementList', err);
         if (!err?._notificationShown) {
           const msg = err?.error?.message || err?.error?.error || "Impossible d'envoyer la candidature.";
           this.notifService.showError(msg);

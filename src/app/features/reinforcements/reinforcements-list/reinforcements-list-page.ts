@@ -9,6 +9,7 @@ import { ReinforcementsRepository } from '@repositories/reinforcements-repositor
 import { OrganizationRepository } from '@repositories/organization-repository';
 import { AuthService } from '@services/auth-service';
 import { NotifService } from '@services/notif-service';
+import { LoggerService } from '@services/logger-service';
 
 export type ReinforcementTab = 'public' | 'my';
 
@@ -23,6 +24,7 @@ export class ReinforcementsListPage implements OnInit {
   private readonly repo = inject(ReinforcementsRepository);
   private readonly orgRepo = inject(OrganizationRepository);
   private readonly notifService = inject(NotifService);
+  private readonly logger = inject(LoggerService);
   readonly authService = inject(AuthService);
 
   readonly userOrganizations = signal<Organization[]>([]);
@@ -126,7 +128,7 @@ export class ReinforcementsListPage implements OnInit {
             this.userOrganizations.set(orgs);
           },
           error: (err) => {
-            console.error('[ReinforcementListPage] Error fetching user organizations:', err);
+            this.logger.error('Error fetching user organizations', 'ReinforcementListPage', err);
           },
         });
       }
@@ -139,7 +141,7 @@ export class ReinforcementsListPage implements OnInit {
         this.userApplications.set(apps);
       },
       error: (err) => {
-        console.error('[ReinforcementListPage] Error fetching user applications:', err);
+        this.logger.error('Error fetching user applications', 'ReinforcementListPage', err);
       },
     });
   }
@@ -185,7 +187,7 @@ export class ReinforcementsListPage implements OnInit {
         this.loadAnnouncements();
       },
       error: (err) => {
-        console.error('[ReinforcementListPage] Error deleting announcement:', err);
+        this.logger.error('Error deleting announcement', 'ReinforcementListPage', err);
         if (!err?._notificationShown) {
           const msg = err?.error?.message || err?.error?.error || "Impossible de supprimer l'annonce.";
           this.notifService.showError(msg);

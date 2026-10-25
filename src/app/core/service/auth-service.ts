@@ -5,6 +5,7 @@ import { Observable, tap } from 'rxjs';
 import { AuthResponse, LoginRequest, RegisterRequest } from '@models/auth';
 import { UserProfile } from '@models/user';
 import { AuthRepository } from '@repositories/auth-repository';
+import { LoggerService } from './logger-service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,7 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly authRepo = inject(AuthRepository);
   private readonly request = inject(REQUEST, { optional: true });
+  private readonly logger = inject(LoggerService);
 
   private readonly tokenSignal = signal<string | null>(this.getInitialToken());
   private readonly profileSignal = signal<UserProfile | null>(null);
@@ -59,8 +61,8 @@ export class AuthService {
       next: (user) => {
         this.profileSignal.set(user);
       },
-      error: () => {
-        console.error('[AuthService] Error loading user profile');
+      error: (err) => {
+        this.logger.error('Error loading user profile', 'AuthService', err);
         this.profileSignal.set(null);
       },
     });
@@ -69,7 +71,6 @@ export class AuthService {
   private getInitialToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
       const token = this.getCookie('jwt_token');
-      console.log('[Auth] Browser initial token:', token ? 'Found' : 'Not found', 'Cookies:', typeof document !== 'undefined' ? document.cookie : 'no document');
       return token;
     } else if (isPlatformServer(this.platformId) && this.request) {
       let cookieHeader = '';
@@ -86,7 +87,6 @@ export class AuthService {
       const token = this.parseCookie(cookieHeader, 'jwt_token');
       return token;
     }
-    console.log('[Auth] getInitialToken: no platform matched or no request.');
     return null;
   }
 

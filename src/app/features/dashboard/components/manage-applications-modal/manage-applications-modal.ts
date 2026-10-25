@@ -5,6 +5,7 @@ import { ReinforcementAnnouncement, ReinforcementResponse, ResponseStatus } from
 import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 import { NotifService } from '@services/notif-service';
+import { LoggerService } from '@services/logger-service';
 
 export type ManageAnnouncementItem = (ReinforcementAnnouncement | PermanentAnnouncement) & {
   title?: string;
@@ -21,6 +22,7 @@ export class ManageApplicationsModal {
   private readonly repo = inject(ReinforcementsRepository);
   private readonly permanentRepo = inject(PermanentRecruitmentsRepository);
   private readonly notifService = inject(NotifService);
+  private readonly logger = inject(LoggerService);
 
   /** Type of announcement: 'RENFORT' (ponctuel) or 'PERMANENT' (annuel). */
   announcementType = input<'RENFORT' | 'PERMANENT'>('RENFORT');
@@ -127,7 +129,7 @@ export class ManageApplicationsModal {
         this.updatingAppIds.update((ids) => ids.filter((id) => id !== response.id));
       },
       error: (err) => {
-        console.error('[ManageApplicationsModal] Erreur statut candidature:', err);
+        this.logger.error('Erreur statut candidature', 'ManageApplicationsModal', err);
         if (!err?._notificationShown) {
           const msg =
             err?.error?.message || err?.error?.error || 'Impossible de mettre à jour la candidature.';

@@ -8,12 +8,13 @@ import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruit
 import { OrganizationRepository } from '@repositories/organization-repository';
 import { AuthService } from '@services/auth-service';
 import { NotifService } from '@services/notif-service';
+import { ManageApplicationsModal } from '@pages/dashboard/components/manage-applications-modal/manage-applications-modal';
 
 export type PermanentTab = 'public' | 'my';
 
 @Component({
   selector: 'copupitre-permanent-recruitments-list-page',
-  imports: [BaseLayout, FormsModule, RouterLink, LowerCasePipe],
+  imports: [BaseLayout, FormsModule, RouterLink, LowerCasePipe, ManageApplicationsModal],
   templateUrl: './permanent-recruitments-list-page.html',
   styleUrl: './permanent-recruitments-list-page.scss',
 })
@@ -54,6 +55,9 @@ export class PermanentRecruitmentsListPage implements OnInit {
 
   /** Currently selected announcement for applying modal. */
   selectedAnnouncement = signal<PermanentAnnouncement | null>(null);
+
+  /** Currently selected announcement for managing applications modal. */
+  selectedManageAnnouncement = signal<PermanentAnnouncement | null>(null);
 
   /** Motivation message for applying. */
   applicationMessage = signal<string>('');
@@ -193,6 +197,28 @@ export class PermanentRecruitmentsListPage implements OnInit {
   closeApplyModal() {
     this.selectedAnnouncement.set(null);
     this.applicationMessage.set('');
+  }
+
+  openManageModal(announcement: PermanentAnnouncement) {
+    this.selectedManageAnnouncement.set(announcement);
+  }
+
+  closeManageModal() {
+    this.selectedManageAnnouncement.set(null);
+  }
+
+  onStatusUpdated(event: { announcementId: number; response: ReinforcementResponse }) {
+    this.announcements.update((list) =>
+      list.map((a) => {
+        if (a.id === event.announcementId && a.responses) {
+          const updatedResponses = a.responses.map((r) =>
+            r.id === event.response.id ? { ...r, status: event.response.status } : r
+          );
+          return { ...a, responses: updatedResponses };
+        }
+        return a;
+      })
+    );
   }
 
   submitApplication() {

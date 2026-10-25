@@ -50,6 +50,14 @@
                 </div>
 
                 <div class="response-item__actions">
+                  <a
+                    [href]="getMailtoLink(announcement, resp)"
+                    class="btn-action btn-action--contact"
+                    title="Contacter le candidat par email"
+                  >
+                    <i class="pi pi-envelope" aria-hidden="true"></i> Contacter
+                  </a>
+
                   @if (resp.status === 'PENDING') {
                     <div class="decision-buttons">
                       <button
@@ -58,7 +66,7 @@
                         [disabled]="isUpdating(resp.id)"
                         (click)="updateApplicationStatus(announcement, resp, 'ACCEPTED')"
                         title="Accepter cette candidature">
-                        <i class="pi pi-check"></i> Accepter
+                        <i class="pi pi-check" aria-hidden="true"></i> Accepter
                       </button>
                       <button
                         type="button"
@@ -66,14 +74,39 @@
                         [disabled]="isUpdating(resp.id)"
                         (click)="updateApplicationStatus(announcement, resp, 'REJECTED')"
                         title="Refuser cette candidature">
-                        <i class="pi pi-times"></i> Refuser
+                        <i class="pi pi-times" aria-hidden="true"></i> Refuser
                       </button>
                     </div>
-                  } @else {
-                    <span class="response-status" [class]="'response-status--' + (resp.status | lowercase)">
-                      <i [class]="resp.status === 'ACCEPTED' ? 'pi pi-check' : 'pi pi-times'"></i>
-                      {{ translateStatus(resp.status) }}
-                    </span>
+                  } @else if (resp.status === 'ACCEPTED') {
+                    <div class="decision-buttons">
+                      <span class="response-status response-status--accepted">
+                        <i class="pi pi-check" aria-hidden="true"></i>
+                        {{ translateStatus(resp.status) }}
+                      </span>
+                      <button
+                        type="button"
+                        class="btn-action btn-action--switch-reject"
+                        [disabled]="isUpdating(resp.id)"
+                        (click)="updateApplicationStatus(announcement, resp, 'REJECTED')"
+                        title="Changer d'avis et refuser">
+                        <i class="pi pi-times" aria-hidden="true"></i> Refuser
+                      </button>
+                    </div>
+                  } @else if (resp.status === 'REJECTED') {
+                    <div class="decision-buttons">
+                      <span class="response-status response-status--rejected">
+                        <i class="pi pi-times" aria-hidden="true"></i>
+                        {{ translateStatus(resp.status) }}
+                      </span>
+                      <button
+                        type="button"
+                        class="btn-action btn-action--switch-accept"
+                        [disabled]="isUpdating(resp.id)"
+                        (click)="updateApplicationStatus(announcement, resp, 'ACCEPTED')"
+                        title="Changer d'avis et accepter">
+                        <i class="pi pi-check" aria-hidden="true"></i> Accepter
+                      </button>
+                    </div>
                   }
                 </div>
               </li>

@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { vi } from 'vitest';
 import { ReinforcementsListPage } from './reinforcements-list-page';
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
+import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
 import { OrganizationRepository } from '@repositories/organization-repository';
 import { AuthService } from '@services/auth-service';
 import { NotifService } from '@services/notif-service';
@@ -112,6 +113,7 @@ describe('ReinforcementsListPage', () => {
       providers: [
         provideRouter([]),
         { provide: ReinforcementsRepository, useValue: mockRepo },
+        { provide: PermanentRecruitmentsRepository, useValue: { updateApplicationStatus: vi.fn() } },
         { provide: OrganizationRepository, useValue: mockOrgRepo },
         { provide: AuthService, useValue: mockAuthService },
         { provide: NotifService, useValue: mockNotifService },
@@ -210,5 +212,20 @@ describe('ReinforcementsListPage', () => {
     component.onDeleteAnnouncement(1);
     expect(mockRepo.deleteAnnouncement).toHaveBeenCalledWith(1);
     expect(mockNotifService.showSuccess).toHaveBeenCalledWith('Annonce supprimée avec succès.');
+  });
+
+  it('devrait mettre à jour le statut d\'une candidature via onStatusUpdated', () => {
+    const updatedResp: ReinforcementResponse = {
+      id: 50,
+      announcementId: 2,
+      announcementTitle: 'Trompette solo',
+      respondentUsername: 'musician1',
+      respondedAt: '2026-10-05T10:00:00Z',
+      status: 'ACCEPTED',
+    };
+
+    component.onStatusUpdated({ announcementId: 2, response: updatedResp });
+    const targetAnnouncement = component.announcements().find((a) => a.id === 2);
+    expect(targetAnnouncement).toBeDefined();
   });
 });

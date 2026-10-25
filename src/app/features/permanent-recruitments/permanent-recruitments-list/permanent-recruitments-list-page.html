@@ -211,9 +211,19 @@
                       Candidature : {{ translateStatus(userApp?.status || 'PENDING') }}
                     </span>
                   } @else if (isAdminOfOrg(item)) {
-                    <span class="admin-badge" title="Vous administrez cet ensemble">
-                      <i class="pi pi-shield"></i> Votre organisation
-                    </span>
+                    <div class="admin-actions-cell">
+                      <button
+                        type="button"
+                        class="btn btn--secondary btn--small btn-manage"
+                        (click)="openManageModal(item)"
+                        title="Gérer les candidatures pour cette annonce"
+                      >
+                        <i class="pi pi-users" aria-hidden="true"></i> Candidatures ({{ item.responses?.length || 0 }})
+                      </button>
+                      <span class="admin-badge" title="Vous administrez cet ensemble">
+                        <i class="pi pi-shield" aria-hidden="true"></i> Votre ensemble
+                      </span>
+                    </div>
                   } @else if (authService.isAuthenticated()) {
                     <button
                       type="button"
@@ -324,5 +334,14 @@
         </button>
       </div>
     </div>
+  }
+
+  @if (selectedManageAnnouncement(); as manageAnn) {
+    <copupitre-manage-applications-modal
+      [announcement]="manageAnn"
+      [announcementType]="'PERMANENT'"
+      (closed)="closeManageModal()"
+      (statusUpdated)="onStatusUpdated($event)"
+    ></copupitre-manage-applications-modal>
   }
 </copupitre-base-layout>

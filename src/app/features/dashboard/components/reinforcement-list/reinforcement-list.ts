@@ -6,10 +6,11 @@ import { ReinforcementAnnouncement, ReinforcementResponse } from '@models/reinfo
 import { AuthService } from '@services/auth-service';
 import { NotifService } from '@services/notif-service';
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
+import { ManageApplicationsModal } from '../manage-applications-modal/manage-applications-modal';
 
 @Component({
   selector: 'copupitre-reinforcement-list',
-  imports: [DatePipe, LowerCasePipe, FormsModule, RouterLink],
+  imports: [DatePipe, LowerCasePipe, FormsModule, RouterLink, ManageApplicationsModal],
   templateUrl: './reinforcement-list.html',
   styleUrl: './reinforcement-list.scss',
 })
@@ -23,7 +24,7 @@ export class ReinforcementList {
 
   /**
    * Optional set of organization IDs the current user administers.
-   * When provided, a delete button is shown for announcements belonging to those orgs.
+   * When provided, a delete button and management actions are shown for announcements belonging to those orgs.
    */
   adminOrgIds = input<number[]>([]);
 
@@ -38,8 +39,14 @@ export class ReinforcementList {
   /** Emits the newly created application when user applies successfully. */
   applicationApplied = output<ReinforcementResponse>();
 
+  /** Emits when an application status has been updated. */
+  statusUpdated = output<{ announcementId: number; response: ReinforcementResponse }>();
+
   /** Currently selected announcement for applying modal. */
   selectedAnnouncement = signal<ReinforcementAnnouncement | null>(null);
+
+  /** Currently selected announcement for managing applications modal. */
+  selectedManageAnnouncement = signal<ReinforcementAnnouncement | null>(null);
 
   /** Optional message for application (RG-RENF-10). */
   applicationMessage = signal<string>('');
@@ -51,6 +58,22 @@ export class ReinforcementList {
   canDelete(announcement: ReinforcementAnnouncement): boolean {
     if (!this.authService.isAuthenticated()) return false;
     return this.adminOrgIds().includes(announcement.organizationId);
+  }
+
+  isAdminOfOrg(announcement: ReinforcementAnnouncement): boolean {
+    return this.canDelete(announcement);
+  }
+
+  openManageModal(announcement: ReinforcementAnnouncement) {
+    this.selectedManageAnnouncement.set(announcement);
+  }
+
+  closeManageModal() {
+    this.selectedManageAnnouncement.set(null);
+  }
+
+  onStatusUpdated(event: { announcementId: number; response: ReinforcementResponse }) {
+    this.statusUpdated.emit(event);
   }
 
   onDelete(id: number) {

@@ -157,6 +157,14 @@
   white-space: nowrap;
 }
 
+.btn-manage {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
 .btn-delete {
   display: flex;
   align-items: center;

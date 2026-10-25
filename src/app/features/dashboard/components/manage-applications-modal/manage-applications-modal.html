@@ -1,0 +1,218 @@
+<div class="modal-backdrop" (click)="close()" aria-hidden="true"></div>
+
+<div
+  class="manage-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="manage-modal-title"
+>
+  <header class="manage-modal__header">
+    <div class="header-info">
+      <div class="badges-row">
+        <span
+          class="type-pill"
+          [class.type-pill--permanent]="announcementType() === 'PERMANENT'"
+          [class.type-pill--renfort]="announcementType() !== 'PERMANENT'"
+        >
+          <i
+            class="pi"
+            [class.pi-id-card]="announcementType() === 'PERMANENT'"
+            [class.pi-bolt]="announcementType() !== 'PERMANENT'"
+            aria-hidden="true"
+          ></i>
+          {{ announcementType() === 'PERMANENT' ? 'Permanent' : 'Renfort' }}
+        </span>
+        <span class="quota-pill">
+          <i class="pi pi-users" aria-hidden="true"></i>
+          {{ announcement().validatedCount || 0 }} / {{ getRequiredCount() }} acceptés
+        </span>
+      </div>
+
+      <h2 id="manage-modal-title" class="modal-title">
+        {{ getAnnouncementTitle() }}
+      </h2>
+
+      <p class="modal-subtitle">
+        <span><i class="pi pi-building" aria-hidden="true"></i> {{ announcement().organizationName }}</span>
+        @if (getInstrumentName()) {
+          <span><i class="pi pi-tag" aria-hidden="true"></i> {{ getInstrumentName() }}</span>
+        }
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn-close"
+      (click)="close()"
+      aria-label="Fermer la fenêtre de gestion"
+    >
+      <i class="pi pi-times" aria-hidden="true"></i>
+    </button>
+  </header>
+
+  <!-- Filtres des candidatures -->
+  <div class="filter-tabs" role="tablist" aria-label="Filtrer les candidatures">
+    <button
+      type="button"
+      class="filter-tab"
+      [class.filter-tab--active]="filter() === 'ALL'"
+      (click)="filter.set('ALL')"
+    >
+      Toutes ({{ (announcement().responses || []).length }})
+    </button>
+    <button
+      type="button"
+      class="filter-tab filter-tab--pending"
+      [class.filter-tab--active]="filter() === 'PENDING'"
+      (click)="filter.set('PENDING')"
+    >
+      En attente ({{ getCountByStatus('PENDING') }})
+    </button>
+    <button
+      type="button"
+      class="filter-tab filter-tab--accepted"
+      [class.filter-tab--active]="filter() === 'ACCEPTED'"
+      (click)="filter.set('ACCEPTED')"
+    >
+      Acceptées ({{ getCountByStatus('ACCEPTED') }})
+    </button>
+    <button
+      type="button"
+      class="filter-tab filter-tab--rejected"
+      [class.filter-tab--active]="filter() === 'REJECTED'"
+      (click)="filter.set('REJECTED')"
+    >
+      Refusées ({{ getCountByStatus('REJECTED') }})
+    </button>
+  </div>
+
+  <div class="manage-modal__body">
+    @if (getResponses().length === 0) {
+      <div class="no-candidatures">
+        <i class="pi pi-inbox" aria-hidden="true"></i>
+        <p>
+          @if (filter() === 'ALL') {
+            Aucune candidature reçue pour cette annonce pour le moment.
+          } @else {
+            Aucune candidature avec le statut « {{ translateStatus(filter()) }} ».
+          }
+        </p>
+      </div>
+    } @else {
+      <ul class="applicants-list">
+        @for (resp of getResponses(); track resp.id) {
+          <li class="applicant-item" [class]="'applicant-item--' + (resp.status | lowercase)">
+            <div class="applicant-main">
+              <div class="applicant-profile">
+                <div class="applicant-avatar">
+                  <i class="pi pi-user" aria-hidden="true"></i>
+                </div>
+                <div class="applicant-identity">
+                  <div class="identity-top">
+                    <strong class="applicant-name">
+                      {{ resp.respondentFullName || resp.respondentUsername }}
+                    </strong>
+                    @if (resp.respondentUsername) {
+                      <span class="applicant-handle">&#64;{{ resp.respondentUsername }}</span>
+                    }
+                    @if (resp.respondentInstrument) {
+                      <span class="instrument-tag">
+                        <i class="pi pi-music" aria-hidden="true"></i> {{ resp.respondentInstrument }}
+                      </span>
+                    }
+                  </div>
+                  <div class="identity-bottom">
+                    <span class="date-tag">
+                      <i class="pi pi-clock" aria-hidden="true"></i>
+                      Postulé le {{ resp.respondedAt | date:'dd/MM/yyyy à HH:mm' }}
+                    </span>
+                    @if (resp.respondentEmail) {
+                      <span class="email-tag">
+                        <i class="pi pi-envelope" aria-hidden="true"></i>
+                        {{ resp.respondentEmail }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              @if (resp.message) {
+                <div class="applicant-message">
+                  <span class="message-label"><i class="pi pi-comment" aria-hidden="true"></i> Message :</span>
+                  <p>« {{ resp.message }} »</p>
+                </div>
+              }
+            </div>
+
+            <div class="applicant-actions">
+              <!-- Bouton pour contacter le candidat -->
+              <a
+                [href]="getMailtoLink(resp)"
+                class="btn-action btn-action--contact"
+                title="Contacter le candidat par email"
+              >
+                <i class="pi pi-envelope" aria-hidden="true"></i> Contacter
+              </a>
+
+              <!-- Status badge and state transitions -->
+              <div class="decision-group">
+                @if (resp.status === 'PENDING') {
+                  <button
+                    type="button"
+                    class="btn-action btn-action--accept"
+                    [disabled]="isUpdating(resp.id)"
+                    (click)="updateApplicationStatus(resp, 'ACCEPTED')"
+                    title="Accepter cette candidature"
+                  >
+                    <i class="pi pi-check" aria-hidden="true"></i> Accepter
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-action btn-action--reject"
+                    [disabled]="isUpdating(resp.id)"
+                    (click)="updateApplicationStatus(resp, 'REJECTED')"
+                    title="Refuser cette candidature"
+                  >
+                    <i class="pi pi-times" aria-hidden="true"></i> Refuser
+                  </button>
+                } @else if (resp.status === 'ACCEPTED') {
+                  <span class="status-badge status-badge--accepted">
+                    <i class="pi pi-check-circle" aria-hidden="true"></i> Acceptée
+                  </span>
+                  <button
+                    type="button"
+                    class="btn-action btn-action--switch-reject"
+                    [disabled]="isUpdating(resp.id)"
+                    (click)="updateApplicationStatus(resp, 'REJECTED')"
+                    title="Changer d'avis et refuser"
+                  >
+                    <i class="pi pi-times" aria-hidden="true"></i> Refuser
+                  </button>
+                } @else if (resp.status === 'REJECTED') {
+                  <span class="status-badge status-badge--rejected">
+                    <i class="pi pi-times-circle" aria-hidden="true"></i> Refusée
+                  </span>
+                  <button
+                    type="button"
+                    class="btn-action btn-action--switch-accept"
+                    [disabled]="isUpdating(resp.id)"
+                    (click)="updateApplicationStatus(resp, 'ACCEPTED')"
+                    title="Changer d'avis et accepter"
+                  >
+                    <i class="pi pi-check" aria-hidden="true"></i> Accepter
+                  </button>
+                }
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+
+  <footer class="manage-modal__footer">
+    <button type="button" class="btn btn--secondary" (click)="close()">
+      Fermer
+    </button>
+  </footer>
+</div>

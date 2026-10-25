@@ -162,6 +162,20 @@ export class ReinforcementsListPage implements OnInit {
     });
   }
 
+  onStatusUpdated(event: { announcementId: number; response: ReinforcementResponse }) {
+    this.announcements.update((list) =>
+      list.map((a) => {
+        if (a.id === event.announcementId && a.responses) {
+          const updatedResponses = a.responses.map((r) =>
+            r.id === event.response.id ? { ...r, status: event.response.status } : r
+          );
+          return { ...a, responses: updatedResponses };
+        }
+        return a;
+      })
+    );
+  }
+
   onDeleteAnnouncement(id: number) {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) return;
 

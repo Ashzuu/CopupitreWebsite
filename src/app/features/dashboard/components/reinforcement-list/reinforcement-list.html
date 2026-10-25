@@ -50,6 +50,13 @@
           @if (canDelete(announcement)) {
             <button
               type="button"
+              class="btn btn--secondary btn--small btn-manage"
+              (click)="openManageModal(announcement)"
+              title="Gérer les candidatures pour cette annonce">
+              <i class="pi pi-users"></i> Candidatures ({{ announcement.responses?.length || 0 }})
+            </button>
+            <button
+              type="button"
               class="btn-delete"
               title="Supprimer cette annonce"
               (click)="onDelete(announcement.id)">
@@ -112,4 +119,13 @@
       </button>
     </div>
   </div>
+}
+
+@if (selectedManageAnnouncement(); as manageAnn) {
+  <copupitre-manage-applications-modal
+    [announcement]="manageAnn"
+    [announcementType]="'RENFORT'"
+    (closed)="closeManageModal()"
+    (statusUpdated)="onStatusUpdated($event)"
+  ></copupitre-manage-applications-modal>
 }

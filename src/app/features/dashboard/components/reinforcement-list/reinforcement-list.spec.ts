@@ -4,6 +4,7 @@ import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { ReinforcementList } from './reinforcement-list';
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
+import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
 import { AuthService } from '@services/auth-service';
 import { NotifService } from '@services/notif-service';
 import { ReinforcementAnnouncement, ReinforcementResponse } from '@models/reinforcement';
@@ -75,6 +76,7 @@ describe('ReinforcementList', () => {
       providers: [
         provideRouter([]),
         { provide: ReinforcementsRepository, useValue: mockRepo },
+        { provide: PermanentRecruitmentsRepository, useValue: { updateApplicationStatus: vi.fn() } },
         { provide: AuthService, useValue: mockAuthService },
         { provide: NotifService, useValue: mockNotifService },
       ],
@@ -184,5 +186,21 @@ describe('ReinforcementList', () => {
 
     expect(mockNotifService.showError).toHaveBeenCalledWith('Déjà postulé');
     expect(component.isSubmitting()).toBe(false);
+  });
+
+  it('devrait ouvrir et fermer la modale de gestion des candidatures pour un administrateur', () => {
+    expect(component.selectedManageAnnouncement()).toBeNull();
+    component.openManageModal(mockAnnouncementOpen);
+    expect(component.selectedManageAnnouncement()).toEqual(mockAnnouncementOpen);
+
+    component.closeManageModal();
+    expect(component.selectedManageAnnouncement()).toBeNull();
+  });
+
+  it('devrait émettre statusUpdated lors de la mise à jour d\'une candidature', () => {
+    const emitSpy = vi.spyOn(component.statusUpdated, 'emit');
+    const event = { announcementId: 1, response: mockUserApp };
+    component.onStatusUpdated(event);
+    expect(emitSpy).toHaveBeenCalledWith(event);
   });
 });

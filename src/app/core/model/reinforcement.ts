@@ -48,12 +48,26 @@ export interface ReinforcementResponse {
   respondentFullName?: string;
   /** Principal instrument of the respondent. */
   respondentInstrument?: string;
+  /** Email of the respondent (for administrator contact). */
+  respondentEmail?: string;
   /** The respondedAt property. */
   respondedAt: string;
   /** The status property. */
   status: ResponseStatus;
   /** Optional message/justification submitted by the applicant (RG-RENF-10). */
   message?: string;
+  /** Organization id associated with the announcement. */
+  organizationId?: number;
+  /** Organization name associated with the announcement. */
+  organizationName?: string;
+  /** Organization contact email. */
+  organizationEmail?: string;
+  /** Type of announcement: 'RENFORT' or 'PERMANENT'. */
+  type?: 'RENFORT' | 'PERMANENT';
+  /** Event date if reinforcement. */
+  eventDate?: string;
+  /** Event location or rehearsals city. */
+  eventLocation?: string;
 }
 
 export type ResponseStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';

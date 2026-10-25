@@ -5,6 +5,7 @@ import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { PermanentRecruitmentsListPage } from './permanent-recruitments-list-page';
 import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
+import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 import { OrganizationRepository } from '@repositories/organization-repository';
 import { AuthService } from '@services/auth-service';
 import { NotifService } from '@services/notif-service';
@@ -90,6 +91,7 @@ describe('PermanentRecruitmentsListPage', () => {
         provideRouter([]),
         provideHttpClient(),
         { provide: PermanentRecruitmentsRepository, useValue: mockPermanentRepo },
+        { provide: ReinforcementsRepository, useValue: { updateApplicationStatus: vi.fn() } },
         { provide: OrganizationRepository, useValue: mockOrgRepo },
         { provide: AuthService, useValue: mockAuthService },
         { provide: NotifService, useValue: mockNotifService },
@@ -187,5 +189,14 @@ describe('PermanentRecruitmentsListPage', () => {
 
     expect(mockNotifService.showError).toHaveBeenCalledWith('Déjà postulé');
     expect(component.isSubmitting()).toBe(false);
+  });
+
+  it('devrait ouvrir et fermer la modale de gestion des candidatures permanentes', () => {
+    expect(component.selectedManageAnnouncement()).toBeNull();
+    component.openManageModal(mockAnnouncements[0]);
+    expect(component.selectedManageAnnouncement()).toEqual(mockAnnouncements[0]);
+
+    component.closeManageModal();
+    expect(component.selectedManageAnnouncement()).toBeNull();
   });
 });

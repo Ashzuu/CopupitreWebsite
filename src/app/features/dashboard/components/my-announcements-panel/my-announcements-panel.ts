@@ -74,6 +74,7 @@ export class MyAnnouncementsPanel {
   ) {
     if (this.isUpdating(response.id)) return;
 
+    const previousStatus = response.status;
     this.updatingAppIds.update((ids) => [...ids, response.id]);
 
     const req$ =
@@ -86,13 +87,18 @@ export class MyAnnouncementsPanel {
         // Update local response status
         response.status = newStatus;
 
-        // If accepted, update announcement quota and status
-        if (newStatus === 'ACCEPTED') {
+        // Update announcement quota and status
+        if (newStatus === 'ACCEPTED' && previousStatus !== 'ACCEPTED') {
           announcement.validatedCount = (announcement.validatedCount || 0) + 1;
-          const req = this.getRequiredCount(announcement);
-          if (announcement.validatedCount >= req) {
-            announcement.status = 'OBJECTIVE_MET';
-          }
+        } else if (previousStatus === 'ACCEPTED' && newStatus !== 'ACCEPTED') {
+          announcement.validatedCount = Math.max(0, (announcement.validatedCount || 0) - 1);
+        }
+
+        const req = this.getRequiredCount(announcement);
+        if ((announcement.validatedCount || 0) >= req) {
+          announcement.status = 'OBJECTIVE_MET';
+        } else if (announcement.status === 'OBJECTIVE_MET') {
+          announcement.status = 'OPEN';
         }
 
         this.notifService.showSuccess(
@@ -116,6 +122,20 @@ export class MyAnnouncementsPanel {
         this.updatingAppIds.update((ids) => ids.filter((id) => id !== response.id));
       },
     });
+  }
+
+  getMailtoLink(announcement: AnnouncementItem, response: ReinforcementResponse): string {
+    const email = response.respondentEmail || `${response.respondentUsername}@copupitre.fr`;
+    const applicantName = response.respondentFullName || response.respondentUsername;
+    const subject = encodeURIComponent(
+      `Votre candidature sur Copupitre - ${this.getAnnouncementTitle(announcement)}`
+    );
+    const body = encodeURIComponent(
+      `Bonjour ${applicantName},\n\n` +
+        `Nous vous contactons concernant votre candidature pour « ${this.getAnnouncementTitle(announcement)} ».\n\n` +
+        `Musicalement,\n`
+    );
+    return `mailto:${email}?subject=${subject}&body=${body}`;
   }
 
   /** Executes the translateStatus action. */

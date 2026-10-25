@@ -18,6 +18,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'mes-candidatures',
+    loadComponent: () =>
+      import('../features/my-applications/my-applications-page').then((m) => m.MyApplicationsPage),
+    title: 'Mes Candidatures — Copupitre',
+    canActivate: [authGuard],
+  },
+  {
     path: 'login',
     loadComponent: () => import('../features/login/login-page').then((m) => m.LoginPage),
     title: 'Connexion - Copupitre',

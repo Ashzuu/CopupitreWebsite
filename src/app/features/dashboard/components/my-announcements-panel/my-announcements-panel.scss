@@ -190,6 +190,8 @@
   &__actions {
     display: flex;
     align-items: center;
+    gap: $spacing-xs;
+    flex-wrap: wrap;
   }
 }
 
@@ -202,12 +204,13 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 6px 12px;
+    padding: 5px 10px;
     font-size: $font-size-xs;
     font-weight: 600;
     border: none;
     border-radius: $border-radius-sm;
     cursor: pointer;
+    text-decoration: none;
     transition: background 0.2s, opacity 0.2s;
 
     &:disabled {
@@ -215,7 +218,16 @@
       cursor: not-allowed;
     }
 
-    &--accept {
+    &--contact {
+      background: rgba($color-secondary, 0.08);
+      color: $color-secondary;
+
+      &:hover {
+        background: rgba($color-secondary, 0.16);
+      }
+    }
+
+    &--accept, &--switch-accept {
       background: $color-success;
       color: #fff;
 
@@ -224,7 +236,7 @@
       }
     }
 
-    &--reject {
+    &--reject, &--switch-reject {
       background: $color-error;
       color: #fff;
 
@@ -232,6 +244,34 @@
         background: #d32f2f;
       }
     }
+
+    &--switch-reject, &--switch-accept {
+      padding: 3px 6px;
+      font-size: 0.72rem;
+      opacity: 0.85;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.btn-action--contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  border-radius: $border-radius-sm;
+  background: rgba($color-secondary, 0.08);
+  color: $color-secondary;
+  text-decoration: none;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba($color-secondary, 0.16);
   }
 }
 

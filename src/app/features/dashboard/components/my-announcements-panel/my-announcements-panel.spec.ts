@@ -157,4 +157,12 @@ describe('MyAnnouncementsPanel', () => {
 
     expect(mockNotifService.showError).toHaveBeenCalledWith('Erreur réseau');
   });
+
+  it('devrait générer un lien mailto pour contacter le candidat', () => {
+    const announcement = component.localAnnouncements()[0];
+    const resp = { ...mockResponse, respondentEmail: 'sophie@music.fr' };
+    const link = component.getMailtoLink(announcement, resp);
+    expect(link).toContain('mailto:sophie@music.fr');
+    expect(link).toContain('subject=Votre%20candidature');
+  });
 });

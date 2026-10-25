@@ -1,0 +1,181 @@
+<copupitre-base-layout [Footer]="false">
+  <div class="my-apps-page container section">
+    <header class="my-apps-page__header">
+      <div class="header-content">
+        <span class="page-badge"><i class="pi pi-briefcase" aria-hidden="true"></i> Espace Musicien</span>
+        <h1 class="my-apps-page__title">Mes Candidatures</h1>
+        <p class="my-apps-page__subtitle">
+          Consultez l'historique et l'état d'avancement de toutes vos réponses aux annonces de renforts et de postes permanents.
+        </p>
+      </div>
+      <div class="header-actions">
+        <a routerLink="/dashboard" class="btn btn--secondary btn--small">
+          <i class="pi pi-th-large" aria-hidden="true"></i> Tableau de bord
+        </a>
+      </div>
+    </header>
+
+    <!-- Onglets de filtre par type -->
+    <nav class="category-tabs" role="tablist" aria-label="Filtrer mes candidatures par catégorie">
+      <button
+        type="button"
+        role="tab"
+        id="tab-all"
+        class="category-tab"
+        [class.category-tab--active]="activeTab() === 'ALL'"
+        [attr.aria-selected]="activeTab() === 'ALL'"
+        (click)="setTab('ALL')"
+      >
+        <i class="pi pi-list" aria-hidden="true"></i> Toutes
+        <span class="tab-badge">{{ allApplications().length }}</span>
+      </button>
+
+      <button
+        type="button"
+        role="tab"
+        id="tab-renfort"
+        class="category-tab"
+        [class.category-tab--active]="activeTab() === 'RENFORT'"
+        [attr.aria-selected]="activeTab() === 'RENFORT'"
+        (click)="setTab('RENFORT')"
+      >
+        <i class="pi pi-bolt" aria-hidden="true"></i> Renforts ponctuels
+        <span class="tab-badge">{{ reinforcementApplications().length }}</span>
+      </button>
+
+      <button
+        type="button"
+        role="tab"
+        id="tab-permanent"
+        class="category-tab"
+        [class.category-tab--active]="activeTab() === 'PERMANENT'"
+        [attr.aria-selected]="activeTab() === 'PERMANENT'"
+        (click)="setTab('PERMANENT')"
+      >
+        <i class="pi pi-id-card" aria-hidden="true"></i> Recrutements permanents
+        <span class="tab-badge">{{ permanentApplications().length }}</span>
+      </button>
+    </nav>
+
+    <!-- Liste des candidatures -->
+    <main class="applications-container" role="region" aria-label="Liste de mes candidatures">
+      @if (loading()) {
+        <div class="loading-state">
+          <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+          <span>Chargement de vos candidatures...</span>
+        </div>
+      } @else if (filteredApplications().length === 0) {
+        <div class="empty-card">
+          <i class="pi pi-inbox empty-icon" aria-hidden="true"></i>
+          <h3>Aucune candidature dans cette catégorie</h3>
+          <p>
+            @if (activeTab() === 'ALL') {
+              Vous n'avez pas encore postulé à des annonces d'orchestres ou d'ensembles musicaux.
+            } @else if (activeTab() === 'RENFORT') {
+              Vous n'avez envoyé aucune candidature pour un renfort ponctuel.
+            } @else {
+              Vous n'avez envoyé aucune candidature pour un recrutement permanent.
+            }
+          </p>
+          <div class="empty-actions">
+            <a routerLink="/renforts" class="btn btn--primary btn--small">
+              <i class="pi pi-bolt" aria-hidden="true"></i> Trouver un renfort
+            </a>
+            <a routerLink="/recrutements" class="btn btn--secondary btn--small">
+              <i class="pi pi-id-card" aria-hidden="true"></i> Trouver un pupitre permanent
+            </a>
+          </div>
+        </div>
+      } @else {
+        <div class="applications-grid">
+          @for (app of filteredApplications(); track app.id + '-' + app.type) {
+            <article class="application-card" [class.application-card--permanent]="app.type === 'PERMANENT'">
+              <div class="application-card__header">
+                <div class="card-badges">
+                  <span
+                    class="type-pill"
+                    [class.type-pill--permanent]="app.type === 'PERMANENT'"
+                    [class.type-pill--renfort]="app.type !== 'PERMANENT'"
+                  >
+                    <i class="pi" [class.pi-id-card]="app.type === 'PERMANENT'" [class.pi-bolt]="app.type !== 'PERMANENT'" aria-hidden="true"></i>
+                    {{ app.type === 'PERMANENT' ? 'Permanent' : 'Renfort' }}
+                  </span>
+
+                  <span
+                    class="status-pill"
+                    [class]="'status-pill--' + (app.status | lowercase)"
+                  >
+                    <i
+                      class="pi"
+                      [class.pi-clock]="app.status === 'PENDING'"
+                      [class.pi-check-circle]="app.status === 'ACCEPTED'"
+                      [class.pi-times-circle]="app.status === 'REJECTED'"
+                      aria-hidden="true"
+                    ></i>
+                    {{ translateStatus(app.status) }}
+                  </span>
+                </div>
+
+                <time class="applied-date" [attr.datetime]="app.respondedAt">
+                  Postulé le {{ app.respondedAt | date:'dd/MM/yyyy à HH:mm' }}
+                </time>
+              </div>
+
+              <div class="application-card__body">
+                <h2 class="announcement-title">{{ app.announcementTitle || 'Demande sans titre' }}</h2>
+
+                <div class="meta-row">
+                  @if (app.organizationName) {
+                    <span class="meta-item">
+                      <i class="pi pi-building" aria-hidden="true"></i>
+                      <strong>{{ app.organizationName }}</strong>
+                    </span>
+                  }
+                  @if (app.eventLocation) {
+                    <span class="meta-item">
+                      <i class="pi pi-map-marker" aria-hidden="true"></i>
+                      {{ app.eventLocation }}
+                    </span>
+                  }
+                  @if (app.eventDate) {
+                    <span class="meta-item">
+                      <i class="pi pi-calendar" aria-hidden="true"></i>
+                      {{ app.eventDate | date:'dd/MM/yyyy' }}
+                    </span>
+                  }
+                </div>
+
+                @if (app.message) {
+                  <div class="applicant-message-box">
+                    <span class="box-label"><i class="pi pi-comment" aria-hidden="true"></i> Votre message :</span>
+                    <p class="message-text">« {{ app.message }} »</p>
+                  </div>
+                }
+              </div>
+
+              <footer class="application-card__footer">
+                <div class="footer-left">
+                  @if (app.organizationId) {
+                    <a [routerLink]="['/organization', app.organizationId]" class="btn btn--outline btn--small">
+                      <i class="pi pi-external-link" aria-hidden="true"></i> Voir l'ensemble
+                    </a>
+                  }
+                </div>
+
+                <div class="footer-right">
+                  <a
+                    [href]="getMailtoLink(app)"
+                    class="btn btn--primary btn--small btn-contact"
+                    title="Contacter l'organisation par email"
+                  >
+                    <i class="pi pi-envelope" aria-hidden="true"></i> Contacter l'organisation
+                  </a>
+                </div>
+              </footer>
+            </article>
+          }
+        </div>
+      }
+    </main>
+  </div>
+</copupitre-base-layout>

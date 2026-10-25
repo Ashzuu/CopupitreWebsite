@@ -70,7 +70,8 @@
           [adminOrgIds]="adminOrgIds()"
           [userApplications]="userApplications()"
           (deleteRequest)="onDeleteAnnouncement($event)"
-          (applicationApplied)="onApplicationApplied($event)">
+          (applicationApplied)="onApplicationApplied($event)"
+          (statusUpdated)="onStatusUpdated($event)">
         </copupitre-reinforcement-list>
       } @else {
         @if (activeTab() === 'my') {

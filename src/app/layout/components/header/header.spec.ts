@@ -97,5 +97,14 @@ describe('Header', () => {
       expect(mockAuthService.logout).toHaveBeenCalled();
       expect(component.profileMenuOpen()).toBe(false);
     });
+
+    it('devrait afficher le lien Mes candidatures dans le menu profil', () => {
+      component.profileMenuOpen.set(true);
+      fixture.detectChanges();
+      const compiled = fixture.nativeElement as HTMLElement;
+      const candidaturesLink = compiled.querySelector('a[routerLink="/mes-candidatures"]');
+      expect(candidaturesLink).toBeTruthy();
+      expect(candidaturesLink?.textContent).toContain('Mes candidatures');
+    });
   });
 });

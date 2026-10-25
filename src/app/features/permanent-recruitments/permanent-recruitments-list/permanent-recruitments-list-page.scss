@@ -421,6 +421,20 @@
   }
 }
 
+.admin-actions-cell {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+
+  .btn-manage {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+  }
+}
+
 .admin-badge {
   font-size: $font-size-xs;
   font-weight: 700;

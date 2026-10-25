@@ -163,13 +163,14 @@
                 </div>
 
                 <div class="footer-right">
-                  <a
-                    [href]="getMailtoLink(app)"
+                  <button
+                    type="button"
                     class="btn btn--primary btn--small btn-contact"
-                    title="Contacter l'organisation par email"
+                    (click)="openConversation(app)"
+                    title="Discuter avec l'organisation via la messagerie interne"
                   >
-                    <i class="pi pi-envelope" aria-hidden="true"></i> Contacter l'organisation
-                  </a>
+                    <i class="pi pi-comments" aria-hidden="true"></i> Contacter l'organisation
+                  </button>
                 </div>
               </footer>
             </article>
@@ -179,3 +180,14 @@
     </main>
   </div>
 </copupitre-base-layout>
+
+@if (activeConversationApp(); as convApp) {
+  <copupitre-conversation-modal
+    [isOpen]="true"
+    [contextType]="convApp.type === 'PERMANENT' ? 'ANNUAL_APPLICATION' : 'APPLICATION'"
+    [contextId]="convApp.id"
+    [title]="'Discussion avec ' + (convApp.organizationName || 'l\'organisation')"
+    [subtitle]="convApp.announcementTitle || ''"
+    (closed)="closeConversation()"
+  />
+}

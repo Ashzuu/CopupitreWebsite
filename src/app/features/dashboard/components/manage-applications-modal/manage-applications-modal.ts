@@ -6,6 +6,7 @@ import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruit
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 import { NotifService } from '@services/notif-service';
 import { LoggerService } from '@services/logger-service';
+import { ConversationModal } from '../../../../core/components/conversation-modal/conversation-modal';
 
 export type ManageAnnouncementItem = (ReinforcementAnnouncement | PermanentAnnouncement) & {
   title?: string;
@@ -17,7 +18,7 @@ export type ManageAnnouncementItem = (ReinforcementAnnouncement | PermanentAnnou
   host: {
     '(document:keydown.escape)': 'onEscape()',
   },
-  imports: [LowerCasePipe, DatePipe],
+  imports: [LowerCasePipe, DatePipe, ConversationModal],
   templateUrl: './manage-applications-modal.html',
   styleUrl: './manage-applications-modal.scss',
 })
@@ -44,6 +45,17 @@ export class ManageApplicationsModal {
 
   /** Active sub-filter: 'ALL' | 'PENDING' | 'ACCEPTED' | 'REJECTED'. */
   filter = signal<'ALL' | ResponseStatus>('ALL');
+
+  /** Active candidate conversation (US-COM-03). */
+  readonly activeConversationApp = signal<ReinforcementResponse | null>(null);
+
+  openConversation(response: ReinforcementResponse) {
+    this.activeConversationApp.set(response);
+  }
+
+  closeConversation() {
+    this.activeConversationApp.set(null);
+  }
 
   onEscape() {
     this.close();

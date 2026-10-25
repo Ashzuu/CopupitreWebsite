@@ -3,6 +3,7 @@ import { of, throwError } from 'rxjs';
 import { ManageApplicationsModal, ManageAnnouncementItem } from './manage-applications-modal';
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
+import { MessagingRepository } from '@repositories/messaging-repository';
 import { NotifService } from '@services/notif-service';
 import { ReinforcementResponse } from '@models/reinforcement';
 
@@ -94,6 +95,7 @@ describe('ManageApplicationsModal', () => {
       providers: [
         { provide: ReinforcementsRepository, useValue: mockRepo },
         { provide: PermanentRecruitmentsRepository, useValue: mockPermanentRepo },
+        { provide: MessagingRepository, useValue: { getMessages: vi.fn().mockReturnValue(of([])), sendMessage: vi.fn() } },
         { provide: NotifService, useValue: mockNotifService },
       ],
     }).compileComponents();
@@ -179,6 +181,16 @@ describe('ManageApplicationsModal', () => {
     const mailto = component.getMailtoLink(mockResponses[0]);
     expect(mailto).toContain('mailto:alex@example.com');
     expect(mailto).toContain('subject=Votre%20candidature');
+  });
+
+  it('devrait ouvrir et fermer la conversation contextuelle avec un candidat (US-COM-03)', () => {
+    expect(component.activeConversationApp()).toBeNull();
+
+    component.openConversation(mockResponses[0]);
+    expect(component.activeConversationApp()).toEqual(mockResponses[0]);
+
+    component.closeConversation();
+    expect(component.activeConversationApp()).toBeNull();
   });
 
   it('devrait gérer l\'erreur de mise à jour de statut', () => {

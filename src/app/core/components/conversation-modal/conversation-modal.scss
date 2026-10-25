@@ -1,0 +1,325 @@
+@use '../../../styles/variables' as *;
+
+.conv-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1200;
+  animation: convFadeIn 200ms ease;
+}
+
+.conv-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  max-width: 92vw;
+  height: 620px;
+  max-height: 90vh;
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  z-index: 1210;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: convPopIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-md $spacing-lg;
+    background-color: $color-secondary;
+    color: $color-text-inverse;
+    border-bottom: 1px solid rgba($color-discrete, 0.2);
+
+    .header-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+
+      .conv-title {
+        margin: 0;
+        font-size: $font-size-base;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        color: $color-text-inverse;
+
+        i {
+          color: $color-primary;
+        }
+      }
+
+      .conv-subtitle {
+        margin: 0;
+        font-size: $font-size-xs;
+        color: $color-discrete;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      color: $color-discrete;
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: $spacing-xs;
+      border-radius: $border-radius-sm;
+      transition: all $transition-fast;
+
+      &:hover,
+      &:focus-visible {
+        color: $color-text-inverse;
+        background-color: rgba(255, 255, 255, 0.1);
+        outline: none;
+      }
+    }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-lg;
+    background-color: $color-background-alt;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .conv-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
+    color: $color-text-light;
+    text-align: center;
+
+    &--empty {
+      .empty-icon {
+        font-size: 2.5rem;
+        color: $color-discrete;
+      }
+
+      p {
+        margin: 0;
+        font-weight: 500;
+      }
+
+      .subtext {
+        font-size: $font-size-xs;
+        color: $color-discrete;
+      }
+    }
+  }
+
+  .messages-flow {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .message-row {
+    display: flex;
+    width: 100%;
+
+    &--me {
+      justify-content: flex-end;
+
+      .message-bubble {
+        background-color: $color-primary;
+        color: $color-text-inverse;
+        border-bottom-right-radius: 2px;
+
+        .sender-name {
+          color: #fff;
+        }
+
+        .role-badge {
+          background-color: rgba(255, 255, 255, 0.25);
+          color: #fff;
+        }
+
+        .message-time {
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .message-content {
+          color: #fff;
+        }
+      }
+    }
+
+    &--other {
+      justify-content: flex-start;
+
+      .message-bubble {
+        background-color: $color-background;
+        color: $color-text;
+        border-bottom-left-radius: 2px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+
+        .sender-name {
+          color: $color-secondary;
+        }
+
+        .role-badge {
+          &--admin {
+            background-color: rgba($color-primary, 0.15);
+            color: $color-primary-dark;
+          }
+          &--musician {
+            background-color: rgba($color-secondary, 0.1);
+            color: $color-secondary;
+          }
+        }
+
+        .message-time {
+          color: $color-text-light;
+        }
+
+        .message-content {
+          color: $color-text;
+        }
+      }
+    }
+  }
+
+  .message-bubble {
+    max-width: 80%;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius-md;
+    word-break: break-word;
+
+    .message-meta {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      margin-bottom: 4px;
+      font-size: 0.75rem;
+
+      .sender-name {
+        font-weight: 600;
+      }
+
+      .role-badge {
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 1px 6px;
+        border-radius: $border-radius-full;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+
+      .message-time {
+        margin-left: auto;
+      }
+    }
+
+    .message-content {
+      font-size: $font-size-sm;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+  }
+
+  &__footer {
+    padding: $spacing-md $spacing-lg;
+    background-color: $color-background;
+    border-top: 1px solid rgba($color-discrete, 0.2);
+
+    .input-container {
+      display: flex;
+      align-items: flex-end;
+      gap: $spacing-sm;
+
+      .message-textarea {
+        flex: 1;
+        resize: none;
+        padding: $spacing-sm $spacing-md;
+        border: 1px solid rgba($color-discrete, 0.4);
+        border-radius: $border-radius-md;
+        font-family: inherit;
+        font-size: $font-size-sm;
+        line-height: 1.4;
+        color: $color-text;
+        background-color: $color-background;
+        outline: none;
+        transition: border-color $transition-fast;
+
+        &:focus {
+          border-color: $color-primary;
+          box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+        }
+      }
+
+      .btn-send {
+        width: 42px;
+        height: 42px;
+        border-radius: $border-radius-md;
+        background-color: $color-primary;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: background-color $transition-fast, transform $transition-fast;
+        flex-shrink: 0;
+
+        &:hover:not(:disabled) {
+          background-color: $color-primary-dark;
+          transform: translateY(-1px);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .footer-tip {
+      margin-top: $spacing-xs;
+      font-size: 0.72rem;
+      color: $color-discrete;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      i {
+        color: $color-primary;
+      }
+    }
+  }
+}
+
+@keyframes convFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes convPopIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

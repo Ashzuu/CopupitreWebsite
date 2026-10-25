@@ -6,6 +6,7 @@ import { vi } from 'vitest';
 import { EquipmentRequestsListPage } from './equipment-requests-list-page';
 import { EquipmentRepository } from '@repositories/equipment-repository';
 import { OrganizationRepository } from '@repositories/organization-repository';
+import { MessagingRepository } from '@repositories/messaging-repository';
 import { AuthService } from '@services/auth-service';
 import { NotifService } from '@services/notif-service';
 import { EquipmentRequest, Organization } from '@models/index';
@@ -94,6 +95,7 @@ describe('EquipmentRequestsListPage', () => {
         provideHttpClient(),
         { provide: EquipmentRepository, useValue: mockEquipmentRepo },
         { provide: OrganizationRepository, useValue: mockOrgRepo },
+        { provide: MessagingRepository, useValue: { getMessages: vi.fn().mockReturnValue(of([])), sendMessage: vi.fn() } },
         { provide: AuthService, useValue: mockAuthService },
         { provide: NotifService, useValue: mockNotifService },
       ],
@@ -183,6 +185,16 @@ describe('EquipmentRequestsListPage', () => {
     expect(mockEquipmentRepo.deleteRequest).toHaveBeenCalledWith(1);
     expect(mockNotifService.showSuccess).toHaveBeenCalledWith('Demande de matériel supprimée avec succès.');
     expect(component.allRequests().find((r) => r.id === 1)).toBeUndefined();
+  });
+
+  it('devrait ouvrir et fermer la modale de discussion pour proposer un prêt (US-COM-04)', () => {
+    expect(component.activeConversationRequest()).toBeNull();
+
+    component.openConversation(mockRequests[1]); // public request
+    expect(component.activeConversationRequest()).toEqual(mockRequests[1]);
+
+    component.closeConversation();
+    expect(component.activeConversationRequest()).toBeNull();
   });
 
   it('ne devrait pas supprimer si l\'utilisateur annule la confirmation', () => {

@@ -4,6 +4,7 @@ import { of, throwError } from 'rxjs';
 import { MyApplicationsPage } from './my-applications-page';
 import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
+import { MessagingRepository } from '@repositories/messaging-repository';
 import { NotifService } from '@services/notif-service';
 import { ReinforcementResponse } from '@models/reinforcement';
 
@@ -82,6 +83,7 @@ describe('MyApplicationsPage', () => {
         provideRouter([]),
         { provide: ReinforcementsRepository, useValue: mockReinforcementsRepo },
         { provide: PermanentRecruitmentsRepository, useValue: mockPermanentRepo },
+        { provide: MessagingRepository, useValue: { getMessages: vi.fn().mockReturnValue(of([])), sendMessage: vi.fn() } },
         { provide: NotifService, useValue: mockNotifService },
       ],
     }).compileComponents();
@@ -136,6 +138,16 @@ describe('MyApplicationsPage', () => {
     const mailto = component.getMailtoLink(app);
     expect(mailto).toContain('mailto:contact@symphonique.org');
     expect(mailto).toContain('subject=Candidature%20Copupitre');
+  });
+
+  it('devrait ouvrir et fermer la conversation contextuelle avec l\'organisation (US-COM-03)', () => {
+    expect(component.activeConversationApp()).toBeNull();
+
+    component.openConversation(mockReinforcements[0]);
+    expect(component.activeConversationApp()).toEqual(mockReinforcements[0]);
+
+    component.closeConversation();
+    expect(component.activeConversationApp()).toBeNull();
   });
 
   it('devrait gérer l\'erreur de chargement gracieusement', () => {

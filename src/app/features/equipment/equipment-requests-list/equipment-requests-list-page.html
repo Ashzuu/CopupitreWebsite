@@ -223,12 +223,22 @@
                     </button>
                   </div>
                 } @else {
-                  <!-- Contact / Consultation pour les autres ensembles -->
-                  @if (req.organizationId) {
-                    <a [routerLink]="['/organization', req.organizationId]" class="btn btn--secondary btn--small">
-                      <i class="pi pi-arrow-right" aria-hidden="true"></i> Proposer un prêt
-                    </a>
-                  }
+                  <!-- Contact / Consultation pour les autres ensembles (US-COM-04) -->
+                  <div class="public-actions">
+                    <button
+                      type="button"
+                      class="btn btn--primary btn--small"
+                      (click)="openConversation(req)"
+                      title="Proposer un prêt ou échanger avec l'ensemble"
+                    >
+                      <i class="pi pi-comments" aria-hidden="true"></i> Proposer un prêt
+                    </button>
+                    @if (req.organizationId) {
+                      <a [routerLink]="['/organization', req.organizationId]" class="btn btn--outline btn--small">
+                        <i class="pi pi-building" aria-hidden="true"></i> Fiche ensemble
+                      </a>
+                    }
+                  </div>
                 }
               </footer>
             </article>
@@ -261,3 +271,14 @@
     </main>
   </div>
 </copupitre-base-layout>
+
+@if (activeConversationRequest(); as convReq) {
+  <copupitre-conversation-modal
+    [isOpen]="true"
+    contextType="EQUIPMENT"
+    [contextId]="convReq.id"
+    [title]="'Discussion prêt : ' + convReq.equipmentName"
+    [subtitle]="convReq.title + ' • ' + (convReq.organizationName || '')"
+    (closed)="closeConversation()"
+  />
+}

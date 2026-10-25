@@ -7,13 +7,14 @@ import { ReinforcementsRepository } from '@repositories/reinforcements-repositor
 import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
 import { NotifService } from '@services/notif-service';
 import { LoggerService } from '@services/logger-service';
+import { ConversationModal } from '../../core/components/conversation-modal/conversation-modal';
 import { forkJoin } from 'rxjs';
 
 export type ApplicationFilterTab = 'ALL' | 'RENFORT' | 'PERMANENT';
 
 @Component({
   selector: 'copupitre-my-applications-page',
-  imports: [BaseLayout, RouterLink, DatePipe, LowerCasePipe],
+  imports: [BaseLayout, RouterLink, DatePipe, LowerCasePipe, ConversationModal],
   templateUrl: './my-applications-page.html',
   styleUrl: './my-applications-page.scss',
 })
@@ -34,6 +35,17 @@ export class MyApplicationsPage implements OnInit {
 
   /** List of permanent recruitment applications. */
   permanentApplications = signal<ReinforcementResponse[]>([]);
+
+  /** Active conversation modal state (US-COM-03). */
+  activeConversationApp = signal<ReinforcementResponse | null>(null);
+
+  openConversation(app: ReinforcementResponse): void {
+    this.activeConversationApp.set(app);
+  }
+
+  closeConversation(): void {
+    this.activeConversationApp.set(null);
+  }
 
   /** Combined list of all applications sorted by most recent date. */
   allApplications = computed<ReinforcementResponse[]>(() => {

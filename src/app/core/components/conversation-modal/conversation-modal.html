@@ -1,0 +1,106 @@
+@if (isOpen()) {
+  <div class="conv-modal-backdrop" (click)="close()" aria-hidden="true"></div>
+
+  <div
+    class="conv-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="conv-modal-title"
+  >
+    <header class="conv-modal__header">
+      <div class="header-titles">
+        <h3 id="conv-modal-title" class="conv-title">
+          <i class="pi pi-comments" aria-hidden="true"></i>
+          {{ title() }}
+        </h3>
+        @if (subtitle()) {
+          <p class="conv-subtitle">{{ subtitle() }}</p>
+        }
+      </div>
+      <button
+        type="button"
+        class="btn-close"
+        (click)="close()"
+        aria-label="Fermer la conversation"
+      >
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <div class="conv-modal__body" #messagesContainer>
+      @if (loading()) {
+        <div class="conv-state">
+          <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+          <span>Chargement de la conversation...</span>
+        </div>
+      } @else if (messages().length === 0) {
+        <div class="conv-state conv-state--empty">
+          <i class="pi pi-inbox empty-icon" aria-hidden="true"></i>
+          <p>Aucun message échangé pour le moment.</p>
+          <span class="subtext">Posez vos questions ou partagez vos disponibilités ci-dessous.</span>
+        </div>
+      } @else {
+        <div class="messages-flow">
+          @for (msg of messages(); track msg.id) {
+            <div
+              class="message-row"
+              [class.message-row--me]="msg.isMe"
+              [class.message-row--other]="!msg.isMe"
+            >
+              <div class="message-bubble">
+                <div class="message-meta">
+                  <strong class="sender-name">
+                    {{ msg.isMe ? 'Vous' : (msg.senderFullName || msg.senderUsername || 'Interlocuteur') }}
+                  </strong>
+                  @if (msg.senderRole) {
+                    <span
+                      class="role-badge"
+                      [class.role-badge--admin]="msg.senderRole === 'ORGANIZATION_ADMIN'"
+                      [class.role-badge--musician]="msg.senderRole === 'MUSICIAN'"
+                    >
+                      {{ msg.senderRole === 'ORGANIZATION_ADMIN' ? 'Organisation' : 'Musicien' }}
+                    </span>
+                  }
+                  <time class="message-time">{{ msg.createdAt | date:'dd/MM HH:mm' }}</time>
+                </div>
+                <div class="message-content">
+                  {{ msg.content }}
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <footer class="conv-modal__footer">
+      <div class="input-container">
+        <textarea
+          class="message-textarea"
+          [ngModel]="newMessage()"
+          (ngModelChange)="newMessage.set($event)"
+          (keydown)="onKeyDown($event)"
+          placeholder="Écrivez votre message... (Ctrl + Entrée pour envoyer)"
+          rows="2"
+          aria-label="Votre message"
+        ></textarea>
+        <button
+          type="button"
+          class="btn-send"
+          [disabled]="!newMessage().trim() || sending()"
+          (click)="sendMessage()"
+          aria-label="Envoyer le message"
+        >
+          @if (sending()) {
+            <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+          } @else {
+            <i class="pi pi-send" aria-hidden="true"></i>
+          }
+        </button>
+      </div>
+      <div class="footer-tip">
+        <span><i class="pi pi-shield" aria-hidden="true"></i> Messagerie sécurisée intégrée & conforme RGPD</span>
+      </div>
+    </footer>
+  </div>
+}

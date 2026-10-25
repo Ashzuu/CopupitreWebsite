@@ -377,7 +377,8 @@
 }
 
 /* Boutons d'actions */
-.admin-actions {
+.admin-actions,
+.public-actions {
   display: flex;
   align-items: center;
   gap: $spacing-xs;

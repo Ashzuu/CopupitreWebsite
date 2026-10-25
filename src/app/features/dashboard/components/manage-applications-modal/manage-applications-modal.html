@@ -126,12 +126,6 @@
                       <i class="pi pi-clock" aria-hidden="true"></i>
                       Postulé le {{ resp.respondedAt | date:'dd/MM/yyyy à HH:mm' }}
                     </span>
-                    @if (resp.respondentEmail) {
-                      <span class="email-tag">
-                        <i class="pi pi-envelope" aria-hidden="true"></i>
-                        {{ resp.respondentEmail }}
-                      </span>
-                    }
                   </div>
                 </div>
               </div>
@@ -145,14 +139,15 @@
             </div>
 
             <div class="applicant-actions">
-              <!-- Bouton pour contacter le candidat -->
-              <a
-                [href]="getMailtoLink(resp)"
+              <!-- Bouton pour discuter avec le candidat (US-COM-03 & RG-COM-01) -->
+              <button
+                type="button"
                 class="btn-action btn-action--contact"
-                title="Contacter le candidat par email"
+                (click)="openConversation(resp)"
+                title="Discuter avec le candidat via la messagerie interne"
               >
-                <i class="pi pi-envelope" aria-hidden="true"></i> Contacter
-              </a>
+                <i class="pi pi-comments" aria-hidden="true"></i> Discuter
+              </button>
 
               <!-- Status badge and state transitions -->
               <div class="decision-group">
@@ -216,3 +211,14 @@
     </button>
   </footer>
 </div>
+
+@if (activeConversationApp(); as convApp) {
+  <copupitre-conversation-modal
+    [isOpen]="true"
+    [contextType]="announcementType() === 'PERMANENT' ? 'ANNUAL_APPLICATION' : 'APPLICATION'"
+    [contextId]="convApp.id"
+    [title]="'Discussion avec ' + (convApp.respondentFullName || convApp.respondentUsername)"
+    [subtitle]="getAnnouncementTitle() + ' • ' + (announcement().organizationName || '')"
+    (closed)="closeConversation()"
+  />
+}

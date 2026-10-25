@@ -9,13 +9,14 @@ import { OrganizationRepository } from '@repositories/organization-repository';
 import { AuthService } from '@services/auth-service';
 import { NotifService } from '@services/notif-service';
 import { LoggerService } from '@services/logger-service';
+import { ConversationModal } from '../../../core/components/conversation-modal/conversation-modal';
 
 export type EquipmentTab = 'public' | 'my';
 export type EquipmentStatusFilter = 'ALL' | 'OPEN' | 'MET' | 'CLOSED';
 
 @Component({
   selector: 'copupitre-equipment-requests-list-page',
-  imports: [CommonModule, FormsModule, RouterLink, BaseLayout],
+  imports: [CommonModule, FormsModule, RouterLink, BaseLayout, ConversationModal],
   templateUrl: './equipment-requests-list-page.html',
   styleUrl: './equipment-requests-list-page.scss',
 })
@@ -26,6 +27,24 @@ export class EquipmentRequestsListPage implements OnInit {
   readonly authService = inject(AuthService);
   private readonly notifService = inject(NotifService);
   private readonly logger = inject(LoggerService);
+
+  /** Active conversation modal for equipment loans (US-COM-04). */
+  activeConversationRequest = signal<EquipmentRequest | null>(null);
+
+  openConversation(req: EquipmentRequest): void {
+    if (!this.authService.isAuthenticated()) {
+      this.notifService.showWarning(
+        'Veuillez vous connecter pour contacter cette organisation.',
+        'Connexion requise',
+      );
+      return;
+    }
+    this.activeConversationRequest.set(req);
+  }
+
+  closeConversation(): void {
+    this.activeConversationRequest.set(null);
+  }
 
   /** Toutes les demandes de matériel chargées */
   allRequests = signal<EquipmentRequest[]>([]);

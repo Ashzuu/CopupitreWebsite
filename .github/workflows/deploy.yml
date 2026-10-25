@@ -1,9 +1,10 @@
-name: Deploiement Docker sur CentOS
+name: Deploiement Docker sur Debian (CopupitreWebsite)
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -19,6 +20,12 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
+            set -e
+            echo "=== Déploiement de CopupitreWebsite ==="
             cd /parts/projects/CopupitreWebsite
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
+            chmod +x deploy.sh
+            ./deploy.sh --no-pull

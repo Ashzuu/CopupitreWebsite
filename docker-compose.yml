@@ -1,0 +1,26 @@
+services:
+  copupitre-website:
+    container_name: copupitre-website
+    image: copupitre-website:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${WEBSITE_PORT:-40000}:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - copupitre-network
+
+networks:
+  copupitre-network:
+    name: copupitre-network
+    driver: bridge

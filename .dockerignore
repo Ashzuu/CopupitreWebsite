@@ -1,0 +1,47 @@
+# Dépendances et caches de paquets
+node_modules/
+.npm/
+.pnpm-store/
+
+# Artefacts de build et caches de compilation
+dist/
+.angular/
+.vite/
+.turbo/
+coverage/
+
+# Dossiers d'outils IA et métadonnées locales
+.gemini/
+.claude/
+
+# Contrôle de version et environnement IDE
+.git/
+.gitignore
+.gitattributes
+.github/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Fichiers d'environnement et secrets sensibles
+.env
+.env.*
+!.env.example
+
+# Fichiers de logs et traces d'erreurs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Fichiers Docker et scripts de déploiement locaux
+Dockerfile*
+docker-compose*.yml
+deploy.sh
+
+# Documentation et configurations locales
+README.md
+.editorconfig
+.prettierrc

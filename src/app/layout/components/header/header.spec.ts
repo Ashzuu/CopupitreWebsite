@@ -127,6 +127,15 @@ describe('Header', () => {
       expect(candidaturesLink).toBeTruthy();
       expect(candidaturesLink?.textContent).toContain('Mes candidatures');
     });
+
+    it('devrait afficher le lien Messagerie dans le menu profil', () => {
+      component.profileMenuOpen.set(true);
+      fixture.detectChanges();
+      const compiled = fixture.nativeElement as HTMLElement;
+      const messagerieLink = compiled.querySelector('a[routerLink="/messagerie"]');
+      expect(messagerieLink).toBeTruthy();
+      expect(messagerieLink?.textContent).toContain('Messagerie');
+    });
   });
 
   describe('Notifications in-app (US-COM-02)', () => {

@@ -25,6 +25,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'messagerie',
+    loadComponent: () =>
+      import('../features/messaging/messaging-page').then((m) => m.MessagingPage),
+    title: 'Messagerie — Copupitre',
+    canActivate: [authGuard],
+  },
+  {
     path: 'login',
     loadComponent: () => import('../features/login/login-page').then((m) => m.LoginPage),
     title: 'Connexion - Copupitre',

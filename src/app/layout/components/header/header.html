@@ -206,6 +206,16 @@
         </li>
         <li>
           <a
+            routerLink="/messagerie"
+            class="profile-drawer__link"
+            (click)="closeAllMenus()"
+          >
+            <i class="pi pi-comments" aria-hidden="true"></i>
+            <span>Messagerie</span>
+          </a>
+        </li>
+        <li>
+          <a
             routerLink="/dashboard"
             class="profile-drawer__link"
             (click)="closeAllMenus()"

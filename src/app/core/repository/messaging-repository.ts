@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ChatMessage } from '../model';
+import { ChatMessage, Conversation } from '../model';
 import { environment } from '@environments/environment';
 
 @Injectable({
@@ -10,6 +10,10 @@ import { environment } from '@environments/environment';
 export class MessagingRepository {
   private readonly http = inject(HttpClient);
   private readonly BASE_API_URL = environment.BASE_API_URL;
+
+  getConversations(): Observable<Conversation[]> {
+    return this.http.get<Conversation[]>(`${this.BASE_API_URL}/api/messages/conversations`);
+  }
 
   getMessages(contextType: string, contextId: number): Observable<ChatMessage[]> {
     return this.http.get<ChatMessage[]>(`${this.BASE_API_URL}/api/messages/${contextType}/${contextId}`);

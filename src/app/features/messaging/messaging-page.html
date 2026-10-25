@@ -1,0 +1,291 @@
+<copupitre-base-layout>
+  <div class="messaging-page">
+    <!-- Header -->
+    <header class="messaging-page__header">
+      <div>
+        <span class="page-badge">
+          <i class="pi pi-comments" aria-hidden="true"></i> Messagerie interne
+        </span>
+        <h1 class="messaging-page__title">Messagerie</h1>
+        <p class="messaging-page__subtitle">
+          Centralisez tous vos échanges sécurisés pour vos candidatures et vos prêts d'équipements.
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Container: Master-Detail -->
+    <div class="messaging-container" [class.has-selection]="selectedConversation() !== null">
+      <!-- Left Panel: Conversations List -->
+      <aside
+        class="conv-list-panel"
+        [class.is-hidden-mobile]="selectedConversation() !== null"
+        aria-label="Liste des conversations"
+      >
+        <!-- Filter Tabs -->
+        <nav class="conv-tabs" aria-label="Filtres des conversations">
+          <button
+            type="button"
+            class="conv-tab"
+            [class.is-active]="activeTab() === 'ALL'"
+            (click)="activeTab.set('ALL')"
+          >
+            Tous
+          </button>
+          <button
+            type="button"
+            class="conv-tab"
+            [class.is-active]="activeTab() === 'APPLICATION'"
+            (click)="activeTab.set('APPLICATION')"
+          >
+            Renforts
+          </button>
+          <button
+            type="button"
+            class="conv-tab"
+            [class.is-active]="activeTab() === 'ANNUAL_APPLICATION'"
+            (click)="activeTab.set('ANNUAL_APPLICATION')"
+          >
+            Permanents
+          </button>
+          <button
+            type="button"
+            class="conv-tab"
+            [class.is-active]="activeTab() === 'EQUIPMENT'"
+            (click)="activeTab.set('EQUIPMENT')"
+          >
+            Matériel
+          </button>
+        </nav>
+
+        <!-- Search Box -->
+        <div class="conv-search">
+          <i class="pi pi-search search-icon" aria-hidden="true"></i>
+          <input
+            type="text"
+            [ngModel]="searchTerm()"
+            (ngModelChange)="searchTerm.set($event)"
+            placeholder="Rechercher une discussion..."
+            class="search-input"
+            aria-label="Rechercher une discussion"
+          />
+          @if (searchTerm()) {
+            <button
+              type="button"
+              class="clear-search-btn"
+              (click)="searchTerm.set('')"
+              aria-label="Effacer la recherche"
+            >
+              <i class="pi pi-times" aria-hidden="true"></i>
+            </button>
+          }
+        </div>
+
+        <!-- Conversations Flow -->
+        <div class="conv-items-scroll">
+          @if (loading()) {
+            <div class="conv-state">
+              <i class="pi pi-spin pi-spinner state-icon" aria-hidden="true"></i>
+              <p>Chargement des conversations...</p>
+            </div>
+          } @else if (filteredConversations().length === 0) {
+            <div class="conv-state conv-state--empty">
+              <i class="pi pi-inbox state-icon" aria-hidden="true"></i>
+              <p>Aucune conversation trouvée</p>
+              <span class="subtext">
+                @if (searchTerm() || activeTab() !== 'ALL') {
+                  Essayez d'ajuster vos critères de recherche.
+                } @else {
+                  Vos échanges avec les musiciens ou organisations apparaîtront ici.
+                }
+              </span>
+            </div>
+          } @else {
+            <ul class="conv-list" role="list">
+              @for (conv of filteredConversations(); track conv.id) {
+                <li
+                  class="conv-item"
+                  [class.is-active]="selectedConversation()?.id === conv.id"
+                  (click)="selectConversation(conv)"
+                  (keydown.enter)="selectConversation(conv)"
+                  tabindex="0"
+                  role="button"
+                  [attr.aria-selected]="selectedConversation()?.id === conv.id"
+                >
+                  <div class="conv-item__header">
+                    <span class="context-badge context-badge--{{ conv.contextType | lowercase }}">
+                      {{ getContextBadgeLabel(conv.contextType) }}
+                    </span>
+                    @if (conv.status) {
+                      <span class="status-badge {{ getStatusBadgeClass(conv.status) }}">
+                        {{ getStatusLabel(conv.status) }}
+                      </span>
+                    }
+                    @if (conv.lastMessageAt) {
+                      <time class="conv-date" [dateTime]="conv.lastMessageAt">
+                        {{ conv.lastMessageAt | date: 'dd/MM/yy HH:mm' }}
+                      </time>
+                    }
+                  </div>
+
+                  <h2 class="conv-item__title">
+                    {{ conv.title }}
+                  </h2>
+
+                  <div class="conv-item__party">
+                    <i class="pi pi-user" aria-hidden="true"></i>
+                    <span>{{ conv.otherPartyName }}</span>
+                  </div>
+
+                  <div class="conv-item__preview">
+                    <p class="preview-text">
+                      {{ conv.lastMessage || 'Aucun message pour l\'instant.' }}
+                    </p>
+                    @if (conv.messageCount && conv.messageCount > 0) {
+                      <span class="message-count-badge" title="Nombre total de messages">
+                        {{ conv.messageCount }}
+                      </span>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </aside>
+
+      <!-- Right Panel: Discussion Pane -->
+      <main
+        class="conv-chat-panel"
+        [class.is-hidden-mobile]="selectedConversation() === null"
+        aria-label="Discussion active"
+      >
+        @if (selectedConversation(); as conv) {
+          <!-- Chat Header -->
+          <header class="chat-header">
+            <button
+              type="button"
+              class="mobile-back-btn"
+              (click)="deselectConversation()"
+              aria-label="Retour à la liste des conversations"
+            >
+              <i class="pi pi-arrow-left" aria-hidden="true"></i>
+              <span>Retour</span>
+            </button>
+
+            <div class="chat-header__info">
+              <div class="chat-header__title-row">
+                <span class="context-badge context-badge--{{ conv.contextType | lowercase }}">
+                  {{ getContextBadgeLabel(conv.contextType) }}
+                </span>
+                <h2 class="chat-title">{{ conv.title }}</h2>
+                @if (conv.status) {
+                  <span class="status-badge {{ getStatusBadgeClass(conv.status) }}">
+                    {{ getStatusLabel(conv.status) }}
+                  </span>
+                }
+              </div>
+              <div class="chat-header__subtitle-row">
+                <span class="party-name">
+                  <i class="pi pi-comments" aria-hidden="true"></i>
+                  Échange avec <strong>{{ conv.otherPartyName }}</strong>
+                </span>
+                @if (conv.subtitle) {
+                  <span class="party-context">• {{ conv.subtitle }}</span>
+                }
+              </div>
+            </div>
+          </header>
+
+          <!-- Chat Body: Messages -->
+          <div class="chat-body" #messagesContainer>
+            @if (loadingMessages()) {
+              <div class="conv-state">
+                <i class="pi pi-spin pi-spinner state-icon" aria-hidden="true"></i>
+                <p>Chargement des messages...</p>
+              </div>
+            } @else if (messages().length === 0) {
+              <div class="conv-state conv-state--empty">
+                <i class="pi pi-comment state-icon" aria-hidden="true"></i>
+                <p>Aucun message pour l'instant</p>
+                <span class="subtext">
+                  Envoyez un message pour démarrer la discussion sécurisée avec {{ conv.otherPartyName }}.
+                </span>
+              </div>
+            } @else {
+              <div class="messages-flow" role="log" aria-live="polite">
+                @for (msg of messages(); track msg.id) {
+                  <article
+                    class="message-row"
+                    [class.message-row--me]="msg.isMe"
+                    [class.message-row--other]="!msg.isMe"
+                  >
+                    <div class="message-bubble">
+                      <header class="message-meta">
+                        <span class="sender-name">
+                          {{ msg.isMe ? 'Moi' : msg.senderFullName }}
+                        </span>
+                        @if (!msg.isMe && msg.senderRole) {
+                          <span class="role-badge">
+                            {{ msg.senderRole === 'ORGANIZATION' ? 'Organisation' : 'Musicien' }}
+                          </span>
+                        }
+                        <time class="message-time" [dateTime]="msg.createdAt">
+                          {{ msg.createdAt | date: 'dd/MM HH:mm' }}
+                        </time>
+                      </header>
+                      <p class="message-text">{{ msg.content }}</p>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Chat Footer: Input & Send -->
+          <footer class="chat-footer">
+            <form (ngSubmit)="sendMessage()" class="chat-input-form">
+              <label for="messageInput" class="visually-hidden">Votre message</label>
+              <textarea
+                id="messageInput"
+                rows="2"
+                [ngModel]="newMessageText()"
+                (ngModelChange)="newMessageText.set($event)"
+                name="messageText"
+                placeholder="Écrivez votre message... (Ctrl + Entrée pour envoyer)"
+                (keydown)="onKeyDown($event)"
+                class="chat-textarea"
+                [disabled]="sendingMessage()"
+              ></textarea>
+              <button
+                type="submit"
+                class="btn-send"
+                [disabled]="!newMessageText().trim() || sendingMessage()"
+                aria-label="Envoyer le message"
+              >
+                @if (sendingMessage()) {
+                  <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+                } @else {
+                  <i class="pi pi-send" aria-hidden="true"></i>
+                }
+                <span>Envoyer</span>
+              </button>
+            </form>
+          </footer>
+        } @else {
+          <!-- Empty State when no conversation is selected (Desktop) -->
+          <div class="conv-empty-selection">
+            <div class="empty-selection-content">
+              <div class="empty-icon-wrap">
+                <i class="pi pi-comments" aria-hidden="true"></i>
+              </div>
+              <h2>Sélectionnez une discussion</h2>
+              <p>
+                Choisissez une conversation dans la liste à gauche pour consulter l'historique et échanger avec votre interlocuteur.
+              </p>
+            </div>
+          </div>
+        }
+      </main>
+    </div>
+  </div>
+</copupitre-base-layout>

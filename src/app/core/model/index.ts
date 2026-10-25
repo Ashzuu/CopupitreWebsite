@@ -7,3 +7,4 @@ export * from './permanent-recruitment';
 export * from './subscription-status';
 export * from './in-app-notification';
 export * from './chat-message';
+export * from './conversation';

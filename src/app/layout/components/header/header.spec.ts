@@ -4,6 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { Header } from './header';
 import { AuthService } from '@services/auth-service';
+import { InAppNotificationService } from '@services/in-app-notification-service';
 
 describe('Header', () => {
   let component: Header;
@@ -22,11 +23,27 @@ describe('Header', () => {
     logout: vi.fn(),
   };
 
+  const mockNotifService = {
+    notifications: signal([]),
+    unreadCount: signal(2),
+    isOpen: signal(false),
+    isLoading: signal(false),
+    loadNotifications: vi.fn(),
+    refreshUnreadCount: vi.fn(),
+    togglePanel: vi.fn(),
+    closePanel: vi.fn(),
+    markAsRead: vi.fn().mockResolvedValue(undefined),
+    markAllAsRead: vi.fn().mockResolvedValue(undefined),
+  };
+
   beforeEach(async () => {
     isAuthenticatedSignal.set(true);
     currentUsernameSignal.set('alex_trombone');
     currentUserFullNameSignal.set('Alex Trombone');
     mockAuthService.logout.mockClear();
+    mockNotifService.togglePanel.mockClear();
+    mockNotifService.closePanel.mockClear();
+    mockNotifService.refreshUnreadCount.mockClear();
 
     await TestBed.configureTestingModule({
       imports: [Header],
@@ -34,6 +51,7 @@ describe('Header', () => {
         provideRouter([{ path: 'login', component: class {} as any }]),
         provideHttpClient(),
         { provide: AuthService, useValue: mockAuthService },
+        { provide: InAppNotificationService, useValue: mockNotifService },
       ],
     }).compileComponents();
 
@@ -71,6 +89,7 @@ describe('Header', () => {
       component.closeAllMenus();
       expect(component.menuOpen()).toBe(false);
       expect(component.profileMenuOpen()).toBe(false);
+      expect(mockNotifService.closePanel).toHaveBeenCalled();
     });
 
     it('devrait fermer le menu principal lors de l\'ouverture du menu profil', () => {
@@ -84,10 +103,12 @@ describe('Header', () => {
     it('devrait fermer les menus lors de l\'appui sur la touche Escape', () => {
       component.profileMenuOpen.set(true);
       component.menuOpen.set(true);
+      mockNotifService.isOpen.set(true);
 
       component.onEscape();
       expect(component.profileMenuOpen()).toBe(false);
       expect(component.menuOpen()).toBe(false);
+      expect(mockNotifService.closePanel).toHaveBeenCalled();
     });
 
     it('devrait déconnecter l\'utilisateur et fermer le menu profil lors de logout()', () => {
@@ -105,6 +126,22 @@ describe('Header', () => {
       const candidaturesLink = compiled.querySelector('a[routerLink="/mes-candidatures"]');
       expect(candidaturesLink).toBeTruthy();
       expect(candidaturesLink?.textContent).toContain('Mes candidatures');
+    });
+  });
+
+  describe('Notifications in-app (US-COM-02)', () => {
+    it('devrait rafraîchir le nombre de notifications au chargement si authentifié', () => {
+      expect(mockNotifService.refreshUnreadCount).toHaveBeenCalled();
+    });
+
+    it('devrait basculer le panneau de notifications via toggleNotificationPanel()', () => {
+      component.toggleNotificationPanel();
+      expect(mockNotifService.togglePanel).toHaveBeenCalled();
+    });
+
+    it('devrait fermer le panneau de notifications via closeNotificationPanel()', () => {
+      component.closeNotificationPanel();
+      expect(mockNotifService.closePanel).toHaveBeenCalled();
     });
   });
 });

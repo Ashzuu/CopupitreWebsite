@@ -20,6 +20,24 @@
 
       <div class="header__actions">
         @if (authService.isAuthenticated()) {
+          <!-- Bouton Cloche de notifications (US-COM-02) -->
+          <button
+            type="button"
+            class="header__notif-btn"
+            (click)="toggleNotificationPanel()"
+            [attr.aria-expanded]="notifService.isOpen()"
+            aria-haspopup="dialog"
+            aria-label="Notifications"
+            title="Notifications"
+          >
+            <i class="pi pi-bell" aria-hidden="true"></i>
+            @if (notifService.unreadCount() > 0) {
+              <span class="header__notif-badge" aria-label="{{ notifService.unreadCount() }} notifications non lues">
+                {{ notifService.unreadCount() > 9 ? '9+' : notifService.unreadCount() }}
+              </span>
+            }
+          </button>
+
           <button
             type="button"
             class="header__profile-badge"
@@ -42,6 +60,98 @@
   </div>
 </header>
 
+<!-- Tiroir des notifications (US-COM-02) -->
+@if (authService.isAuthenticated() && notifService.isOpen()) {
+  <div class="profile-drawer-backdrop" (click)="closeNotificationPanel()" aria-hidden="true"></div>
+  <aside
+    class="profile-drawer notif-drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Centre de notifications"
+  >
+    <div class="profile-drawer__header">
+      <div class="notif-drawer__title">
+        <i class="pi pi-bell" aria-hidden="true"></i>
+        <strong>Notifications</strong>
+        @if (notifService.unreadCount() > 0) {
+          <span class="notif-badge-pill">{{ notifService.unreadCount() }}</span>
+        }
+      </div>
+      <div class="notif-drawer__header-actions">
+        @if (notifService.unreadCount() > 0) {
+          <button
+            type="button"
+            class="btn-text-action"
+            (click)="notifService.markAllAsRead()"
+            title="Tout marquer comme lu"
+          >
+            Tout marquer lu
+          </button>
+        }
+        <button
+          type="button"
+          class="profile-drawer__close"
+          (click)="closeNotificationPanel()"
+          aria-label="Fermer les notifications"
+        >
+          <i class="pi pi-times" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="notif-drawer__content">
+      @if (notifService.isLoading()) {
+        <div class="notif-loading">
+          <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+          <span>Chargement de vos notifications...</span>
+        </div>
+      } @else if (notifService.notifications().length === 0) {
+        <div class="notif-empty">
+          <i class="pi pi-inbox empty-icon" aria-hidden="true"></i>
+          <p>Vous n'avez aucune notification pour l'instant.</p>
+        </div>
+      } @else {
+        <ul class="notif-list" role="list">
+          @for (notif of notifService.notifications(); track notif.id) {
+            <li
+              class="notif-item"
+              [class.notif-item--unread]="!notif.isRead"
+              (click)="onNotificationClick(notif)"
+              role="button"
+              tabindex="0"
+              (keydown.enter)="onNotificationClick(notif)"
+              (keydown.space)="onNotificationClick(notif)"
+            >
+              <div class="notif-item__icon">
+                @if (notif.type === 'NEW_MESSAGE') {
+                  <i class="pi pi-comments" aria-hidden="true"></i>
+                } @else if (notif.type === 'APPLICATION_STATUS') {
+                  <i class="pi pi-check-circle" aria-hidden="true"></i>
+                } @else if (notif.type === 'NEW_APPLICATION') {
+                  <i class="pi pi-user-plus" aria-hidden="true"></i>
+                } @else {
+                  <i class="pi pi-bell" aria-hidden="true"></i>
+                }
+              </div>
+              <div class="notif-item__body">
+                <div class="notif-item__header">
+                  <h4 class="notif-item__title">{{ notif.title }}</h4>
+                  <time class="notif-item__time">{{ notif.createdAt | date:'dd/MM HH:mm' }}</time>
+                </div>
+                <p class="notif-item__content">{{ notif.content }}</p>
+              </div>
+              @if (!notif.isRead) {
+                <span class="unread-dot" aria-hidden="true"></span>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </aside>
+}
+
+<!-- Tiroir du menu profil -->
 @if (authService.isAuthenticated() && profileMenuOpen()) {
   <div class="profile-drawer-backdrop" (click)="closeProfileMenu()" aria-hidden="true"></div>
   <aside

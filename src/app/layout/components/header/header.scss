@@ -59,34 +59,53 @@
       width: 100%;
       background-color: $color-secondary;
       flex-direction: column;
-      padding: $spacing-xl;
-      gap: $spacing-xl;
-      box-shadow: $shadow-md;
-      clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
-      transition: clip-path $transition-base;
-      
+      padding: $spacing-lg;
+      gap: $spacing-lg;
+      border-top: 1px solid rgba($color-discrete, 0.2);
+      display: none;
+
       &--open {
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        display: flex;
       }
     }
   }
 
   &__nav-list {
     display: flex;
-    gap: $spacing-lg;
+    align-items: center;
+    gap: $spacing-xl;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 
     @media (max-width: $breakpoint-md - 1) {
       flex-direction: column;
-      text-align: center;
+      width: 100%;
+      gap: $spacing-md;
     }
   }
 
   &__nav-link {
-    color: $color-text-inverse;
+    color: rgba($color-text-inverse, 0.85);
     font-weight: 500;
-    
-    &:hover, &:focus-visible {
+    transition: color $transition-fast;
+    position: relative;
+    padding-block: $spacing-xs;
+
+    &:hover,
+    &.active {
       color: $color-primary;
+    }
+
+    &.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: $color-primary;
+      border-radius: $border-radius-full;
     }
   }
 
@@ -96,39 +115,75 @@
     gap: $spacing-md;
 
     @media (max-width: $breakpoint-md - 1) {
-      flex-direction: column;
       width: 100%;
-      
-      .btn {
-        width: 100%;
-      }
+      flex-direction: column;
     }
   }
 
-  &__profile-badge {
+  /* Cloche de notifications (US-COM-02) */
+  &__notif-btn {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: $spacing-xs;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: $border-radius-full;
+    background-color: rgba($color-secondary-light, 0.4);
+    border: 1px solid rgba($color-discrete, 0.25);
+    color: $color-text-inverse;
+    font-size: 1.15rem;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover,
+    &:focus-visible {
+      background-color: rgba($color-primary, 0.2);
+      border-color: $color-primary;
+      color: $color-primary;
+      outline: none;
+    }
+  }
+
+  &__notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: $border-radius-full;
+    background-color: $color-error;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  &__profile-badge {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
     padding: $spacing-xs $spacing-md;
-    border-radius: $border-radius-sm;
-    background-color: rgba($color-background, 0.12);
+    border-radius: $border-radius-full;
+    background-color: rgba($color-secondary-light, 0.5);
     border: 1px solid rgba($color-discrete, 0.3);
     color: $color-text-inverse;
     font-size: $font-size-sm;
     font-weight: 500;
-    font-family: inherit;
     cursor: pointer;
     transition: all $transition-fast;
 
     i {
       color: $color-primary;
-      font-size: 0.95rem;
     }
 
     .profile-badge__chevron {
       font-size: 0.75rem;
       color: $color-discrete;
-      margin-left: 2px;
       transition: transform $transition-fast;
 
       &--open {
@@ -136,26 +191,16 @@
       }
     }
 
-    &:hover, &:focus-visible {
-      background-color: rgba($color-primary, 0.2);
+    &:hover,
+    &:focus-visible {
+      background-color: rgba($color-secondary-light, 0.8);
       border-color: $color-primary;
-      color: $color-text-inverse;
+      outline: none;
     }
-
-    @media (max-width: $breakpoint-md - 1) {
-      width: 100%;
-      justify-content: center;
-      padding: $spacing-sm;
-    }
-  }
-  
-  &__welcome {
-    font-size: $font-size-sm;
-    color: $color-discrete;
   }
 }
 
-/* Profile Side Drawer Backdrop */
+/* Profile / Notification Side Drawer Backdrop */
 .profile-drawer-backdrop {
   position: fixed;
   inset: 0;
@@ -165,14 +210,14 @@
   animation: drawerFadeIn 200ms ease;
 }
 
-/* Profile Side Drawer */
+/* Profile & Notification Side Drawer */
 .profile-drawer {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 320px;
-  max-width: 85vw;
+  width: 340px;
+  max-width: 88vw;
   background-color: $color-secondary;
   color: $color-text-inverse;
   z-index: 1100;
@@ -249,45 +294,41 @@
 
     &:hover, &:focus-visible {
       color: $color-text-inverse;
-      background-color: rgba($color-discrete, 0.2);
+      background-color: rgba(255, 255, 255, 0.1);
+      outline: none;
     }
   }
 
   &__nav {
     flex: 1;
-    padding: $spacing-md;
     overflow-y: auto;
+    padding: $spacing-md 0;
   }
 
   &__list {
     list-style: none;
-    padding: 0;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xs;
+    padding: 0;
   }
 
   &__link {
     display: flex;
     align-items: center;
     gap: $spacing-md;
-    width: 100%;
-    padding: $spacing-sm $spacing-md;
-    border-radius: $border-radius-md;
-    color: $color-text-inverse;
-    font-size: $font-size-sm;
+    padding: $spacing-md $spacing-lg;
+    color: rgba($color-text-inverse, 0.85);
+    font-size: $font-size-base;
     font-weight: 500;
-    font-family: inherit;
     text-decoration: none;
+    transition: all $transition-fast;
+    width: 100%;
     background: transparent;
     border: none;
     cursor: pointer;
     text-align: left;
-    transition: all $transition-fast;
 
     i {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       color: $color-primary;
       width: 20px;
       text-align: center;
@@ -296,7 +337,8 @@
     &:hover, &:focus-visible {
       background-color: rgba($color-primary, 0.15);
       color: $color-text-inverse;
-      padding-left: calc(#{$spacing-md} + 4px);
+      padding-left: calc(#{$spacing-lg} + 4px);
+      outline: none;
     }
 
     &--danger {
@@ -317,6 +359,174 @@
     height: 1px;
     background-color: rgba($color-discrete, 0.2);
     margin: $spacing-sm 0;
+  }
+}
+
+/* Styles spécifiques au tiroir de notifications (US-COM-02) */
+.notif-drawer {
+  width: 400px;
+  max-width: 92vw;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: $font-size-base;
+    color: $color-text-inverse;
+
+    i {
+      color: $color-primary;
+      font-size: 1.2rem;
+    }
+
+    .notif-badge-pill {
+      background-color: rgba($color-primary, 0.2);
+      color: $color-primary;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: $border-radius-full;
+      border: 1px solid rgba($color-primary, 0.4);
+    }
+  }
+
+  &__header-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    .btn-text-action {
+      background: none;
+      border: none;
+      color: $color-primary;
+      font-size: $font-size-xs;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: $spacing-xs;
+
+      &:hover {
+        color: #ffffff;
+      }
+    }
+  }
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-sm 0;
+  }
+}
+
+.notif-loading,
+.notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-2xl $spacing-md;
+  color: $color-discrete;
+  text-align: center;
+  font-size: $font-size-sm;
+
+  .empty-icon {
+    font-size: 2.5rem;
+    color: rgba($color-discrete, 0.5);
+  }
+}
+
+.notif-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid rgba($color-discrete, 0.15);
+  cursor: pointer;
+  transition: background-color $transition-fast;
+  position: relative;
+
+  &:hover,
+  &:focus-visible {
+    background-color: rgba($color-primary, 0.1);
+    outline: none;
+  }
+
+  &--unread {
+    background-color: rgba($color-primary, 0.05);
+
+    .notif-item__title {
+      font-weight: 700;
+      color: $color-text-inverse;
+    }
+  }
+
+  &__icon {
+    width: 32px;
+    height: 32px;
+    border-radius: $border-radius-full;
+    background-color: rgba($color-primary, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+
+    i {
+      color: $color-primary;
+      font-size: 0.95rem;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    margin: 0;
+    color: $color-text-inverse;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__time {
+    font-size: 0.75rem;
+    color: $color-discrete;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    font-size: $font-size-xs;
+    color: rgba($color-text-inverse, 0.8);
+    margin: 0;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .unread-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: $border-radius-full;
+    background-color: $color-primary;
+    flex-shrink: 0;
+    align-self: center;
   }
 }
 

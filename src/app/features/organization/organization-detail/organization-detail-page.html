@@ -29,8 +29,24 @@
           </div>
         </div>
         <div class="org-header__actions">
-          <button type="button" class="btn btn--primary" (click)="service.subscribeToAnnouncements()">
-            <i class="pi pi-bell" aria-hidden="true"></i> S'abonner aux annonces
+          <button
+            type="button"
+            class="btn"
+            [class.btn--primary]="!service.isSubscribed()"
+            [class.btn--secondary]="service.isSubscribed()"
+            [disabled]="service.isSubscriptionLoading()"
+            [attr.aria-pressed]="service.isSubscribed()"
+            (click)="service.toggleSubscription()"
+          >
+            <i
+              class="pi"
+              [class.pi-bell]="!service.isSubscribed() && !service.isSubscriptionLoading()"
+              [class.pi-check]="service.isSubscribed() && !service.isSubscriptionLoading()"
+              [class.pi-spin]="service.isSubscriptionLoading()"
+              [class.pi-spinner]="service.isSubscriptionLoading()"
+              aria-hidden="true"
+            ></i>
+            <span>{{ service.isSubscribed() ? 'Abonné(e)' : "S'abonner aux annonces" }}</span>
           </button>
         </div>
       </header>

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { EquipmentRequest, Organization, ReinforcementAnnouncement } from '../model';
+import { EquipmentRequest, Organization, ReinforcementAnnouncement, SubscriptionStatus } from '../model';
 import { environment } from '@environments/environment';
 import { HttpClient } from '@angular/common/http';
 
@@ -51,4 +51,20 @@ export class OrganizationRepository {
   removeAdmin(orgId: number, username: string): Observable<Organization> {
     return this.http.delete<Organization>(`${this.BASE_API_URL}/api/organizations/${orgId}/admins/${username}`);
   }
+
+  /** Subscribes current user to organization announcements (US-COM-01). */
+  subscribe(orgId: number): Observable<SubscriptionStatus> {
+    return this.http.post<SubscriptionStatus>(`${this.BASE_API_URL}/api/organizations/${orgId}/subscribe`, {});
+  }
+
+  /** Unsubscribes current user from organization announcements (US-COM-01). */
+  unsubscribe(orgId: number): Observable<SubscriptionStatus> {
+    return this.http.delete<SubscriptionStatus>(`${this.BASE_API_URL}/api/organizations/${orgId}/subscribe`);
+  }
+
+  /** Checks if current user is subscribed to organization announcements (US-COM-01). */
+  isSubscribed(orgId: number): Observable<SubscriptionStatus> {
+    return this.http.get<SubscriptionStatus>(`${this.BASE_API_URL}/api/organizations/${orgId}/is-subscribed`);
+  }
 }
+

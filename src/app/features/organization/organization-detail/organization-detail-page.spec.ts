@@ -236,4 +236,31 @@ describe('OrganizationDetailPage', () => {
       expect(removeSpy).not.toHaveBeenCalled();
     });
   });
+
+  describe('Abonnement aux annonces (US-COM-01)', () => {
+    it('devrait alterner l\'état d\'abonnement via service.toggleSubscription()', async () => {
+      vi.spyOn(orgRepo, 'subscribe').mockReturnValue(of({ organizationId: 42, isSubscribed: true }));
+      const notifSuccessSpy = vi.spyOn(notifService, 'showSuccess');
+
+      expect(component.service.isSubscribed()).toBe(false);
+
+      await component.service.toggleSubscription();
+
+      expect(orgRepo.subscribe).toHaveBeenCalledWith(42);
+      expect(component.service.isSubscribed()).toBe(true);
+      expect(notifSuccessSpy).toHaveBeenCalled();
+    });
+
+    it('devrait désabonner lorsque l\'utilisateur est déjà abonné', async () => {
+      component.service.isSubscribed.set(true);
+      vi.spyOn(orgRepo, 'unsubscribe').mockReturnValue(of({ organizationId: 42, isSubscribed: false }));
+      const notifSuccessSpy = vi.spyOn(notifService, 'showSuccess');
+
+      await component.service.toggleSubscription();
+
+      expect(orgRepo.unsubscribe).toHaveBeenCalledWith(42);
+      expect(component.service.isSubscribed()).toBe(false);
+      expect(notifSuccessSpy).toHaveBeenCalled();
+    });
+  });
 });

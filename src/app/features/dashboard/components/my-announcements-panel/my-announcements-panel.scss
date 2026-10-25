@@ -1,13 +1,20 @@
 @use '../../../../styles/variables' as *;
+
 .my-announcements {
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
 }
+
 .announcement-card {
   border: 1px solid rgba($color-discrete, 0.3);
   border-radius: $border-radius-md;
   padding: $spacing-md;
+  background: $color-background;
+
+  &--permanent {
+    border-left: 4px solid #1b4965;
+  }
 
   &__header {
     display: flex;
@@ -16,56 +23,241 @@
     margin-bottom: $spacing-md;
     padding-bottom: $spacing-sm;
     border-bottom: 1px dashed rgba($color-discrete, 0.3);
+    flex-wrap: wrap;
+    gap: $spacing-xs;
 
-    h4 { margin: 0; }
+    .header-main {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      h4 {
+        margin: 0;
+        font-size: $font-size-base;
+        font-weight: 600;
+      }
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+    }
   }
 }
-.count-badge {
+
+.type-badge {
   font-size: $font-size-xs;
-  background: rgba($color-primary, 0.1);
-  color: $color-primary-dark;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: $border-radius-sm;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &--renfort {
+    background: rgba($color-primary, 0.12);
+    color: $color-primary;
+    border: 1px solid rgba($color-primary, 0.3);
+  }
+
+  &--permanent {
+    background: rgba(#1b4965, 0.12);
+    color: #1b4965;
+    border: 1px solid rgba(#1b4965, 0.3);
+  }
+}
+
+.status-badge {
+  font-size: $font-size-xs;
+  font-weight: 600;
   padding: 2px 8px;
   border-radius: $border-radius-sm;
-  font-weight: 600;
-}
-.responses-section {
-  h5 {
-    font-size: $font-size-sm;
-    color: $color-text-light;
-    margin: 0 0 $spacing-sm 0;
+
+  &--open {
+    background: rgba($color-success, 0.12);
+    color: $color-success;
+  }
+  &--objective_met {
+    background: rgba($color-warning, 0.12);
+    color: #B38600;
+  }
+  &--closed {
+    background: rgba($color-discrete, 0.2);
+    color: $color-discrete;
   }
 }
+
+.count-badge {
+  font-size: $font-size-xs;
+  background: rgba($color-text, 0.06);
+  padding: 2px 8px;
+  border-radius: $border-radius-sm;
+  color: $color-text;
+  font-weight: 500;
+}
+
+.instrument-tag {
+  background: rgba($color-discrete, 0.1);
+  padding: 2px 8px;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-xs;
+  color: $color-text;
+  font-weight: 500;
+}
+
+.responses-section {
+  h5 {
+    margin: 0 0 $spacing-sm 0;
+    font-size: $font-size-sm;
+    color: $color-discrete;
+    font-weight: 600;
+  }
+}
+
 .responses-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: $spacing-xs;
 }
+
 .response-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: $color-background-alt;
   padding: $spacing-sm $spacing-md;
+  background: rgba($color-discrete, 0.04);
+  border: 1px solid rgba($color-discrete, 0.15);
   border-radius: $border-radius-sm;
-  font-size: $font-size-sm;
+  gap: $spacing-md;
 
-  &__info {
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__applicant {
     display: flex;
     align-items: center;
-    gap: $spacing-sm;
-    i { color: $color-primary; }
+    gap: $spacing-xs;
+    font-size: $font-size-sm;
+
+    i {
+      color: $color-primary;
+    }
+
+    .applicant-instrument {
+      color: $color-discrete;
+      font-style: italic;
+    }
+
+    .applicant-date {
+      color: $color-discrete;
+      font-size: $font-size-xs;
+    }
+  }
+
+  &__message {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-xs;
+    font-size: $font-size-xs;
+    color: $color-text;
+    background: rgba($color-discrete, 0.08);
+    padding: 4px 8px;
+    border-radius: $border-radius-sm;
+    margin-top: 2px;
+
+    i {
+      color: $color-discrete;
+      margin-top: 2px;
+    }
+
+    span {
+      font-style: italic;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
   }
 }
+
+.decision-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    border: none;
+    border-radius: $border-radius-sm;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &--accept {
+      background: $color-success;
+      color: #fff;
+
+      &:hover:not(:disabled) {
+        background: #388e3c;
+      }
+    }
+
+    &--reject {
+      background: $color-error;
+      color: #fff;
+
+      &:hover:not(:disabled) {
+        background: #d32f2f;
+      }
+    }
+  }
+}
+
 .response-status {
   font-size: $font-size-xs;
   font-weight: 600;
-  &--pending { color: $color-warning; }
-  &--accepted { color: $color-success; }
-  &--rejected { color: $color-error; }
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: $border-radius-sm;
+
+  &--accepted {
+    background: rgba($color-success, 0.12);
+    color: $color-success;
+  }
+
+  &--rejected {
+    background: rgba($color-error, 0.12);
+    color: $color-error;
+  }
 }
+
 .no-responses {
+  margin: 0;
   font-size: $font-size-sm;
   color: $color-discrete;
   font-style: italic;
-  margin: 0;
 }

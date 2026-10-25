@@ -1,29 +1,86 @@
 <div class="my-announcements">
-  @for (announcement of announcements(); track announcement.id) {
-    <div class="announcement-card">
+  @for (announcement of localAnnouncements(); track announcement.id) {
+    <div class="announcement-card" [class.announcement-card--permanent]="announcementType() === 'PERMANENT'">
       <div class="announcement-card__header">
-        <h4>{{ announcement.title }}</h4>
-        <span class="count-badge">{{ announcement.validatedCount }} / {{ announcement.requiredCount }} validés</span>
+        <div class="header-main">
+          <span
+            class="type-badge"
+            [class.type-badge--permanent]="announcementType() === 'PERMANENT'"
+            [class.type-badge--renfort]="announcementType() === 'RENFORT'"
+          >
+            <i class="pi" [class.pi-id-card]="announcementType() === 'PERMANENT'" [class.pi-bolt]="announcementType() === 'RENFORT'"></i>
+            {{ announcementType() === 'PERMANENT' ? 'Permanent' : 'Renfort' }}
+          </span>
+          <h4>{{ getAnnouncementTitle(announcement) }}</h4>
+          <span class="instrument-tag">{{ getInstrumentName(announcement) }}</span>
+        </div>
+        <div class="header-badges">
+          <span class="status-badge" [class]="'status-badge--' + (announcement.status | lowercase)">
+            {{ translateStatus(announcement.status) }}
+          </span>
+          <span class="count-badge">
+            {{ announcement.validatedCount || 0 }} / {{ getRequiredCount(announcement) }} validés
+          </span>
+        </div>
       </div>
-      
+
       <div class="responses-section">
-        <h5>Réponses reçues :</h5>
+        <h5>Candidatures reçues :</h5>
         @if (announcement.responses && announcement.responses.length > 0) {
           <ul class="responses-list">
             @for (resp of announcement.responses; track resp.id) {
               <li class="response-item">
-                <div class="response-item__info">
-                  <i class="pi pi-user"></i>
-                  <strong>{{ resp.respondentUsername }}</strong> a postulé.
+                <div class="response-item__main">
+                  <div class="response-item__applicant">
+                    <i class="pi pi-user"></i>
+                    <strong>{{ resp.respondentFullName || resp.respondentUsername }}</strong>
+                    @if (resp.respondentInstrument) {
+                      <span class="applicant-instrument">({{ resp.respondentInstrument }})</span>
+                    }
+                    @if (resp.respondedAt) {
+                      <span class="applicant-date">• {{ resp.respondedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                    }
+                  </div>
+                  @if (resp.message) {
+                    <div class="response-item__message">
+                      <i class="pi pi-comment"></i>
+                      <span>« {{ resp.message }} »</span>
+                    </div>
+                  }
                 </div>
-                <span class="response-status" [class]="'response-status--' + resp.status | lowercase">
-                  {{ translateStatus(resp.status) }}
-                </span>
+
+                <div class="response-item__actions">
+                  @if (resp.status === 'PENDING') {
+                    <div class="decision-buttons">
+                      <button
+                        type="button"
+                        class="btn-action btn-action--accept"
+                        [disabled]="isUpdating(resp.id)"
+                        (click)="updateApplicationStatus(announcement, resp, 'ACCEPTED')"
+                        title="Accepter cette candidature">
+                        <i class="pi pi-check"></i> Accepter
+                      </button>
+                      <button
+                        type="button"
+                        class="btn-action btn-action--reject"
+                        [disabled]="isUpdating(resp.id)"
+                        (click)="updateApplicationStatus(announcement, resp, 'REJECTED')"
+                        title="Refuser cette candidature">
+                        <i class="pi pi-times"></i> Refuser
+                      </button>
+                    </div>
+                  } @else {
+                    <span class="response-status" [class]="'response-status--' + (resp.status | lowercase)">
+                      <i [class]="resp.status === 'ACCEPTED' ? 'pi pi-check' : 'pi pi-times'"></i>
+                      {{ translateStatus(resp.status) }}
+                    </span>
+                  }
+                </div>
               </li>
             }
           </ul>
         } @else {
-          <p class="no-responses">Aucune réponse pour le moment.</p>
+          <p class="no-responses">Aucune candidature pour le moment.</p>
         }
       </div>
     </div>

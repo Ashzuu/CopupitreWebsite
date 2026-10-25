@@ -59,7 +59,8 @@
   border-bottom: 2px solid rgba($color-discrete, 0.2);
 }
 
-.org-tab {
+.org-tab,
+.org-tab-btn {
   display: inline-flex;
   align-items: center;
   gap: $spacing-xs;
@@ -79,7 +80,9 @@
     font-size: 1.1rem;
   }
 
-  &__badge {
+  &__badge,
+  .org-tab__badge,
+  .admin-tab-badge {
     background: rgba($color-discrete, 0.3);
     color: $color-secondary;
     font-size: $font-size-xs;
@@ -92,11 +95,14 @@
     color: $color-primary;
   }
 
-  &--active {
+  &--active,
+  &.org-tab--active,
+  &.org-tab-btn--active {
     color: $color-primary;
     border-bottom-color: $color-primary;
 
-    .org-tab__badge {
+    .org-tab__badge,
+    .admin-tab-badge {
       background: rgba($color-primary, 0.15);
       color: $color-primary-dark;
     }

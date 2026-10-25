@@ -15,58 +15,62 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      let title = 'Erreur réseau';
+      let title = 'Erreur';
       let message = 'Une erreur est survenue lors de la communication.';
 
       if (error.status === 0) {
         title = 'Serveur inaccessible';
         message = 'Impossible de contacter le serveur. Veuillez vérifier votre connexion internet.';
       } else {
-        title = `Erreur ${error.status}`;
-
-        // Extract message from response payload if present
+        // 1. Extraction du message d'erreur métier renvoyé par le backend
+        let backendMsg: string | null = null;
         if (error.error && typeof error.error === 'object') {
-          // Can be error.error.message, error.error.error, etc.
-          message = error.error.message || error.error.error || error.error.username || error.message;
-        } else if (typeof error.error === 'string') {
-          message = error.error;
-        } else {
-          message = error.message;
+          backendMsg = error.error.message || error.error.error || error.error.detail || null;
+          if (backendMsg && backendMsg.includes('Http failure response')) {
+            backendMsg = null;
+          }
+        } else if (typeof error.error === 'string' && error.error.trim().length > 0) {
+          if (!error.error.includes('Http failure response')) {
+            backendMsg = error.error.trim();
+          }
         }
 
-        // Custom localized messages based on HTTP Status Codes
+        // 2. Définition du titre et du message selon le statut HTTP
         switch (error.status) {
           case 400:
-            title = 'Requête incorrecte';
-            if (message.includes('Http failure response')) {
-              message = 'Les données fournies sont invalides ou incomplètes.';
-            }
+            title = 'Erreur';
+            message = backendMsg || 'Les données fournies sont invalides ou incomplètes.';
             break;
           case 401:
-            title = 'Non autorisé';
-            if (message.includes('Http failure') || message.includes('Unauthorized') || message.toLowerCase().includes('credential')) {
-              message = 'Vos identifiants sont incorrects ou votre session a expiré.';
-            }
+            title = 'Session expirée';
+            message = backendMsg || 'Vos identifiants sont incorrects ou votre session a expiré.';
             break;
           case 403:
             title = 'Accès interdit';
-            message = "Vous n'avez pas l'autorisation d'accéder à cette fonctionnalité.";
+            message = backendMsg || "Vous n'avez pas l'autorisation d'accéder à cette fonctionnalité.";
             break;
           case 404:
             title = 'Introuvable';
-            message = 'La ressource demandée n\'existe pas ou a été déplacée.';
+            message = backendMsg || "La ressource demandée n'existe pas ou a été déplacée.";
+            break;
+          case 409:
+            title = 'Conflit';
+            message = backendMsg || 'Un conflit est survenu avec les données existantes.';
             break;
           case 500:
+          default:
             title = 'Erreur serveur';
-            message = 'Une erreur interne est survenue sur le serveur. Veuillez réessayer plus tard.';
+            message = backendMsg || 'Une erreur interne est survenue sur le serveur. Veuillez réessayer plus tard.';
             break;
         }
       }
 
-      // Display the error visually
+      // Marquer l'erreur pour que les abonnés locaux sachent qu'elle a déjà été notifiée à l'utilisateur
+      (error as any)._notificationShown = true;
+
+      // Afficher une seule notification claire et lisible
       errorService.showError(message, title);
 
-      // Still propagate the error so calling components can react (e.g. stop a loader)
       return throwError(() => error);
     })
   );

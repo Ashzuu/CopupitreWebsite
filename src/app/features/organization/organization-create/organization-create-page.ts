@@ -54,8 +54,10 @@ export class OrganizationCreatePage implements OnInit {
       next: (org) => {
         this.patchForm(org);
       },
-      error: () => {
-        this.errorService.showError("Impossible de charger les informations de l'organisation.");
+      error: (err) => {
+        if (!err?._notificationShown) {
+          this.errorService.showError("Impossible de charger les informations de l'organisation.");
+        }
         this.router.navigate(['/dashboard']);
       },
     });
@@ -83,8 +85,8 @@ export class OrganizationCreatePage implements OnInit {
           this.fb.group({
             id: [s.id],
             dayOfWeek: [s.dayOfWeek, Validators.required],
-            startTime: [s.startTime, [Validators.required, Validators.pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)]],
-            endTime: [s.endTime, [Validators.required, Validators.pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)]],
+            startTime: [this.formatTime(s.startTime), [Validators.required, Validators.pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)]],
+            endTime: [this.formatTime(s.endTime), [Validators.required, Validators.pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)]],
             location: [s.location, Validators.required],
           })
         );
@@ -98,9 +100,9 @@ export class OrganizationCreatePage implements OnInit {
         this.rehearsalManuals.push(
           this.fb.group({
             id: [m.id],
-            manualDate: [m.manualDate, Validators.required],
-            startTime: [m.startTime, [Validators.required, Validators.pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)]],
-            endTime: [m.endTime, [Validators.required, Validators.pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)]],
+            manualDate: [this.formatDate(m.manualDate), Validators.required],
+            startTime: [this.formatTime(m.startTime), [Validators.required, Validators.pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)]],
+            endTime: [this.formatTime(m.endTime), [Validators.required, Validators.pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)]],
             location: [m.location, Validators.required],
           })
         );
@@ -121,7 +123,7 @@ export class OrganizationCreatePage implements OnInit {
       org.concerts.forEach((c) => {
         let formattedDate = '';
         if (c.eventDate) {
-          formattedDate = new Date(c.eventDate).toISOString().substring(0, 10);
+          formattedDate = this.formatDate(c.eventDate);
         }
         this.concerts.push(
           this.fb.group({
@@ -133,6 +135,40 @@ export class OrganizationCreatePage implements OnInit {
           })
         );
       });
+    }
+  }
+
+  /** Formats a time string (e.g. "20:00:00" or "20:00") into "HH:mm". */
+  formatTime(time: string | null | undefined): string {
+    if (!time) return '';
+    const trimmed = String(time).trim();
+    if (/^\d{2}:\d{2}$/.test(trimmed)) {
+      return trimmed;
+    }
+    if (/^\d{2}:\d{2}:\d{2}/.test(trimmed)) {
+      return trimmed.substring(0, 5);
+    }
+    const parts = trimmed.split(':');
+    if (parts.length >= 2) {
+      return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+    }
+    return trimmed;
+  }
+
+  /** Formats a date string into "YYYY-MM-DD". */
+  formatDate(date: string | null | undefined): string {
+    if (!date) return '';
+    const trimmed = String(date).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+      return trimmed;
+    }
+    if (trimmed.length >= 10 && /^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
+      return trimmed.substring(0, 10);
+    }
+    try {
+      return new Date(trimmed).toISOString().substring(0, 10);
+    } catch {
+      return trimmed;
     }
   }
 
@@ -262,8 +298,10 @@ export class OrganizationCreatePage implements OnInit {
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {
-          const msg = err?.error?.message || "Une erreur est survenue lors de l'enregistrement de l'organisation.";
-          this.errorService.showError(msg);
+          if (!err?._notificationShown) {
+            const msg = err?.error?.message || err?.error?.error || "Une erreur est survenue lors de l'enregistrement de l'organisation.";
+            this.errorService.showError(msg);
+          }
         },
       });
     } else {

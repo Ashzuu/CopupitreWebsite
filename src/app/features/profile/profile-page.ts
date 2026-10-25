@@ -53,8 +53,10 @@ export class ProfilePage implements OnInit {
       next: (profile) => {
         this.populateForm(profile);
       },
-      error: () => {
-        this.notifService.showError('Impossible de charger les données de votre profil.');
+      error: (err) => {
+        if (!err?._notificationShown) {
+          this.notifService.showError('Impossible de charger les données de votre profil.');
+        }
       },
     });
   }
@@ -135,8 +137,10 @@ export class ProfilePage implements OnInit {
         this.notifService.showSuccess('Votre profil musical a été mis à jour avec succès.');
       },
       error: (err) => {
-        const errorMsg = err?.error?.message || 'Erreur lors de la mise à jour de votre profil.';
-        this.notifService.showError(errorMsg);
+        if (!err?._notificationShown) {
+          const errorMsg = err?.error?.message || err?.error?.error || 'Erreur lors de la mise à jour de votre profil.';
+          this.notifService.showError(errorMsg);
+        }
       },
     });
   }

@@ -1,15 +1,17 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { EquipmentRequest, Organization, ReinforcementAnnouncement } from '@models/index';
+import { EquipmentRequest, Organization, PermanentAnnouncement, ReinforcementAnnouncement } from '@models/index';
 import { DashboardRepository } from './dashboard-repository';
 
 export interface OrgDashboardBlock {
   /** The organization property. */
   organization: Organization;
-  /** The announcements property. */
+  /** The announcements property (Renforts ponctuels). */
   announcements: ReinforcementAnnouncement[];
   /** The equipmentRequests property. */
   equipmentRequests: EquipmentRequest[];
+  /** The permanentAnnouncements property (Recrutements permanents / Besoins annuels). */
+  permanentAnnouncements: PermanentAnnouncement[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -34,16 +36,22 @@ export class DashboardService {
   async loadDashboardData(): Promise<void> {
     this.error.set(null);
     try {
-      const [orgs, allAnnouncements, allEquipment] = await Promise.all([
+      const [orgs, allAnnouncements, allEquipment, myPermanentAnnouncements] = await Promise.all([
         firstValueFrom(this.repository.getUserOrganizations()),
         firstValueFrom(this.repository.getAllReinforcementAnnouncements()),
         firstValueFrom(this.repository.getAllEquipmentRequests()),
+        firstValueFrom(this.repository.getMyPermanentAnnouncements()).catch(() => [] as PermanentAnnouncement[]),
       ]);
       this.organizations.set(orgs);
-      this.allAnnouncements.set(allAnnouncements.slice(0,3));
+
+      // Exclure les annonces des organisations administrées du panel des offres publiques
+      const userOrgIds = new Set(orgs.map((o) => o.id));
+      const publicAnnouncements = allAnnouncements.filter((a) => !userOrgIds.has(a.organizationId));
+
+      this.allAnnouncements.set(publicAnnouncements.slice(0, 3));
       this.allEquipmentRequests.set(allEquipment.slice(0, 3));
 
-      this.numberOfReinforcements.set(allAnnouncements.length);
+      this.numberOfReinforcements.set(publicAnnouncements.length);
 
       const blocks: OrgDashboardBlock[] = [];
 
@@ -62,17 +70,20 @@ export class DashboardService {
           }),
         );
 
+        const orgPermanent = myPermanentAnnouncements.filter((p) => p.organizationId === org.id);
+
         blocks.push({
           organization: org,
           announcements: announcementsWithResponses,
           equipmentRequests: orgEquipment,
+          permanentAnnouncements: orgPermanent,
         });
       }
 
       this.orgBlocks.set(blocks);
     } catch (e) {
       this.error.set('Une erreur est survenue lors du chargement des données.');
-      console.error('Dashboard data loading error');
+      console.error('Dashboard data loading error', e);
     }
   }
 }

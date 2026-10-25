@@ -5,25 +5,111 @@
         <h4>{{ announcement.title }}</h4>
         <div class="announcement-item__meta">
           <span><i class="pi pi-building"></i> {{ announcement.organizationName }}</span>
+          @if (announcement.location || announcement.eventLocation) {
+            <span><i class="pi pi-map-marker"></i> {{ announcement.location || announcement.eventLocation }}</span>
+          }
           <span><i class="pi pi-calendar"></i> {{ announcement.eventDate | date:'dd/MM/yyyy' }}</span>
         </div>
+        @if (announcement.description) {
+          <p class="announcement-item__description">{{ announcement.description }}</p>
+        }
       </div>
+
       <div class="announcement-item__side">
         <div class="announcement-item__indicators">
-          <span class="status-badge" [class]="'status-badge--' + announcement.status | lowercase">
+          <span class="status-badge" [class]="'status-badge--' + (announcement.status | lowercase)">
             {{ translateStatus(announcement.status) }}
           </span>
-            <span class="instrument-tag">{{ announcement.instrumentNeeded }}</span>
+          <span class="instrument-tag">
+            <i class="pi pi-tag"></i> {{ announcement.instrumentNeeded }}
+          </span>
+          <span class="quota-tag">
+            <i class="pi pi-users"></i> {{ announcement.validatedCount || 0 }} / {{ announcement.requiredCount || announcement.requiredQuantity || 1 }}
+          </span>
         </div>
-        @if (canDelete(announcement)) {
-          <button
-            class="btn-delete"
-            title="Supprimer cette annonce"
-            (click)="onDelete(announcement.id)">
-            <i class="pi pi-trash"></i>
-          </button>
-        }
+
+        <div class="announcement-item__actions">
+          @if (hasApplied(announcement.id)) {
+            @let app = getUserApplication(announcement.id)!;
+            <span class="app-status-badge" [class]="'app-status-badge--' + (app.status | lowercase)">
+              <i class="pi pi-check-circle"></i> Candidature : {{ translateAppStatus(app.status) }}
+            </span>
+          } @else if (canApply(announcement)) {
+            <button
+              type="button"
+              class="btn btn--primary btn--small btn-apply"
+              (click)="openApplyModal(announcement)">
+              <i class="pi pi-send"></i> Postuler
+            </button>
+          } @else if (!authService.isAuthenticated() && announcement.status === 'OPEN') {
+            <a routerLink="/auth/login" class="btn btn--secondary btn--small btn-apply">
+              <i class="pi pi-sign-in"></i> Postuler
+            </a>
+          }
+
+          @if (canDelete(announcement)) {
+            <button
+              type="button"
+              class="btn-delete"
+              title="Supprimer cette annonce"
+              (click)="onDelete(announcement.id)">
+              <i class="pi pi-trash"></i>
+            </button>
+          }
+        </div>
       </div>
     </div>
   }
 </div>
+
+@if (selectedAnnouncement(); as modalAnnouncement) {
+  <div class="apply-modal-backdrop" (click)="closeApplyModal()"></div>
+  <div class="apply-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="apply-modal__header">
+      <h3 id="modal-title"><i class="pi pi-send"></i> Postuler comme renfort</h3>
+      <button type="button" class="btn-close" (click)="closeApplyModal()" aria-label="Fermer">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+
+    <div class="apply-modal__body">
+      <div class="apply-modal__summary">
+        <strong>{{ modalAnnouncement.title }}</strong>
+        <p class="summary-meta">
+          <span><i class="pi pi-building"></i> {{ modalAnnouncement.organizationName }}</span>
+          <span><i class="pi pi-tag"></i> {{ modalAnnouncement.instrumentNeeded }}</span>
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="apply-message">Message ou justification (facultatif) :</label>
+        <p class="help-text">Présentez brièvement vos disponibilités, expérience ou niveau.</p>
+        <textarea
+          id="apply-message"
+          class="input-field"
+          rows="4"
+          [ngModel]="applicationMessage()"
+          (ngModelChange)="applicationMessage.set($event)"
+          placeholder="Ex : Instrument : {{modalAnnouncement.instrumentNeeded}}, depuis X ans en harmonie, je suis disponible pour les répétitions...">
+        </textarea>
+      </div>
+    </div>
+
+    <div class="apply-modal__footer">
+      <button type="button" class="btn btn--secondary" (click)="closeApplyModal()" [disabled]="isSubmitting()">
+        Annuler
+      </button>
+      <button
+        type="button"
+        class="btn btn--primary"
+        (click)="submitApplication()"
+        [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          <i class="pi pi-spin pi-spinner"></i> Envoi...
+        } @else {
+          <i class="pi pi-check"></i> Confirmer ma candidature
+        }
+      </button>
+    </div>
+  </div>
+}

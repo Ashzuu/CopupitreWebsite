@@ -4,37 +4,80 @@
       <h2><i class="pi pi-filter"></i> Filtrer les annonces</h2>
       <div class="filters-grid">
         <div class="form-group">
-          <label>Ville</label>
-          <input type="text" class="input-field" [ngModel]="filterCity()" (ngModelChange)="filterCity.set($event)" placeholder="Ex: Lyon, Paris...">
+          <label for="filter-city">Ville</label>
+          <input id="filter-city" type="text" class="input-field" [ngModel]="filterCity()" (ngModelChange)="filterCity.set($event)" placeholder="Ex: Lyon, Paris...">
         </div>
         <div class="form-group">
-          <label>Organisation</label>
-          <input type="text" class="input-field" [ngModel]="filterOrg()" (ngModelChange)="filterOrg.set($event)" placeholder="Nom de l'orchestre...">
+          <label for="filter-org">Organisation</label>
+          <input id="filter-org" type="text" class="input-field" [ngModel]="filterOrg()" (ngModelChange)="filterOrg.set($event)" placeholder="Nom de l'orchestre...">
         </div>
         <div class="form-group">
-          <label>Instrument recherché</label>
-          <input type="text" class="input-field" [ngModel]="filterInstrument()" (ngModelChange)="filterInstrument.set($event)">
+          <label for="filter-inst">Instrument recherché</label>
+          <input id="filter-inst" type="text" class="input-field" [ngModel]="filterInstrument()" (ngModelChange)="filterInstrument.set($event)" placeholder="Ex: Clarinette, Trompette...">
         </div>
       </div>
     </div>
 
-    <div class="results-section">
+    <!-- Onglets de navigation : Demandes publiques / Mes demandes (visible pour les administrateurs) -->
+    @if (hasAdminOrganization()) {
+      <nav class="reinforcements-tabs" role="tablist" aria-label="Catégories d'annonces de renfort">
+        <button
+          type="button"
+          role="tab"
+          id="tab-public"
+          class="reinforcements-tab"
+          [class.reinforcements-tab--active]="activeTab() === 'public'"
+          [attr.aria-selected]="activeTab() === 'public'"
+          aria-controls="panel-announcements"
+          (click)="setTab('public')">
+          <i class="pi pi-globe" aria-hidden="true"></i> Demandes publiques
+          <span class="reinforcements-tab__badge">{{ publicFilteredAnnouncements().length }}</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-my"
+          class="reinforcements-tab"
+          [class.reinforcements-tab--active]="activeTab() === 'my'"
+          [attr.aria-selected]="activeTab() === 'my'"
+          aria-controls="panel-announcements"
+          (click)="setTab('my')">
+          <i class="pi pi-folder" aria-hidden="true"></i> Mes demandes
+          <span class="reinforcements-tab__badge">{{ myFilteredAnnouncements().length }}</span>
+        </button>
+      </nav>
+    }
+
+    <div class="results-section" id="panel-announcements" role="tabpanel" [attr.aria-labelledby]="activeTab() === 'public' ? 'tab-public' : 'tab-my'">
       <div class="results-header">
-        <h2><i class="pi pi-list"></i> Annonces disponibles ({{ filteredAnnouncements().length }})</h2>
+        <h2>
+          <i class="pi pi-list"></i>
+          @if (activeTab() === 'my') {
+            Mes demandes publiées ({{ myFilteredAnnouncements().length }})
+          } @else {
+            Demandes disponibles ({{ publicFilteredAnnouncements().length }})
+          }
+        </h2>
         @if (hasAdminOrganization()) {
           <a routerLink="/annonces/create" class="btn btn--primary btn--small">
             <i class="pi pi-plus"></i> Créer une annonce
           </a>
         }
       </div>
-      @if (filteredAnnouncements().length > 0) {
+      @if (displayedAnnouncements().length > 0) {
         <copupitre-reinforcement-list
-          [announcements]="filteredAnnouncements()"
+          [announcements]="displayedAnnouncements()"
           [adminOrgIds]="adminOrgIds()"
-          (deleteRequest)="onDeleteAnnouncement($event)">
+          [userApplications]="userApplications()"
+          (deleteRequest)="onDeleteAnnouncement($event)"
+          (applicationApplied)="onApplicationApplied($event)">
         </copupitre-reinforcement-list>
       } @else {
-        <p class="empty-state">Aucune annonce ne correspond à vos critères.</p>
+        @if (activeTab() === 'my') {
+          <p class="empty-state">Vous n'avez publié aucune demande correspondant à vos critères.</p>
+        } @else {
+          <p class="empty-state">Aucune annonce publique ne correspond à vos critères.</p>
+        }
       }
     </div>
   </div>

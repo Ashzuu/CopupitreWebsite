@@ -26,7 +26,7 @@
           <copupitre-dashboard-stat-card
             label="Demandes de Renforts"
             [value]="service.numberOfReinforcements().toString()"
-            icon="pi-megaphone"
+            icon="pi-bolt"
             accentColor="#EF8354">
           </copupitre-dashboard-stat-card>
         </div>
@@ -34,7 +34,7 @@
         <div class="dashboard__content-grid">
           <section class="dashboard__section">
             <div class="dashboard__section-header">
-              <h3 class="dashboard__section-subtitle"><i class="pi pi-globe"></i> Offres de Renforts Publiques</h3>
+              <h3 class="dashboard__section-subtitle"><i class="pi pi-bolt"></i> Offres de Renforts Publiques</h3>
               @if(service.organizations().length > 0){
                 <a class="btn btn--primary btn--small" routerLink="/annonces/create"><i class="pi pi-plus"></i> Ajouter</a>
               }
@@ -87,13 +87,23 @@
                   }
                 </div>
 
-                <!-- Annonces de renforts & Réponses -->
+                <!-- Annonces de renforts & Réponses (Ponctuels) -->
                 <div class="org-dashboard-block__col">
-                  <h4 class="org-dashboard-block__subtitle"><i class="pi pi-users"></i> Renforts demandés</h4>
+                  <h4 class="org-dashboard-block__subtitle"><i class="pi pi-bolt"></i> Renforts demandés (Ponctuels)</h4>
                   @if (block.announcements.length > 0) {
-                    <copupitre-my-announcements-panel [announcements]="block.announcements"></copupitre-my-announcements-panel>
+                    <copupitre-my-announcements-panel [announcements]="block.announcements" [announcementType]="'RENFORT'"></copupitre-my-announcements-panel>
                   } @else {
                     <p class="empty-text">Aucune annonce de renfort pour cette organisation.</p>
+                  }
+                </div>
+
+                <!-- Recrutements permanents (Besoins annuels de la saison) -->
+                <div class="org-dashboard-block__col">
+                  <h4 class="org-dashboard-block__subtitle"><i class="pi pi-id-card"></i> Recrutements permanents (Besoins annuels)</h4>
+                  @if (block.permanentAnnouncements && block.permanentAnnouncements.length > 0) {
+                    <copupitre-my-announcements-panel [announcements]="block.permanentAnnouncements" [announcementType]="'PERMANENT'"></copupitre-my-announcements-panel>
+                  } @else {
+                    <p class="empty-text">Aucun besoin permanent pour cette organisation.</p>
                   }
                 </div>
 

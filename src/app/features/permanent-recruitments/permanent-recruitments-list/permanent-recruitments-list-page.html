@@ -1,0 +1,328 @@
+<copupitre-base-layout [Footer]="false">
+  <div class="permanent-page container section">
+    <div class="permanent-page__header">
+      <div class="header-content">
+        <span class="page-category-tag"><i class="pi pi-id-card"></i> Recrutements Permanents</span>
+        <h1 class="permanent-page__title">Bourse aux Musiciens Permanents</h1>
+        <p class="permanent-page__subtitle">
+          Trouvez un pupitre fixe pour la saison parmi nos orchestres partenaires et rejoignez un ensemble musical à l'année.
+        </p>
+      </div>
+      @if (hasAdminOrganization()) {
+        <div class="header-actions">
+          <a routerLink="/organizations/create" class="btn btn--secondary">
+            <i class="pi pi-plus"></i> Créer un orchestre
+          </a>
+        </div>
+      }
+    </div>
+
+    <!-- Onglets de navigation : Demandes publiques vs Mes demandes -->
+    <div class="permanent-tabs" role="tablist" aria-label="Catégories des recrutements permanents">
+      <button
+        type="button"
+        role="tab"
+        id="tab-public"
+        class="permanent-tab-btn"
+        [class.permanent-tab-btn--active]="activeTab() === 'public'"
+        [attr.aria-selected]="activeTab() === 'public'"
+        aria-controls="panel-public"
+        (click)="setTab('public')"
+      >
+        <i class="pi pi-globe"></i> Demandes publiques
+        <span class="tab-badge">{{ publicAnnouncements().length }}</span>
+      </button>
+
+      @if (hasAdminOrganization()) {
+        <button
+          type="button"
+          role="tab"
+          id="tab-my"
+          class="permanent-tab-btn"
+          [class.permanent-tab-btn--active]="activeTab() === 'my'"
+          [attr.aria-selected]="activeTab() === 'my'"
+          aria-controls="panel-my"
+          (click)="setTab('my')"
+        >
+          <i class="pi pi-building"></i> Mes demandes (Mes organisations)
+          <span class="tab-badge">{{ myAnnouncements().length }}</span>
+        </button>
+      }
+    </div>
+
+    <!-- Barre de filtres de recherche -->
+    <div class="filters-card">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label for="filterInstrument"><i class="pi pi-music"></i> Instrument</label>
+          <input
+            type="text"
+            id="filterInstrument"
+            [ngModel]="filterInstrument()"
+            (ngModelChange)="filterInstrument.set($event)"
+            placeholder="Ex: Trompette, Violon, Hautbois..."
+            class="input-field"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label for="filterCity"><i class="pi pi-map-marker"></i> Ville</label>
+          <input
+            type="text"
+            id="filterCity"
+            [ngModel]="filterCity()"
+            (ngModelChange)="filterCity.set($event)"
+            placeholder="Ex: Lyon, Paris, Toulouse..."
+            class="input-field"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label for="filterOrg"><i class="pi pi-building"></i> Orchestre / Ensemble</label>
+          <input
+            type="text"
+            id="filterOrg"
+            [ngModel]="filterOrg()"
+            (ngModelChange)="filterOrg.set($event)"
+            placeholder="Ex: Harmonie municipale, Philharmonie..."
+            class="input-field"
+          />
+        </div>
+
+        <div class="filter-actions">
+          <button
+            type="button"
+            class="btn btn--secondary btn--small"
+            (click)="resetFilters()"
+            [disabled]="!filterInstrument() && !filterCity() && !filterOrg()"
+            title="Réinitialiser les filtres"
+          >
+            <i class="pi pi-filter-slash"></i> Effacer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liste des annonces permanentes -->
+    <div
+      id="panel-permanent-announcements"
+      role="tabpanel"
+      [attr.aria-labelledby]="activeTab() === 'public' ? 'tab-public' : 'tab-my'"
+      class="announcements-container"
+    >
+      @if (displayedAnnouncements().length > 0) {
+        <div class="permanent-cards-grid">
+          @for (item of displayedAnnouncements(); track item.id) {
+            <article class="permanent-card">
+              <header class="permanent-card__header">
+                <div class="header-badges">
+                  <span class="type-pill"><i class="pi pi-id-card"></i> Recrutement Permanent</span>
+                  <span class="status-badge" [class]="'status-badge--' + (item.status | lowercase)">
+                    {{ translateStatus(item.status) }}
+                  </span>
+                </div>
+                <span class="quota-pill">
+                  <i class="pi pi-users"></i> {{ item.validatedCount || 0 }} / {{ item.requiredCount }} validé(s)
+                </span>
+              </header>
+
+              <div class="permanent-card__body">
+                <div class="instrument-title-row">
+                  <h2 class="instrument-name"><i class="pi pi-music"></i> {{ item.instrument }}</h2>
+                  <span class="places-count">
+                    {{ (item.requiredCount - (item.validatedCount || 0)) > 0 ? (item.requiredCount - (item.validatedCount || 0)) + ' place(s) restante(s)' : 'Complet' }}
+                  </span>
+                </div>
+
+                <!-- Informations de l'organisation -->
+                <div class="org-details-box">
+                  <div class="org-name-line">
+                    <i class="pi pi-building"></i>
+                    <a [routerLink]="['/organization', item.organizationId]" class="org-link" title="Consulter la fiche complète">
+                      {{ item.organizationName }}
+                    </a>
+                    @if (item.organizationCity) {
+                      <span class="org-city"><i class="pi pi-map-marker"></i> {{ item.organizationCity }}</span>
+                    }
+                  </div>
+
+                  @if (item.formationType || item.musicianCount) {
+                    <div class="org-tags-line">
+                      @if (item.formationType) {
+                        <span class="meta-tag"><i class="pi pi-tag"></i> {{ item.formationType }}</span>
+                      }
+                      @if (item.musicianCount) {
+                        <span class="meta-tag"><i class="pi pi-users"></i> ~{{ item.musicianCount }} musiciens</span>
+                      }
+                    </div>
+                  }
+
+                  @if (item.organizationDescription) {
+                    <p class="org-desc">{{ item.organizationDescription }}</p>
+                  }
+                </div>
+
+                <!-- Répétitions régulières -->
+                @if (item.rehearsalSchedule || (item.regularSchedules && item.regularSchedules.length > 0)) {
+                  <div class="rehearsal-box">
+                    <span class="box-title"><i class="pi pi-calendar"></i> Répétitions régulières :</span>
+                    @if (item.regularSchedules && item.regularSchedules.length > 0) {
+                      <ul class="schedules-list">
+                        @for (sched of item.regularSchedules; track sched.id) {
+                          <li>
+                            <strong>{{ translateDayOfWeek(sched.dayOfWeek) }}</strong> {{ sched.startTime }} – {{ sched.endTime }}
+                            @if (sched.location) {
+                              <span class="sched-loc">({{ sched.location }})</span>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    } @else if (item.rehearsalSchedule) {
+                      <p class="schedule-note">{{ item.rehearsalSchedule }}</p>
+                    }
+
+                    @if (item.rehearsalAddress) {
+                      <p class="rehearsal-address">
+                        <i class="pi pi-compass"></i> {{ item.rehearsalAddress }}
+                      </p>
+                    }
+                  </div>
+                }
+
+                <!-- Description / Niveau attendu -->
+                @if (item.description) {
+                  <div class="need-desc-box">
+                    <span class="box-title"><i class="pi pi-info-circle"></i> Profil / Niveau attendu :</span>
+                    <p>{{ item.description }}</p>
+                  </div>
+                }
+              </div>
+
+              <footer class="permanent-card__footer">
+                <a [routerLink]="['/organization', item.organizationId]" class="btn btn--secondary btn--small">
+                  <i class="pi pi-external-link"></i> Voir l'ensemble
+                </a>
+
+                <div class="action-cell">
+                  @if (hasApplied(item.id)) {
+                    @let userApp = getUserApplication(item.id);
+                    <span class="applied-badge" [class]="'applied-badge--' + (userApp?.status | lowercase)">
+                      <i class="pi pi-check-circle"></i>
+                      Candidature : {{ translateStatus(userApp?.status || 'PENDING') }}
+                    </span>
+                  } @else if (isAdminOfOrg(item)) {
+                    <span class="admin-badge" title="Vous administrez cet ensemble">
+                      <i class="pi pi-shield"></i> Votre organisation
+                    </span>
+                  } @else if (authService.isAuthenticated()) {
+                    <button
+                      type="button"
+                      class="btn btn--primary btn--small"
+                      [disabled]="item.status !== 'OPEN'"
+                      (click)="openApplyModal(item)"
+                    >
+                      <i class="pi pi-send"></i> Postuler au pupitre
+                    </button>
+                  } @else {
+                    <a routerLink="/login" class="btn btn--primary btn--small">
+                      <i class="pi pi-sign-in"></i> Se connecter pour postuler
+                    </a>
+                  }
+                </div>
+              </footer>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <i class="pi pi-search empty-icon" aria-hidden="true"></i>
+          <h3>Aucun recrutement permanent correspondant</h3>
+          <p>
+            @if (filterInstrument() || filterCity() || filterOrg()) {
+              Aucune annonce ne correspond à vos critères de recherche. Essayez d'élargir vos filtres.
+            } @else if (activeTab() === 'my') {
+              Vos organisations n'ont aucun besoin permanent enregistré pour la saison. Vous pouvez en renseigner en modifiant la fiche de l'organisation.
+            } @else {
+              Il n'y a actuellement aucun poste permanent ouvert au recrutement.
+            }
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Modal de candidature au poste permanent -->
+  @if (selectedAnnouncement(); as ann) {
+    <div class="apply-modal-backdrop" (click)="closeApplyModal()" aria-hidden="true"></div>
+    <div
+      class="apply-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div class="apply-modal__header">
+        <h3 id="modal-title">
+          <i class="pi pi-id-card"></i> Postuler : Pupitre {{ ann.instrument }}
+        </h3>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeApplyModal()"
+          aria-label="Fermer"
+        >
+          <i class="pi pi-times" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="apply-modal__body">
+        <div class="modal-org-summary">
+          <h4>{{ ann.organizationName }}</h4>
+          <p><i class="pi pi-map-marker"></i> {{ ann.organizationCity || 'Ville non précisée' }}</p>
+        </div>
+
+        <div class="modal-notice">
+          <i class="pi pi-info-circle"></i>
+          <span>
+            Ce recrutement concerne une intégration permanente pour la saison musicale. L'ensemble prendra contact avec vous suite à l'étude de votre candidature.
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="apply-message">Message de présentation ou motivation (optionnel) :</label>
+          <textarea
+            id="apply-message"
+            rows="4"
+            class="input-field"
+            placeholder="Ex : Bonjour, je pratique le violon depuis 10 ans et je cherche à intégrer un orchestre convivial. Je suis disponible pour toutes vos répétitions hebdomadaires."
+            [ngModel]="applicationMessage()"
+            (ngModelChange)="applicationMessage.set($event)"
+            maxlength="1000"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="apply-modal__footer">
+        <button
+          type="button"
+          class="btn btn--secondary"
+          (click)="closeApplyModal()"
+          [disabled]="isSubmitting()"
+        >
+          Annuler
+        </button>
+        <button
+          type="button"
+          class="btn btn--primary"
+          (click)="submitApplication()"
+          [disabled]="isSubmitting()"
+        >
+          @if (isSubmitting()) {
+            <i class="pi pi-spin pi-spinner"></i> Envoi en cours...
+          } @else {
+            <i class="pi pi-check"></i> Confirmer ma candidature
+          }
+        </button>
+      </div>
+    </div>
+  }
+</copupitre-base-layout>

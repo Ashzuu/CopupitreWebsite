@@ -6,6 +6,7 @@ import { LoaderService } from '@services/loader-service';
 import { BaseLayout } from '@layouts/base-layout/base-layout';
 import { ReinforcementList } from '@pages/dashboard/components/reinforcement-list/reinforcement-list';
 import { ScheduleTable } from '@pages/dashboard/components/schedule-table/schedule-table';
+import { MyAnnouncementsPanel } from '@pages/dashboard/components/my-announcements-panel/my-announcements-panel';
 import { OrganizationDetailService } from './data/organization-detail-service';
 import { AuthService } from '@services/auth-service';
 import { OrganizationRepository } from '@repositories/organization-repository';
@@ -13,7 +14,15 @@ import { NotifService } from '@services/notif-service';
 
 @Component({
   selector: 'copupitre-organization-detail-page',
-  imports: [BaseLayout, ScheduleTable, ReinforcementList, DatePipe, RouterLink, FormsModule],
+  imports: [
+    BaseLayout,
+    ScheduleTable,
+    ReinforcementList,
+    MyAnnouncementsPanel,
+    DatePipe,
+    RouterLink,
+    FormsModule,
+  ],
   providers: [OrganizationDetailService],
   templateUrl: './organization-detail-page.html',
   styleUrl: './organization-detail-page.scss',
@@ -89,8 +98,10 @@ export class OrganizationDetailPage implements OnInit {
       },
       error: (err) => {
         this.isSubmittingAdmin.set(false);
-        const msg = err?.error?.message || "Impossible d'ajouter cet administrateur. Vérifiez que l'utilisateur existe.";
-        this.notifService.showError(msg, "Erreur lors de l'ajout");
+        if (!err?._notificationShown) {
+          const msg = err?.error?.message || err?.error?.error || "Impossible d'ajouter cet administrateur. Vérifiez que l'utilisateur existe.";
+          this.notifService.showError(msg, "Erreur lors de l'ajout");
+        }
       },
     });
   }
@@ -142,8 +153,10 @@ export class OrganizationDetailPage implements OnInit {
         this.notifService.showSuccess(`L'administrateur "${username}" a bien été retiré.`);
       },
       error: (err) => {
-        const msg = err?.error?.message || "Impossible de retirer cet administrateur.";
-        this.notifService.showError(msg, "Erreur lors du retrait");
+        if (!err?._notificationShown) {
+          const msg = err?.error?.message || err?.error?.error || "Impossible de retirer cet administrateur.";
+          this.notifService.showError(msg, "Erreur lors du retrait");
+        }
       },
     });
   }

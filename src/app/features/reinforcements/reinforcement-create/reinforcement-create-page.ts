@@ -40,6 +40,9 @@ export class ReinforcementCreatePage implements OnInit {
   ngOnInit() {
     this.repo.getUserOrganizations().subscribe((orgs) => {
       this.userOrganizations.set(orgs);
+      if (orgs.length > 0 && !this.form.get('organizationId')?.value) {
+        this.form.patchValue({ organizationId: orgs[0].id.toString() });
+      }
     });
   }
 
@@ -74,7 +77,7 @@ export class ReinforcementCreatePage implements OnInit {
         return;
       }
 
-      // Map the multi-instrument form into separate backend DTO request payloads
+      // Map the multi-instrument form into separate backend DTO request payloads (RG-RENF-02)
       const requests = instrumentsList.map((inst: any) => {
         const payload = {
           organizationId: orgId,
@@ -94,8 +97,11 @@ export class ReinforcementCreatePage implements OnInit {
           this.router.navigate(['/renforts']);
         },
         error: (err) => {
-          console.error('[ReinforcementCreatePage] Error saving reinforcement requests:');
-          this.errorService.showError("Impossible de publier l'annonce de renfort.");
+          console.error('[ReinforcementCreatePage] Error saving reinforcement requests:', err);
+          if (!err?._notificationShown) {
+            const msg = err?.error?.message || err?.error?.error || "Impossible de publier l'annonce de renfort.";
+            this.errorService.showError(msg);
+          }
         }
       });
     } else {

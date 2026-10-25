@@ -11,6 +11,7 @@
 
     <nav class="header__nav" [class.header__nav--open]="menuOpen()">
       <ul class="header__nav-list">
+        <li><a routerLink="/recrutements" class="header__nav-link" (click)="closeMenu()">Recrutements</a></li>
         <li><a routerLink="/renforts" class="header__nav-link" (click)="closeMenu()">Renforts</a></li>
         <li><a routerLink="/materiels" class="header__nav-link" (click)="closeMenu()">Matériel</a></li>
         <li><a routerLink="/organisations" class="header__nav-link" (click)="closeMenu()">Organisations</a></li>

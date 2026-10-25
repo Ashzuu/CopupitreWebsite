@@ -1,5 +1,5 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth-service';
 
 @Component({
@@ -9,6 +9,8 @@ import { AuthService } from '@services/auth-service';
   styleUrl: './header.scss',
 })
 export class Header {
+  /** The router property. */
+  readonly router = inject(Router);
   /** The authService property. */
   readonly authService = inject(AuthService);
   /** The mobile navigation menuOpen property. */
@@ -53,6 +55,7 @@ export class Header {
     this.authService.logout();
     this.closeProfileMenu();
     this.closeMenu();
+    this.router.navigate(['/login']);
   }
 
   /** Closes any open drawer on Escape key press. */

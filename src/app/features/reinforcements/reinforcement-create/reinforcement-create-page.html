@@ -4,11 +4,18 @@
       <h1><i class="pi pi-plus-circle"></i> Publier une annonce de renfort</h1>
       <p class="subtitle">Indiquez les besoins de votre organisation pour un événement spécifique.</p>
 
+      @if (userOrganizations().length === 0) {
+        <div class="empty-org-warning">
+          <i class="pi pi-info-circle"></i> Vous devez administrer au moins une organisation pour créer une annonce de renfort.
+        </div>
+      }
+
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-layout">
         
         <div class="form-group">
           <label for="org">Organisation <span class="required">*</span></label>
           <select id="org" formControlName="organizationId" class="input-field">
+            <option value="" disabled>Sélectionnez une organisation</option>
             @for (org of userOrganizations(); track org.id) {
               <option [value]="org.id">{{ org.name }}</option>
             }
@@ -56,7 +63,7 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn btn--primary">Publier l'annonce</button>
+          <button type="submit" class="btn btn--primary" [disabled]="userOrganizations().length === 0">Publier l'annonce</button>
         </div>
       </form>
     </div>

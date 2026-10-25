@@ -1,9 +1,11 @@
 @use '../../../../styles/variables' as *;
+
 .announcement-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
 }
+
 .announcement-item {
   display: flex;
   justify-content: space-between;
@@ -17,60 +19,150 @@
     background: rgba($color-primary, 0.05);
   }
 
-  @media (max-width: $breakpoint-sm) {
+  @media (max-width: $breakpoint-md) {
     flex-direction: column;
     align-items: flex-start;
-    gap: $spacing-sm;
+    gap: $spacing-md;
   }
 
-  &__main h4 {
-    margin: 0 0 $spacing-xs 0;
-    font-size: $font-size-base;
+  &__main {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 $spacing-xs 0;
+      font-size: $font-size-base;
+      font-weight: 600;
+    }
   }
 
   &__meta {
     display: flex;
+    flex-wrap: wrap;
     gap: $spacing-md;
     font-size: $font-size-xs;
     color: $color-text-light;
+    margin-bottom: $spacing-xs;
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+
+  &__description {
+    font-size: $font-size-sm;
+    color: $color-text-light;
+    margin: $spacing-xs 0 0 0;
+    line-height: 1.4;
   }
 
   &__side {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: $spacing-xs;
+    flex-direction: row;
+    gap: $spacing-md;
+    align-items: center;
 
-    @media (max-width: $breakpoint-sm) {
-      flex-direction: row;
-      align-items: center;
+    @media (max-width: $breakpoint-md) {
+      width: 100%;
+      justify-content: space-between;
+      flex-wrap: wrap;
     }
   }
+
+  &__indicators {
+    display: flex;
+    gap: 6px;
+    flex-direction: column;
+    align-items: flex-end;
+
+    @media (max-width: $breakpoint-md) {
+      align-items: flex-start;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
 }
+
 .status-badge {
   font-size: $font-size-xs;
   font-weight: 600;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: $border-radius-sm;
 
-  &--open { background: rgba($color-success, 0.1); color: $color-success; }
-  &--objective_met { background: rgba($color-warning, 0.1); color: #B38600; }
-  &--closed { background: rgba($color-discrete, 0.2); color: $color-text-light; }
+  &--open {
+    background: rgba($color-success, 0.12);
+    color: $color-success;
+  }
+  &--objective_met {
+    background: rgba($color-warning, 0.12);
+    color: #B38600;
+  }
+  &--closed {
+    background: rgba($color-discrete, 0.2);
+    color: $color-text-light;
+  }
 }
+
 .instrument-tag {
   font-size: $font-size-xs;
-  background: rgba($color-discrete,0.5);
-  color: $color-text;
-  padding: 2px 8px;
+  background: rgba($color-primary, 0.1);
+  color: $color-primary;
+  padding: 3px 8px;
   border-radius: $border-radius-sm;
+  font-weight: 500;
+}
+
+.quota-tag {
+  font-size: $font-size-xs;
+  background: rgba($color-discrete, 0.3);
+  color: $color-text;
+  padding: 3px 8px;
+  border-radius: $border-radius-sm;
+}
+
+.app-status-badge {
+  font-size: $font-size-xs;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: $border-radius-sm;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &--pending {
+    background: rgba($color-warning, 0.15);
+    color: #B38600;
+  }
+  &--accepted {
+    background: rgba($color-success, 0.15);
+    color: $color-success;
+  }
+  &--rejected {
+    background: rgba($color-error, 0.15);
+    color: $color-error;
+  }
+}
+
+.btn-apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .btn-delete {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: none;
   border-radius: $border-radius-sm;
   background: rgba($color-error, 0.1);
@@ -81,24 +173,119 @@
 
   &:hover {
     background: rgba($color-error, 0.2);
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 
   i {
-    font-size: 12px;
+    font-size: 13px;
   }
 }
-.announcement-item__indicators {
-  display: flex;
-  gap: 5px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: end;
+
+/* Modal styles for Application (RG-RENF-10) */
+.apply-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
 }
 
-.announcement-item__side {
+.apply-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 520px;
+  background: $color-background;
+  border-radius: $border-radius-md;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
   display: flex;
-  flex-direction: row;
-  gap: 20px;
-  align-items: center;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-md $spacing-lg;
+    border-bottom: 1px solid rgba($color-discrete, 0.2);
+
+    h3 {
+      margin: 0;
+      font-size: $font-size-base;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: $color-primary;
+    }
+
+    .btn-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: $color-text-light;
+      font-size: 1rem;
+      padding: 4px;
+      border-radius: $border-radius-sm;
+
+      &:hover {
+        color: $color-text;
+      }
+    }
+  }
+
+  &__body {
+    padding: $spacing-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      label {
+        font-weight: 600;
+        font-size: $font-size-sm;
+      }
+
+      .help-text {
+        font-size: $font-size-xs;
+        color: $color-text-light;
+        margin: 0 0 4px 0;
+      }
+    }
+  }
+
+  &__summary {
+    padding: $spacing-sm $spacing-md;
+    background: $color-background-alt;
+    border-radius: $border-radius-sm;
+
+    strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: $font-size-sm;
+    }
+
+    .summary-meta {
+      display: flex;
+      gap: $spacing-md;
+      font-size: $font-size-xs;
+      color: $color-text-light;
+      margin: 0;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    border-top: 1px solid rgba($color-discrete, 0.2);
+    background: $color-background-alt;
+  }
 }

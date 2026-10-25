@@ -48,6 +48,14 @@ export const routes: Routes = [
     title: 'Annonces de Renforts - Copupitre',
   },
   {
+    path: 'recrutements',
+    loadComponent: () =>
+      import('../features/permanent-recruitments/permanent-recruitments-list/permanent-recruitments-list-page').then(
+        (m) => m.PermanentRecruitmentsListPage,
+      ),
+    title: 'Recrutements Permanents - Copupitre',
+  },
+  {
     path: 'annonces/create',
     loadComponent: () =>
       import('../features/reinforcements/reinforcement-create/reinforcement-create-page').then(

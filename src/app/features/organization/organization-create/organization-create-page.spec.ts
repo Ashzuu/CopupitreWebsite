@@ -30,9 +30,18 @@ describe('OrganizationCreatePage', () => {
       {
         id: 10,
         dayOfWeek: 'TUESDAY',
-        startTime: '20:00',
-        endTime: '22:00',
+        startTime: '20:00:00',
+        endTime: '22:00:00',
         location: 'Salle Polyvalente',
+      },
+    ],
+    rehearsalManuals: [
+      {
+        id: 20,
+        manualDate: '2026-11-15T00:00:00.000Z',
+        startTime: '19:30:00',
+        endTime: '21:45:00',
+        location: 'Auditorium',
       },
     ],
     annualNeeds: [
@@ -127,6 +136,45 @@ describe('OrganizationCreatePage', () => {
     const need2 = component.annualNeeds.at(1).value;
     expect(need2.instrument).toBe('Hautbois');
     expect(need2.requiredCount).toBe(1);
+  });
+
+  it('devrait formater correctement les horaires reçus en HH:mm:ss vers HH:mm lors du patchForm', () => {
+    component.patchForm(mockOrg);
+
+    // Vérification des répétitions régulières
+    expect(component.rehearsalSchedules.length).toBe(1);
+    const scheduleCtrl = component.rehearsalSchedules.at(0);
+    expect(scheduleCtrl.get('startTime')?.value).toBe('20:00');
+    expect(scheduleCtrl.get('endTime')?.value).toBe('22:00');
+    expect(scheduleCtrl.get('startTime')?.valid).toBe(true);
+    expect(scheduleCtrl.get('endTime')?.valid).toBe(true);
+
+    // Vérification des répétitions exceptionnelles
+    expect(component.rehearsalManuals.length).toBe(1);
+    const manualCtrl = component.rehearsalManuals.at(0);
+    expect(manualCtrl.get('startTime')?.value).toBe('19:30');
+    expect(manualCtrl.get('endTime')?.value).toBe('21:45');
+    expect(manualCtrl.get('manualDate')?.value).toBe('2026-11-15');
+    expect(manualCtrl.get('startTime')?.valid).toBe(true);
+    expect(manualCtrl.get('endTime')?.valid).toBe(true);
+  });
+
+  it('devrait convertir divers formats d\'horaires via formatTime', () => {
+    expect(component.formatTime('20:00:00')).toBe('20:00');
+    expect(component.formatTime('08:30:45')).toBe('08:30');
+    expect(component.formatTime('20:00')).toBe('20:00');
+    expect(component.formatTime('9:15')).toBe('09:15');
+    expect(component.formatTime('')).toBe('');
+    expect(component.formatTime(null)).toBe('');
+    expect(component.formatTime(undefined)).toBe('');
+  });
+
+  it('devrait convertir divers formats de dates via formatDate', () => {
+    expect(component.formatDate('2026-11-15')).toBe('2026-11-15');
+    expect(component.formatDate('2026-11-15T10:00:00.000Z')).toBe('2026-11-15');
+    expect(component.formatDate('')).toBe('');
+    expect(component.formatDate(null)).toBe('');
+    expect(component.formatDate(undefined)).toBe('');
   });
 
   it('devrait inclure annualNeeds et concerts dans le payload lors de onSubmit()', () => {

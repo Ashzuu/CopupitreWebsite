@@ -15,10 +15,14 @@ export interface ReinforcementAnnouncement {
   deadline: string;
   /** The location property. */
   location: string;
+  /** Alias for eventLocation returned by backend. */
+  eventLocation?: string;
   /** The description property. */
   description: string;
   /** The requiredCount property. */
   requiredCount: number;
+  /** Alias for requiredQuantity returned by backend. */
+  requiredQuantity?: number;
   /** The validatedCount property. */
   validatedCount: number;
   /** The status property. */
@@ -40,10 +44,16 @@ export interface ReinforcementResponse {
   announcementTitle: string;
   /** The respondentUsername property. */
   respondentUsername: string;
+  /** Full name of the respondent. */
+  respondentFullName?: string;
+  /** Principal instrument of the respondent. */
+  respondentInstrument?: string;
   /** The respondedAt property. */
   respondedAt: string;
   /** The status property. */
   status: ResponseStatus;
+  /** Optional message/justification submitted by the applicant (RG-RENF-10). */
+  message?: string;
 }
 
 export type ResponseStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';

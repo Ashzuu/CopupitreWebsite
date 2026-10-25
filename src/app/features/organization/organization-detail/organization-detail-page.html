@@ -1,28 +1,39 @@
-<copupitre-base-layout>
-  <div class="org-detail container section">
+<copupitre-base-layout [Footer]="false">
+  <div class="org-detail-container container">
     @if (service.error()) {
-      <div class="org-detail__error">
-        <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
-        <p>{{ service.error() }}</p>
+      <div class="error-banner">
+        <i class="pi pi-exclamation-triangle"></i>
+        <span>{{ service.error() }}</span>
       </div>
-    } @else if (service.organization(); as org) {
-      <div class="org-header">
+    }
+
+    @if (service.organization(); as org) {
+      <header class="org-header">
         <div class="org-header__content">
-          <h1>{{ org.name }}</h1>
-          <p class="org-header__city"><i class="pi pi-map-marker" aria-hidden="true"></i> {{ org.city }}</p>
-          <p class="org-header__desc">{{ org.description }}</p>
+          <div class="org-title-row">
+            <h1 class="org-name">{{ org.name }}</h1>
+            @if (isAdmin()) {
+              <a [routerLink]="['/organizations/edit', org.id]" class="btn btn--secondary btn--small edit-org-btn" title="Modifier les informations de l'organisation">
+                <i class="pi pi-pencil" aria-hidden="true"></i> Modifier l'organisation
+              </a>
+            }
+          </div>
+          <div class="org-meta">
+            <span class="meta-item"><i class="pi pi-map-marker" aria-hidden="true"></i> {{ org.city }}</span>
+            @if (org.formationType) {
+              <span class="meta-item"><i class="pi pi-users" aria-hidden="true"></i> {{ org.formationType }}</span>
+            }
+            @if (org.musicianCount) {
+              <span class="meta-item"><i class="pi pi-user" aria-hidden="true"></i> {{ org.musicianCount }} musiciens</span>
+            }
+          </div>
         </div>
         <div class="org-header__actions">
-          @if (isAdmin()) {
-            <a [routerLink]="['/organizations/edit', org.id]" class="btn btn--secondary">
-              <i class="pi pi-pencil" aria-hidden="true"></i> Modifier
-            </a>
-          }
-          <button class="btn btn--primary" (click)="service.subscribeToAnnouncements()">
-            <i class="pi pi-bell" aria-hidden="true"></i> M'avertir des annonces
+          <button type="button" class="btn btn--primary" (click)="service.subscribeToAnnouncements()">
+            <i class="pi pi-bell" aria-hidden="true"></i> S'abonner aux annonces
           </button>
         </div>
-      </div>
+      </header>
 
       <!-- Onglets d'organisation (visible pour les administrateurs) -->
       @if (isAdmin()) {
@@ -50,53 +61,77 @@
             (click)="setTab('admin')"
           >
             <i class="pi pi-shield" aria-hidden="true"></i> Administration
-            <span class="org-tab__badge">{{ org.adminUsernames.length }}</span>
+            <span class="org-tab__badge">Admin</span>
           </button>
         </nav>
       }
 
-      @if (!isAdmin() || activeTab() === 'general') {
+      @if (activeTab() === 'general') {
         <div id="panel-general" role="tabpanel" aria-labelledby="tab-general" class="org-grid">
-          <!-- Colonne Principale -->
-          <div class="org-col org-col--main">
-            <!-- Renforts potentiels -->
+          <div class="org-main">
+            <!-- À propos -->
             <section class="org-section">
-              <h2 class="org-section__title"><i class="pi pi-megaphone" aria-hidden="true"></i> Renforts recherchés actuellement</h2>
-              @if (service.announcements().length > 0) {
-                <copupitre-reinforcement-list [announcements]="service.announcements()"></copupitre-reinforcement-list>
-              } @else {
-                <p class="empty-state">Aucun besoin de renfort immédiat.</p>
+              <h2 class="org-section__title"><i class="pi pi-align-left" aria-hidden="true"></i> À propos de l'orchestre</h2>
+              <p class="org-desc">{{ org.description }}</p>
+              
+              @if (org.concertDress) {
+                <div class="org-dress">
+                  <strong>Tenue de concert :</strong> {{ org.concertDress }}
+                </div>
+              }
+              @if (org.logisticsInfo) {
+                <div class="org-logistics">
+                  <strong>Informations logistiques :</strong> {{ org.logisticsInfo }}
+                </div>
               }
             </section>
 
-            <!-- Concerts -->
+            <!-- Annonces de renforts -->
             <section class="org-section">
-              <h2 class="org-section__title"><i class="pi pi-ticket" aria-hidden="true"></i> Prochains Concerts</h2>
+              <div class="section-header-row">
+                <h2 class="org-section__title"><i class="pi pi-bolt" aria-hidden="true"></i> Demandes de Renfort</h2>
+                @if (isAdmin()) {
+                  <a routerLink="/annonces/create" class="btn btn--secondary btn--small">
+                    <i class="pi pi-plus" aria-hidden="true"></i> Publier un renfort
+                  </a>
+                }
+              </div>
+              @if (service.announcements().length > 0) {
+                <copupitre-reinforcement-list [announcements]="service.announcements()"></copupitre-reinforcement-list>
+              } @else {
+                <p class="empty-state">Aucun renfort demandé pour le moment.</p>
+              }
+            </section>
+
+            <!-- Concerts programmés -->
+            <section class="org-section">
+              <h2 class="org-section__title"><i class="pi pi-ticket" aria-hidden="true"></i> Concerts à venir</h2>
               @if (org.concerts && org.concerts.length > 0) {
-                <div class="concert-list">
+                <div class="concerts-list">
                   @for (concert of org.concerts; track concert.id) {
                     <div class="concert-card">
                       <div class="concert-card__date">
-                        <span class="day">{{ concert.eventDate | date:'dd' }}</span>
-                        <span class="month">{{ concert.eventDate | date:'MMM' }}</span>
+                        <i class="pi pi-calendar" aria-hidden="true"></i>
+                        <span>{{ concert.eventDate | date:'dd/MM/yyyy' }}</span>
                       </div>
                       <div class="concert-card__info">
                         <h3>{{ concert.title }}</h3>
-                        <p class="location"><i class="pi pi-map-marker" aria-hidden="true"></i> {{ concert.location }}</p>
-                        <p class="desc">{{ concert.description }}</p>
+                        <p class="concert-location"><i class="pi pi-map-marker" aria-hidden="true"></i> {{ concert.location }}</p>
+                        @if (concert.description) {
+                          <p class="concert-desc">{{ concert.description }}</p>
+                        }
                       </div>
                     </div>
                   }
                 </div>
               } @else {
-                <p class="empty-state">Aucun concert prévu prochainement.</p>
+                <p class="empty-state">Aucun concert à venir.</p>
               }
             </section>
           </div>
 
-          <!-- Colonne Secondaire -->
-          <div class="org-col org-col--side">
-            <!-- Horaires -->
+          <div class="org-sidebar">
+            <!-- Horaires & répétitions -->
             <section class="org-section">
               <h2 class="org-section__title"><i class="pi pi-calendar" aria-hidden="true"></i> Répétitions</h2>
               @if (org.rehearsalSchedules && org.rehearsalSchedules.length > 0) {
@@ -132,6 +167,19 @@
         </div>
       } @else if (isAdmin() && activeTab() === 'admin') {
         <div id="panel-admin" role="tabpanel" aria-labelledby="tab-admin" class="org-admin-panel">
+          <!-- Candidatures aux besoins annuels de recrutement -->
+          <section class="org-section org-section--permanents">
+            <h2 class="org-section__title"><i class="pi pi-id-card" aria-hidden="true"></i> Recrutements Permanents & Candidatures</h2>
+            <p class="org-section__subtitle">
+              Gérez les candidatures reçues pour les besoins de recrutement de la saison.
+            </p>
+            @if (service.permanentAnnouncements().length > 0) {
+              <copupitre-my-announcements-panel [announcements]="service.permanentAnnouncements()" [announcementType]="'PERMANENT'"></copupitre-my-announcements-panel>
+            } @else {
+              <p class="empty-state">Aucun besoin permanent configuré pour cet ensemble.</p>
+            }
+          </section>
+
           <!-- US-ORG-08: Gestion des administrateurs -->
           <section class="org-section org-section--admins">
             <h2 class="org-section__title"><i class="pi pi-shield" aria-hidden="true"></i> Gestion des Administrateurs</h2>

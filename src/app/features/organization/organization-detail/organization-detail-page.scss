@@ -49,6 +49,11 @@
     gap: $spacing-sm;
     align-items: center;
   }
+
+  .org-meta {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 /* Organisation Tabs (US-ORG-08) */
@@ -88,7 +93,7 @@
     font-size: $font-size-xs;
     font-weight: 700;
     padding: 2px 7px;
-    border-radius: $border-radius-full;
+    border-radius: $border-radius-sm;
   }
 
   &:hover {
@@ -321,7 +326,7 @@
       font-size: $font-size-xs;
       font-weight: 600;
       padding: 1px 6px;
-      border-radius: $border-radius-full;
+      border-radius: $border-radius-sm;
       margin-left: $spacing-xs;
     }
   }

@@ -25,7 +25,7 @@
       color: $color-primary;
       background: rgba($color-primary, 0.1);
       padding: 4px 10px;
-      border-radius: $border-radius-full;
+      border-radius: $border-radius-sm;
       margin-bottom: $spacing-xs;
     }
 
@@ -89,7 +89,7 @@
     min-width: 20px;
     height: 20px;
     padding: 0 6px;
-    border-radius: $border-radius-full;
+    border-radius: $border-radius-sm;
     font-size: 0.75rem;
     background: rgba($color-secondary, 0.1);
     color: $color-secondary;
@@ -207,7 +207,7 @@
     align-items: center;
     gap: 4px;
     padding: 3px 8px;
-    border-radius: $border-radius-full;
+    border-radius: $border-radius-sm;
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -228,7 +228,7 @@
     align-items: center;
     gap: 4px;
     padding: 3px 10px;
-    border-radius: $border-radius-full;
+    border-radius: $border-radius-sm;
     font-size: 0.8rem;
     font-weight: 700;
 

@@ -24,7 +24,7 @@ jobs:
           script: |
             set -e
             echo "=== Déploiement de CopupitreWebsite ==="
-            cd /parts/projects/CopupitreWebsite
+            cd /repos/persos/CopupitreWebsite
             git fetch origin main
             git reset --hard origin/main
             chmod +x deploy.sh

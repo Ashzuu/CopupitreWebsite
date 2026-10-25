@@ -5,7 +5,12 @@
       <p class="dashboard__subtitle">Gérez vos organisations, vos annonces et répondez aux besoins des autres orchestres.</p>
     </div>
 
-    @if (service.error()) {
+    @if (service.isLoading()) {
+      <div class="dashboard__loading">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #EF8354;"></i>
+        <p>Chargement du tableau de bord...</p>
+      </div>
+    } @else if (service.error()) {
       <div class="dashboard__error">
         <i class="pi pi-exclamation-triangle"></i>
         <p>{{ service.error() }}</p>
@@ -40,7 +45,11 @@
               }
             </div>
             @if (service.allAnnouncements().length > 0) {
-              <copupitre-reinforcement-list [announcements]="service.allAnnouncements()"></copupitre-reinforcement-list>
+              <copupitre-reinforcement-list
+                [announcements]="service.allAnnouncements()"
+                [userApplications]="userApplications()"
+                (applicationApplied)="onApplicationApplied($event)"
+              ></copupitre-reinforcement-list>
             } @else {
               <div class="dashboard__empty">
                 <p>Aucune annonce de renfort actuellement.</p>
@@ -73,14 +82,18 @@
           @for (block of service.orgBlocks(); track block.organization.id) {
             <div class="org-dashboard-block">
               <div class="org-dashboard-block__header">
-                <h3>{{ block.organization.name }}</h3>
+                <h3>
+                  <a [routerLink]="['/organization', block.organization.id]" class="org-dashboard-block__title-link">
+                    {{ block.organization.name }}
+                  </a>
+                </h3>
               </div>
 
               <div class="org-dashboard-block__content">
                 <!-- Prochaines répétitions -->
                 <div class="org-dashboard-block__col">
                   <h4 class="org-dashboard-block__subtitle"><i class="pi pi-calendar"></i> Répétitions</h4>
-                  @if (block.organization.rehearsalSchedules.length > 0) {
+                  @if (block.organization.rehearsalSchedules && block.organization.rehearsalSchedules.length > 0) {
                     <copupitre-schedule-table [schedules]="block.organization.rehearsalSchedules"></copupitre-schedule-table>
                   } @else {
                     <p class="empty-text">Aucune répétition définie.</p>

@@ -42,7 +42,7 @@
               <i class="pi pi-send"></i> Postuler
             </button>
           } @else if (!authService.isAuthenticated() && announcement.status === 'OPEN') {
-            <a routerLink="/auth/login" class="btn btn--secondary btn--small btn-apply">
+            <a routerLink="/login" class="btn btn--secondary btn--small btn-apply">
               <i class="pi pi-sign-in"></i> Postuler
             </a>
           }

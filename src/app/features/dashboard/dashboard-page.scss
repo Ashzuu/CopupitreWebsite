@@ -138,6 +138,15 @@
       margin: 0;
       color: $color-text-inverse;
     }
+
+    a, .org-dashboard-block__title-link {
+      color: $color-text-inverse;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   &__content {

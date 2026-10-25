@@ -1,8 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LoaderService } from '@services/loader-service';
 import { NotifService } from '@services/notif-service';
 import { LoggerService } from '@services/logger-service';
+import { AuthService } from '@services/auth-service';
+import { ReinforcementsRepository } from '@repositories/reinforcements-repository';
 import { BaseLayout } from '@layouts/base-layout/base-layout';
 import { DashboardStatCard } from './components/dashboard-stat-card/dashboard-stat-card';
 import { EquipmentRequestList } from './components/equipment-request-list/equipment-request-list';
@@ -11,6 +13,7 @@ import { ReinforcementList } from './components/reinforcement-list/reinforcement
 import { ScheduleTable } from './components/schedule-table/schedule-table';
 import { DashboardService } from './data/dashboard-service';
 import { EquipmentRequest } from '@models/equipment-request';
+import { ReinforcementResponse } from '@models/reinforcement';
 
 @Component({
   selector: 'copupitre-dashboard-page',
@@ -31,11 +34,34 @@ export class DashboardPage implements OnInit {
   readonly service: DashboardService = inject(DashboardService);
   /** The loaderService property. */
   readonly loaderService: LoaderService = inject(LoaderService);
+  readonly authService: AuthService = inject(AuthService);
+  private readonly reinforcementRepo: ReinforcementsRepository = inject(ReinforcementsRepository);
   private readonly notifService: NotifService = inject(NotifService);
   private readonly logger: LoggerService = inject(LoggerService);
 
+  /** Candidatures déposées par l'utilisateur connecté */
+  readonly userApplications = signal<ReinforcementResponse[]>([]);
+
   ngOnInit() {
     this.service.loadDashboardData();
+    if (this.authService.isAuthenticated()) {
+      this.reinforcementRepo.getMyApplications().subscribe({
+        next: (apps) => this.userApplications.set(apps || []),
+        error: (err) => this.logger.error('Error fetching user applications', 'DashboardPage', err),
+      });
+    }
+  }
+
+  onApplicationApplied(app: ReinforcementResponse) {
+    this.userApplications.update((apps) => {
+      const index = apps.findIndex((a) => a.id === app.id || a.announcementId === app.announcementId);
+      if (index >= 0) {
+        const copy = [...apps];
+        copy[index] = app;
+        return copy;
+      }
+      return [...apps, app];
+    });
   }
 
   onEquipmentStatusChanged(event: { request: EquipmentRequest; status: 'OPEN' | 'MET' | 'CLOSED' }) {

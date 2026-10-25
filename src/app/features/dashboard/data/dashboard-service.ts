@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom, Observable } from 'rxjs';
 import { EquipmentRequest, Organization, PermanentAnnouncement, ReinforcementAnnouncement } from '@models/index';
 import { LoggerService } from '@services/logger-service';
@@ -20,6 +20,9 @@ export class DashboardService {
   private readonly repository = inject(DashboardRepository);
   private readonly logger = inject(LoggerService);
 
+  /** Indicateur de chargement global du tableau de bord */
+  readonly isLoading = signal<boolean>(false);
+
   /** The organizations property. */
   readonly organizations = signal<Organization[]>([]);
   /** The allAnnouncements property. */
@@ -27,7 +30,13 @@ export class DashboardService {
   /** The allEquipmentRequests property. */
   readonly allEquipmentRequests = signal<EquipmentRequest[]>([]);
 
-  readonly numberOfReinforcements = signal<number>(0);
+  /** KPI: Nombre de demandes de renforts actives (statut OPEN) sur l'ensemble des organisations administrées */
+  readonly numberOfReinforcements = computed(() => {
+    return this.orgBlocks().reduce(
+      (acc, block) => acc + (block.announcements?.filter((a) => a.status === 'OPEN').length || 0),
+      0
+    );
+  });
 
   /** The orgBlocks property. */
   readonly orgBlocks = signal<OrgDashboardBlock[]>([]);
@@ -36,6 +45,7 @@ export class DashboardService {
 
   /** Executes the loadDashboardData action. */
   async loadDashboardData(): Promise<void> {
+    this.isLoading.set(true);
     this.error.set(null);
     try {
       const [orgs, allAnnouncements, allEquipment, myPermanentAnnouncements] = await Promise.all([
@@ -44,46 +54,49 @@ export class DashboardService {
         firstValueFrom(this.repository.getAllEquipmentRequests()),
         firstValueFrom(this.repository.getMyPermanentAnnouncements()).catch(() => [] as PermanentAnnouncement[]),
       ]);
-      this.organizations.set(orgs);
+      this.organizations.set(orgs || []);
 
       // Exclure les annonces des organisations administrées du panel des offres publiques
-      const userOrgIds = new Set(orgs.map((o) => o.id));
-      const publicAnnouncements = allAnnouncements.filter((a) => !userOrgIds.has(a.organizationId));
-      const publicEquipment = allEquipment.filter((e) => !userOrgIds.has(e.organizationId));
+      const userOrgIds = new Set((orgs || []).map((o) => o.id));
+      const publicAnnouncements = (allAnnouncements || []).filter((a) => !userOrgIds.has(a.organizationId));
+      const publicEquipment = (allEquipment || []).filter((e) => !userOrgIds.has(e.organizationId));
       this.allAnnouncements.set(publicAnnouncements);
       this.allEquipmentRequests.set(publicEquipment);
 
-      const blocks: OrgDashboardBlock[] = [];
+      // Chargement en parallèle des blocs pour chaque organisation
+      const blocks: OrgDashboardBlock[] = await Promise.all(
+        (orgs || []).map(async (org) => {
+          const [orgAnnouncements, orgEquipment] = await Promise.all([
+            firstValueFrom(this.repository.getOrganizationReinforcements(org.id)).catch(() => []),
+            firstValueFrom(this.repository.getOrganizationEquipmentRequests(org.id)).catch(() => []),
+          ]);
 
-      for (const org of orgs) {
-        const [orgAnnouncements, orgEquipment] = await Promise.all([
-          firstValueFrom(this.repository.getOrganizationReinforcements(org.id)),
-          firstValueFrom(this.repository.getOrganizationEquipmentRequests(org.id)),
-        ]);
+          const announcementsWithResponses = await Promise.all(
+            (orgAnnouncements || []).map(async (a) => {
+              const responses = await firstValueFrom(
+                this.repository.getResponsesForAnnouncement(a.id),
+              ).catch(() => []);
+              return { ...a, responses };
+            }),
+          );
 
-        const announcementsWithResponses = await Promise.all(
-          orgAnnouncements.map(async (a) => {
-            const responses = await firstValueFrom(
-              this.repository.getResponsesForAnnouncement(a.id),
-            );
-            return { ...a, responses };
-          }),
-        );
+          const orgPermanent = (myPermanentAnnouncements || []).filter((p) => p.organizationId === org.id);
 
-        const orgPermanent = myPermanentAnnouncements.filter((p) => p.organizationId === org.id);
-
-        blocks.push({
-          organization: org,
-          announcements: announcementsWithResponses,
-          equipmentRequests: orgEquipment,
-          permanentAnnouncements: orgPermanent,
-        });
-      }
+          return {
+            organization: org,
+            announcements: announcementsWithResponses,
+            equipmentRequests: orgEquipment || [],
+            permanentAnnouncements: orgPermanent,
+          };
+        }),
+      );
 
       this.orgBlocks.set(blocks);
     } catch (e) {
       this.error.set('Une erreur est survenue lors du chargement des données.');
       this.logger.error('Dashboard data loading error', 'DashboardService', e);
+    } finally {
+      this.isLoading.set(false);
     }
   }
 

@@ -1,5 +1,5 @@
 import { DatePipe, LowerCasePipe } from '@angular/common';
-import { Component, HostListener, inject, input, output, signal } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { PermanentAnnouncement } from '@models/permanent-recruitment';
 import { ReinforcementAnnouncement, ReinforcementResponse, ResponseStatus } from '@models/reinforcement';
 import { PermanentRecruitmentsRepository } from '@repositories/permanent-recruitments-repository';
@@ -14,6 +14,9 @@ export type ManageAnnouncementItem = (ReinforcementAnnouncement | PermanentAnnou
 
 @Component({
   selector: 'copupitre-manage-applications-modal',
+  host: {
+    '(document:keydown.escape)': 'onEscape()',
+  },
   imports: [LowerCasePipe, DatePipe],
   templateUrl: './manage-applications-modal.html',
   styleUrl: './manage-applications-modal.scss',
@@ -42,7 +45,6 @@ export class ManageApplicationsModal {
   /** Active sub-filter: 'ALL' | 'PENDING' | 'ACCEPTED' | 'REJECTED'. */
   filter = signal<'ALL' | ResponseStatus>('ALL');
 
-  @HostListener('document:keydown.escape')
   onEscape() {
     this.close();
   }

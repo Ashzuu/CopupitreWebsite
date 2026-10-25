@@ -1,8 +1,7 @@
 @use '../../styles/variables' as *;
 
 .messaging-page {
-  padding-top: $spacing-xl;
-  padding-bottom: $spacing-2xl;
+  padding: $spacing-xl;
 
   &__header {
     margin-bottom: $spacing-lg;

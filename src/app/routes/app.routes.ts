@@ -4,6 +4,12 @@ import { guestGuard } from '../core/guards/guest-guard';
 
 export const routes: Routes = [
   {
+    path: '',
+    loadComponent: () =>
+      import('../features/home-page/home-page').then((m) => m.HomePage),
+    title: 'Copupitre — Entraide musicale entre orchestres associatifs',
+  },
+  {
     path: 'dashboard',
     loadComponent: () =>
       import('../features/dashboard/dashboard-page').then((m) => m.DashboardPage),
@@ -12,8 +18,7 @@ export const routes: Routes = [
   },
   {
     path: 'profile',
-    loadComponent: () =>
-      import('../features/profile/profile-page').then((m) => m.ProfilePage),
+    loadComponent: () => import('../features/profile/profile-page').then((m) => m.ProfilePage),
     title: 'Mon Profil — Copupitre',
     canActivate: [authGuard],
   },

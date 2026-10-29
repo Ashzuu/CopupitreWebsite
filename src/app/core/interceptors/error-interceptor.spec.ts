@@ -3,19 +3,26 @@ import { HttpClient, HttpContext, provideHttpClient, withInterceptors } from '@a
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { BYPASS_GLOBAL_ERROR, errorInterceptor } from './error-interceptor';
 import { NotifService } from '@services/notif-service';
+import { AuthService } from '@services/auth-service';
 import { vi } from 'vitest';
 
 describe('errorInterceptor', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let notifService: NotifService;
+  let mockAuthService: { logout: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    mockAuthService = {
+      logout: vi.fn(),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(withInterceptors([errorInterceptor])),
         provideHttpClientTesting(),
         NotifService,
+        { provide: AuthService, useValue: mockAuthService },
       ],
     });
 
@@ -45,6 +52,46 @@ describe('errorInterceptor', () => {
     expect(notifService.showError).toHaveBeenCalledWith(
       'Vous avez déjà postulé à cette annonce',
       'Erreur'
+    );
+  });
+
+  it('devrait intercepter un code HTTP 401 sur une route protégée, déconnecter l\'utilisateur et afficher une notification', () => {
+    httpClient.get('/api/users/me').subscribe({
+      error: (err) => {
+        expect(err._notificationShown).toBe(true);
+      },
+    });
+
+    const req = httpTestingController.expectOne('/api/users/me');
+    req.flush(
+      { message: 'Token JWT invalide ou expiré' },
+      { status: 401, statusText: 'Unauthorized' }
+    );
+
+    expect(mockAuthService.logout).toHaveBeenCalled();
+    expect(notifService.showError).toHaveBeenCalledWith(
+      'Token JWT invalide ou expiré',
+      'Session expirée'
+    );
+  });
+
+  it('ne devrait pas déconnecter l\'utilisateur si le 401 provient du endpoint /api/auth/login', () => {
+    httpClient.post('/api/auth/login', {}).subscribe({
+      error: (err) => {
+        expect(err._notificationShown).toBe(true);
+      },
+    });
+
+    const req = httpTestingController.expectOne('/api/auth/login');
+    req.flush(
+      { username: 'Identifiants incorrects' },
+      { status: 401, statusText: 'Unauthorized' }
+    );
+
+    expect(mockAuthService.logout).not.toHaveBeenCalled();
+    expect(notifService.showError).toHaveBeenCalledWith(
+      'Identifiants incorrects',
+      'Connexion échouée'
     );
   });
 

@@ -1,0 +1,279 @@
+  <!-- Canvas WebGL 3D d'arrière-plan interactif (opacité animée au scroll) -->
+  <canvas #webglCanvas class="webgl-canvas" aria-hidden="true"></canvas>
+
+  <div class="home-scroll-container">
+    <!-- SECTION 1 : HÉRO D'ACCUEIL -->
+    <header class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          A la recherche d'un <span class="highlight-text">musicien</span> ?
+        </h1>
+
+        <p class="hero-description">
+          Trouvez un renfort pour votre pupitre, recrutez un musicien pour la saison
+          ou prêtez votre matériel à un orchestre voisin. Vous pouvez également consulter
+          les différentes dates de répétitions et concerts pour rejoindre un ensemble musical
+          près de chez vous.
+        </p>
+
+        <div class="hero-actions">
+          @if (authService.isAuthenticated()) {
+            <a routerLink="/dashboard" class="btn btn-primary btn-large">
+              <i class="pi pi-th-large"></i>
+              <span>Mon tableau de bord</span>
+            </a>
+            <a routerLink="/annonces/create" class="btn btn-outline btn-large">
+              <i class="pi pi-plus-circle"></i>
+              <span>Publier une demande</span>
+            </a>
+          } @else {
+            <a routerLink="/login" class="btn btn-primary btn-large">
+              <i class="pi pi-user-plus"></i>
+              <span>Rejoindre Copupitre</span>
+            </a>
+          }
+        </div>
+
+        <div class="hero-perks">
+          <div class="perk-item">
+            <i class="pi pi-check-circle"></i>
+            <span>100% Gratuit & Bénévole</span>
+          </div>
+          <div class="perk-item">
+            <i class="pi pi-shield"></i>
+            <span>Zéro commission ni publicité</span>
+          </div>
+          <div class="perk-item">
+            <i class="pi pi-lock"></i>
+            <span>Coordonnées privées protégées</span>
+          </div>
+        </div>
+
+        <div class="scroll-indicator" aria-hidden="true">
+          <span>Faites défiler pour voir l'instrument s'animer et découvrir les solutions Copupitre</span>
+          <i class="pi pi-chevron-down bounce"></i>
+        </div>
+      </div>
+    </header>
+
+    <section class="horn-showcase-section" aria-label="Pourquoi choisir Copupitre : Exemples concrets d'entraide">
+      <div class="showcase-backdrop-hint">
+        <div class="showcase-center-halo"></div>
+      </div>
+
+      <div class="showcase-content">
+        <header class="showcase-header">
+          <span class="showcase-tag">Pourquoi choisir Copupitre ?</span>
+          <h2 class="showcase-title">Des solutions concrètes pour chaque situation de pupitre</h2>
+          <p class="showcase-subtitle">
+            Du désistement imprévu à deux semaines du concert jusqu'au recrutement annuel,
+            découvrez comment la solidarité musicale transforme la vie de votre ensemble.
+          </p>
+        </header>
+
+        <div class="scenarios-grid">
+          <article class="scenario-card card-urgency">
+            <div class="scenario-header">
+              <span class="scenario-badge badge-urgency">
+                <span>Urgence</span>
+              </span>
+              <h3 class="scenario-title">Un pupitre manquant à 10 jours du concert</h3>
+            </div>
+            <div class="scenario-body">
+              <p class="scenario-situation">
+                <strong>Situation :</strong> Votre 1er violon solo ou votre unique corniste attrape la grippe
+                à la veille de votre concert de gala. Sans ce pupitre clé, vous craignez de perdre
+                des repères pour vos musiciens.
+              </p>
+              <div class="scenario-solution">
+                <p>
+                  <strong>Notre Solution :</strong> Publiez une annonce de renfort en 2 minutes avec vos dates de générale et vos partitions.
+                  Des musiciens bénévoles qualifiés de votre région reçoivent l'alerte et postulent en un clic.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article class="scenario-card card-repertoire">
+            <div class="scenario-header">
+              <span class="scenario-badge badge-repertoire">
+                <span>Projet de saison</span>
+              </span>
+              <h3 class="scenario-title">Monter une œuvre sans effectif suffisant</h3>
+            </div>
+            <div class="scenario-body">
+              <p class="scenario-situation">
+                <strong>Situation vécue :</strong> Votre orchestre rêve de jouer une symphonie grandiose, mais il vous manque
+                2 altos, un hautbois et un contrebasson introuvables parmi vos adhérents actuels.
+              </p>
+              <div class="scenario-solution">
+                <p>
+                  <strong>Notre Solution :</strong> Enregistrez vos besoins permanents avec calendrier des répétitions.
+                  Les musiciens qui emménagent dans votre ville découvrent vos pupitres ouverts et rejoignent vos rangs pour l'année.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article class="scenario-card card-materiel">
+            <div class="scenario-header">
+              <span class="scenario-badge badge-materiel">
+                <span>Partage de matériel</span>
+              </span>
+              <h3 class="scenario-title">Un instrument rare nécessaire pour 3 mesures</h3>
+            </div>
+            <div class="scenario-body">
+              <p class="scenario-situation">
+                <strong>Situation vécue :</strong> Une partition impose un jeu de cloches tubulaires ou un pupitre chef lourd.
+                Investir 1 800 € pour quelques mesures grèverait tout le budget de votre association.
+              </p>
+              <div class="scenario-solution">
+                <p>
+                  <strong>Notre Solution :</strong> Déposez une demande de prêt amical entre orchestres voisins.
+                  Un ensemble partenaire vous met à disposition son instrument pour vos répétitions et votre concert.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article class="scenario-card card-privacy">
+            <div class="scenario-header">
+              <span class="scenario-badge badge-privacy">
+                <span>Protection & Sérénité</span>
+              </span>
+              <h3 class="scenario-title">Fini les chaînes d'emails et les coordonnées perdues</h3>
+            </div>
+            <div class="scenario-body">
+              <p class="scenario-situation">
+                <strong>Situation :</strong> Transférer des dizaines de mails éparpillés, risquer d'exposer publiquement
+                les numéros de portable des bénévoles et perdre le suivi des postulants.
+              </p>
+              <div class="scenario-solution">
+                <p>
+                  <strong>Notre Solution :</strong> Une messagerie contextuelle intégrée relie directement chaque candidat à l'orchestre.
+                  Aucun email personnel n'est divulgué, garantissant une conformité RGPD totale.
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <main class="content-sections">
+      <section class="pillars-section">
+        <div class="section-header">
+          <span class="section-tag">Une solution complète</span>
+          <h2 class="section-title">Tout ce dont votre ensemble musical a besoin</h2>
+          <p class="section-subtitle">
+            Une boîte à outils pensée sur-mesure pour résoudre les défis concrets des chefs d'orchestre,
+            présidents d'associations et musiciens passionnés.
+          </p>
+        </div>
+
+        <div class="pillars-grid">
+          <article class="pillar-card">
+            <div class="pillar-icon icon-renfort">
+              <i class="pi pi-bolt"></i>
+            </div>
+            <h3 class="pillar-title">Renforts de concert</h3>
+            <p class="pillar-description">
+              Un violoniste ou un timbalier indisponible à deux semaines du concert ? Publiez une annonce
+              précisant le programme, les horaires et les lieux pour trouver un musicien solidaire.
+            </p>
+            <a routerLink="/renforts" class="pillar-link">
+              <span>Voir les renforts</span>
+              <i class="pi pi-arrow-right"></i>
+            </a>
+          </article>
+
+          <article class="pillar-card">
+            <div class="pillar-icon icon-permanent">
+              <i class="pi pi-calendar-plus"></i>
+            </div>
+            <h3 class="pillar-title">Recrutements de saison</h3>
+            <p class="pillar-description">
+              Préparez sereinement votre rentrée en publiant les besoins annuels de votre ensemble par instrument,
+              avec détail complet des plannings de répétitions et des projets musicaux.
+            </p>
+            <a routerLink="/recrutements" class="pillar-link">
+              <span>Découvrir les recrutements</span>
+              <i class="pi pi-arrow-right"></i>
+            </a>
+          </article>
+
+          <article class="pillar-card">
+            <div class="pillar-icon icon-materiel">
+              <i class="pi pi-box"></i>
+            </div>
+            <h3 class="pillar-title">Prêt de matériel & pupitres</h3>
+            <p class="pillar-description">
+              Besoin d'un pupitre lourd pour chef, d'une paire de cloches tubulaires ou de sourdines spécifiques ?
+              Sollicitez le prêt ou proposez votre matériel inutilisé entre orchestres voisins.
+            </p>
+            <a routerLink="/materiels" class="pillar-link">
+              <span>Consulter le matériel</span>
+              <i class="pi pi-arrow-right"></i>
+            </a>
+          </article>
+
+          <article class="pillar-card">
+            <div class="pillar-icon icon-securite">
+              <i class="pi pi-comments"></i>
+            </div>
+            <h3 class="pillar-title">Messagerie contextuelle</h3>
+            <p class="pillar-description">
+              Échangez directement entre musiciens et administrateurs d'orchestres sans divulguer d'adresse email
+              ni de numéro de téléphone. Recevez des alertes in-app claires à chaque étape.
+            </p>
+            <a routerLink="/organisations" class="pillar-link">
+              <span>Les orchestres partenaires</span>
+              <i class="pi pi-arrow-right"></i>
+            </a>
+          </article>
+        </div>
+      </section>
+
+      <section class="steps-section">
+        <div class="section-header">
+          <span class="section-tag">Simplicité & Efficacité</span>
+          <h2 class="section-title">Comment fonctionne l'entraide sur Copupitre ?</h2>
+          <p class="section-subtitle">Trois étapes limpides pour donner vie à vos projets musicaux.</p>
+        </div>
+
+        <div class="steps-container">
+          <div class="step-box">
+            <div class="step-number">1</div>
+            <h3 class="step-box-title">Créez votre profil</h3>
+            <p class="step-box-desc">
+              Indiquez vos instruments de prédilection ou enregistrez la fiche de votre ensemble associatif.
+            </p>
+          </div>
+
+          <div class="step-divider" aria-hidden="true">
+            <i class="pi pi-angle-right"></i>
+          </div>
+
+          <div class="step-box">
+            <div class="step-number">2</div>
+            <h3 class="step-box-title">Publiez ou répondez</h3>
+            <p class="step-box-desc">
+              Déposez un besoin urgent de renfort ou postulez directement aux annonces qui correspondent à votre niveau.
+            </p>
+          </div>
+
+          <div class="step-divider" aria-hidden="true">
+            <i class="pi pi-angle-right"></i>
+          </div>
+
+          <div class="step-box">
+            <div class="step-number">3</div>
+            <h3 class="step-box-title">Jouez ensemble</h3>
+            <p class="step-box-desc">
+              Validez la participation en un clic, répétez et partagez l'émotion du concert avec un pupitre au complet !
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>

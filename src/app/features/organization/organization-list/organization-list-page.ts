@@ -39,6 +39,9 @@ export class OrganizationListPage implements OnInit {
   /** The list of all fetched organizations. */
   readonly allOrganizations = signal<Organization[]>([]);
 
+  // Mobile filters open state
+  readonly mobileFiltersOpen = signal(false);
+
   // Filters State
   readonly searchName = signal('');
   readonly selectedCities = signal<string[]>([]);
@@ -75,6 +78,10 @@ export class OrganizationListPage implements OnInit {
   // Checkbox option lists (UI state helper)
   readonly cityOptions = signal<CityOption[]>([]);
 
+  readonly activeFiltersCount = computed(() => {
+    return this.selectedCities().length + this.selectedSizes().length + this.selectedDays().length;
+  });
+
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.repo.getAllOrganizations().subscribe((data) => {
@@ -84,6 +91,10 @@ export class OrganizationListPage implements OnInit {
         this.cityOptions.set(cityList);
       });
     }
+  }
+
+  toggleMobileFilters() {
+    this.mobileFiltersOpen.update(v => !v);
   }
 
   // Filter computation

@@ -3,10 +3,19 @@
 .profile-page {
   background-color: $color-background-alt;
   min-height: calc(100vh - 140px);
+  padding: $spacing-md 0 $spacing-2xl;
+
+  @media (min-width: $breakpoint-md) {
+    padding: $spacing-xl 0 $spacing-3xl;
+  }
 }
 
 .profile-nav {
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-md;
+
+  @media (min-width: $breakpoint-md) {
+    margin-bottom: $spacing-lg;
+  }
 
   &__back {
     display: inline-flex;
@@ -16,6 +25,7 @@
     font-size: $font-size-sm;
     font-weight: 500;
     transition: color $transition-fast;
+    min-height: 36px;
 
     &:hover {
       color: $color-primary;
@@ -34,11 +44,16 @@
   background-color: rgba($color-primary, 0.08);
   border: 1px solid rgba($color-primary, 0.25);
   border-radius: $border-radius-lg;
-  padding: $spacing-md $spacing-lg;
-  margin-bottom: $spacing-xl;
+  padding: $spacing-md;
+  margin-bottom: $spacing-lg;
   color: $color-secondary;
   font-size: $font-size-sm;
   line-height: 1.5;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-md $spacing-lg;
+    margin-bottom: $spacing-xl;
+  }
 
   &__icon {
     color: $color-primary;
@@ -65,11 +80,15 @@
   align-items: center;
   justify-content: center;
   gap: $spacing-md;
-  padding: $spacing-4xl $spacing-md;
+  padding: $spacing-2xl $spacing-md;
   text-align: center;
   background: $color-background;
   border-radius: $border-radius-xl;
   box-shadow: $shadow-sm;
+
+  @media (min-width: $breakpoint-md) {
+    padding: $spacing-4xl $spacing-md;
+  }
 
   &__spinner {
     font-size: 2.5rem;
@@ -78,7 +97,11 @@
 
   p {
     color: $color-text-light;
-    font-size: $font-size-lg;
+    font-size: $font-size-base;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: $font-size-lg;
+    }
   }
 }
 
@@ -92,10 +115,15 @@
 .profile-card {
   background: $color-background;
   border-radius: $border-radius-xl;
-  padding: $spacing-xl;
+  padding: $spacing-md;
   box-shadow: $shadow-sm;
   border: 1px solid rgba($color-discrete, 0.3);
-  margin-bottom: $spacing-xl;
+  margin-bottom: $spacing-lg;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-xl;
+    margin-bottom: $spacing-xl;
+  }
 
   &--header {
     border-top: 4px solid $color-primary;
@@ -110,9 +138,14 @@
     display: flex;
     align-items: center;
     gap: $spacing-sm;
-    font-size: $font-size-xl;
+    font-size: 1.15rem;
     color: $color-secondary;
-    margin-bottom: $spacing-lg;
+    margin-bottom: $spacing-md;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-xl;
+      margin-bottom: $spacing-lg;
+    }
 
     i {
       color: $color-primary;
@@ -130,7 +163,11 @@
   &__edit-header {
     border-bottom: 1px solid rgba($color-discrete, 0.2);
     padding-bottom: $spacing-md;
-    margin-bottom: $spacing-xl;
+    margin-bottom: $spacing-lg;
+
+    @media (min-width: $breakpoint-sm) {
+      margin-bottom: $spacing-xl;
+    }
   }
 }
 
@@ -139,17 +176,18 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: $spacing-lg;
+  gap: $spacing-md;
 
   @media (min-width: $breakpoint-md) {
     flex-direction: row;
     text-align: left;
     align-items: center;
+    gap: $spacing-lg;
   }
 
   &__avatar {
-    width: 84px;
-    height: 84px;
+    width: 76px;
+    height: 76px;
     border-radius: $border-radius-sm;
     background: linear-gradient(135deg, $color-primary, $color-primary-dark);
     color: $color-text-inverse;
@@ -158,13 +196,22 @@
     justify-content: center;
     box-shadow: 0 4px 16px rgba($color-primary, 0.35);
     flex-shrink: 0;
+
+    @media (min-width: $breakpoint-md) {
+      width: 84px;
+      height: 84px;
+    }
   }
 
   &__initials {
     font-family: $font-family-heading;
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     letter-spacing: 1px;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: 2rem;
+    }
   }
 
   &__info {
@@ -172,6 +219,7 @@
     display: flex;
     flex-direction: column;
     gap: $spacing-xs;
+    min-width: 0;
   }
 
   &__title-row {
@@ -188,14 +236,28 @@
   }
 
   &__name {
-    font-size: $font-size-3xl;
+    font-size: 1.35rem;
     color: $color-secondary;
+    margin: 0;
+    word-break: break-word;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-2xl;
+    }
+
+    @media (min-width: $breakpoint-md) {
+      font-size: $font-size-3xl;
+    }
   }
 
   &__username {
     color: $color-discrete-secondary;
     font-weight: 500;
-    font-size: $font-size-base;
+    font-size: $font-size-sm;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: $font-size-base;
+    }
   }
 
   &__meta {
@@ -212,10 +274,18 @@
 
   &__actions {
     margin-top: $spacing-sm;
+    width: 100%;
 
     @media (min-width: $breakpoint-md) {
       margin-top: 0;
       margin-left: auto;
+      width: auto;
+    }
+
+    @media (max-width: $breakpoint-md - 1) {
+      .btn {
+        width: 100%;
+      }
     }
   }
 }
@@ -251,24 +321,33 @@
 .profile-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: $spacing-xl;
+  gap: $spacing-lg;
 
   @media (min-width: $breakpoint-lg) {
     grid-template-columns: 1fr 1fr;
+    gap: $spacing-xl;
   }
 }
 
 .profile-details {
   display: flex;
   flex-direction: column;
-  gap: $spacing-lg;
+  gap: $spacing-md;
+
+  @media (min-width: $breakpoint-sm) {
+    gap: $spacing-lg;
+  }
 
   &__item {
     display: flex;
     flex-direction: column;
     gap: $spacing-xs;
     border-bottom: 1px solid rgba($color-discrete, 0.15);
-    padding-bottom: $spacing-md;
+    padding-bottom: $spacing-sm;
+
+    @media (min-width: $breakpoint-sm) {
+      padding-bottom: $spacing-md;
+    }
 
     &:last-child {
       border-bottom: none;
@@ -277,7 +356,7 @@
   }
 
   &__term {
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -285,9 +364,13 @@
   }
 
   &__value {
-    font-size: $font-size-base;
+    font-size: $font-size-sm;
     color: $color-text;
     font-weight: 500;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-base;
+    }
   }
 
   &__empty {
@@ -336,6 +419,12 @@
     color: $color-text;
     line-height: 1.7;
     white-space: pre-line;
+    word-break: break-word;
+    font-size: $font-size-sm;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-base;
+    }
   }
 
   &__empty {
@@ -399,12 +488,22 @@
     display: flex;
     flex-wrap: wrap;
     gap: $spacing-md;
-    margin-top: $spacing-xl;
-    padding-top: $spacing-lg;
+    margin-top: $spacing-lg;
+    padding-top: $spacing-md;
     border-top: 1px solid rgba($color-discrete, 0.2);
 
+    @media (min-width: $breakpoint-sm) {
+      margin-top: $spacing-xl;
+      padding-top: $spacing-lg;
+    }
+
     .btn {
-      min-width: 160px;
+      flex: 1 1 140px;
+
+      @media (min-width: $breakpoint-sm) {
+        flex: 0 0 auto;
+        min-width: 160px;
+      }
     }
   }
 }

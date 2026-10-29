@@ -10,12 +10,16 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: $spacing-md $spacing-lg;
+  padding: $spacing-md;
   background: $color-background;
   border: 1px solid rgba($color-discrete, 0.3);
   border-radius: $border-radius-md;
   transition: all $transition-fast;
   gap: $spacing-md;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-md $spacing-lg;
+  }
 
   &:hover {
     box-shadow: $shadow-sm;
@@ -33,12 +37,14 @@
 
   &__main {
     flex: 1;
+    min-width: 0;
 
     h4 {
       margin: 0 0 $spacing-xs 0;
       font-size: $font-size-base;
       font-family: $font-family-heading;
       color: $color-secondary;
+      word-break: break-word;
 
       .equipment-item__name {
         color: $color-primary;
@@ -50,7 +56,7 @@
   &__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: $spacing-md;
+    gap: $spacing-sm $spacing-md;
     font-size: $font-size-xs;
     color: $color-text-light;
     margin-bottom: $spacing-xs;
@@ -67,6 +73,7 @@
     font-size: $font-size-xs;
     color: $color-text;
     line-height: 1.4;
+    word-break: break-word;
   }
 
   &__side {
@@ -80,6 +87,7 @@
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       width: 100%;
       border-top: 1px solid rgba($color-discrete, 0.15);
       padding-top: $spacing-xs;

@@ -13,6 +13,7 @@
   padding: $spacing-md;
   background: $color-background-alt;
   border-radius: $border-radius-md;
+  border: 1px solid rgba($color-discrete, 0.15);
   transition: background $transition-fast;
 
   &:hover {
@@ -27,18 +28,20 @@
 
   &__main {
     flex: 1;
+    min-width: 0;
 
     h4 {
       margin: 0 0 $spacing-xs 0;
       font-size: $font-size-base;
       font-weight: 600;
+      word-break: break-word;
     }
   }
 
   &__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: $spacing-md;
+    gap: $spacing-sm $spacing-md;
     font-size: $font-size-xs;
     color: $color-text-light;
     margin-bottom: $spacing-xs;
@@ -55,6 +58,7 @@
     color: $color-text-light;
     margin: $spacing-xs 0 0 0;
     line-height: 1.4;
+    word-break: break-word;
   }
 
   &__side {
@@ -62,11 +66,14 @@
     flex-direction: row;
     gap: $spacing-md;
     align-items: center;
+    flex-shrink: 0;
 
     @media (max-width: $breakpoint-md) {
       width: 100%;
       justify-content: space-between;
       flex-wrap: wrap;
+      border-top: 1px solid rgba($color-discrete, 0.15);
+      padding-top: $spacing-sm;
     }
   }
 
@@ -87,6 +94,7 @@
     display: flex;
     align-items: center;
     gap: $spacing-xs;
+    flex-wrap: wrap;
   }
 }
 
@@ -95,6 +103,7 @@
   font-weight: 600;
   padding: 3px 8px;
   border-radius: $border-radius-sm;
+  white-space: nowrap;
 
   &--open {
     background: rgba($color-success, 0.12);
@@ -117,6 +126,7 @@
   padding: 3px 8px;
   border-radius: $border-radius-sm;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .quota-tag {
@@ -125,6 +135,7 @@
   color: $color-text;
   padding: 3px 8px;
   border-radius: $border-radius-sm;
+  white-space: nowrap;
 }
 
 .app-status-badge {
@@ -135,6 +146,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 
   &--pending {
     background: rgba($color-warning, 0.15);
@@ -169,8 +181,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border: none;
   border-radius: $border-radius-sm;
   background: rgba($color-error, 0.1);
@@ -185,7 +197,7 @@
   }
 
   i {
-    font-size: 13px;
+    font-size: 14px;
   }
 }
 
@@ -193,7 +205,7 @@
 .apply-modal-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(2px);
   z-index: 1000;
 }
@@ -203,15 +215,16 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90%;
+  width: 92%;
   max-width: 520px;
   background: $color-background;
   border-radius: $border-radius-md;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
   z-index: 1001;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  max-height: 90dvh;
 
   &__header {
     display: flex;
@@ -234,9 +247,12 @@
       border: none;
       cursor: pointer;
       color: $color-text-light;
-      font-size: 1rem;
-      padding: 4px;
+      font-size: 1.1rem;
+      padding: 6px;
       border-radius: $border-radius-sm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       &:hover {
         color: $color-text;
@@ -245,10 +261,15 @@
   }
 
   &__body {
-    padding: $spacing-lg;
+    padding: $spacing-md;
     display: flex;
     flex-direction: column;
     gap: $spacing-md;
+    overflow-y: auto;
+
+    @media (min-width: $breakpoint-sm) {
+      padding: $spacing-lg;
+    }
 
     .form-group {
       display: flex;
@@ -281,7 +302,8 @@
 
     .summary-meta {
       display: flex;
-      gap: $spacing-md;
+      flex-wrap: wrap;
+      gap: $spacing-sm $spacing-md;
       font-size: $font-size-xs;
       color: $color-text-light;
       margin: 0;
@@ -295,5 +317,13 @@
     padding: $spacing-md $spacing-lg;
     border-top: 1px solid rgba($color-discrete, 0.2);
     background: $color-background-alt;
+    flex-wrap: wrap;
+
+    @media (max-width: $breakpoint-xs) {
+      flex-direction: column-reverse;
+      > * {
+        width: 100%;
+      }
+    }
   }
 }

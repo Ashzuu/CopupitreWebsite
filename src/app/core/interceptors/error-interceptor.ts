@@ -1,16 +1,32 @@
 import { HttpContextToken, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { NotifService } from '@services/notif-service';
+import { AuthService } from '@services/auth-service';
 
 /** Use this token in HttpClient requests to bypass global error notifications. */
 export const BYPASS_GLOBAL_ERROR = new HttpContextToken<boolean>(() => false);
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const errorService = inject(NotifService);
+  const authService = inject(AuthService, { optional: true });
+  const router = inject(Router, { optional: true });
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      const isAuthEndpoint = req.url.includes('/auth/login') || req.url.includes('/auth/register');
+      const isUnauthorized = error.status === 401;
+
+      // Déconnexion et redirection automatique immédiate si le token est invalide ou expiré
+      if (isUnauthorized && !isAuthEndpoint) {
+        if (authService) {
+          authService.logout();
+        } else if (router) {
+          router.navigate(['/login']);
+        }
+      }
+
       if (req.context.get(BYPASS_GLOBAL_ERROR)) {
         return throwError(() => error);
       }
@@ -25,7 +41,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         // 1. Extraction du message d'erreur métier renvoyé par le backend
         let backendMsg: string | null = null;
         if (error.error && typeof error.error === 'object') {
-          backendMsg = error.error.message || error.error.error || error.error.detail || null;
+          backendMsg = error.error.message || error.error.error || error.error.detail || error.error.username || null;
           if (backendMsg && backendMsg.includes('Http failure response')) {
             backendMsg = null;
           }
@@ -42,8 +58,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             message = backendMsg || 'Les données fournies sont invalides ou incomplètes.';
             break;
           case 401:
-            title = 'Session expirée';
-            message = backendMsg || 'Vos identifiants sont incorrects ou votre session a expiré.';
+            if (isAuthEndpoint) {
+              title = 'Connexion échouée';
+              message = backendMsg || 'Identifiants incorrects.';
+            } else {
+              title = 'Session expirée';
+              message = backendMsg || 'Votre session a expiré. Veuillez vous reconnecter.';
+            }
             break;
           case 403:
             title = 'Accès interdit';

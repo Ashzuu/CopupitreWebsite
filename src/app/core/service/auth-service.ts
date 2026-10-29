@@ -25,12 +25,8 @@ export class AuthService {
   readonly currentUsername = computed(() => {
     const token = this.tokenSignal();
     if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.sub || 'Utilisateur';
-    } catch {
-      return 'Utilisateur';
-    }
+    const payload = this.decodeJwtPayload(token);
+    return (payload?.['sub'] as string) || 'Utilisateur';
   });
 
   readonly currentUserFullName = computed(() => {
@@ -50,6 +46,37 @@ export class AuthService {
   }
 
   /**
+   * Décode le payload d'un token JWT de façon sécurisée (supporte base64url).
+   */
+  decodeJwtPayload(token: string): Record<string, unknown> | null {
+    try {
+      const parts = token.split('.');
+      if (parts.length < 2) return null;
+      let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      while (base64.length % 4 !== 0) {
+        base64 += '=';
+      }
+      const jsonPayload = atob(base64);
+      return JSON.parse(jsonPayload) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Vérifie si un token JWT est expiré en comparant le claim exp à l'heure courante.
+   */
+  isTokenExpired(token: string | null): boolean {
+    if (!token) return true;
+    const payload = this.decodeJwtPayload(token);
+    if (!payload) return true;
+    if (typeof payload['exp'] === 'number') {
+      return (payload['exp'] as number) * 1000 <= Date.now();
+    }
+    return false;
+  }
+
+  /**
    * Met à jour manuellement le cache local du profil utilisateur.
    */
   updateProfileCache(profile: UserProfile): void {
@@ -64,14 +91,17 @@ export class AuthService {
       error: (err) => {
         this.logger.error('Error loading user profile', 'AuthService', err);
         this.profileSignal.set(null);
+        if (err?.status === 401) {
+          this.logout();
+        }
       },
     });
   }
 
   private getInitialToken(): string | null {
+    let token: string | null = null;
     if (isPlatformBrowser(this.platformId)) {
-      const token = this.getCookie('jwt_token');
-      return token;
+      token = this.getCookie('jwt_token');
     } else if (isPlatformServer(this.platformId) && this.request) {
       let cookieHeader = '';
 
@@ -79,14 +109,24 @@ export class AuthService {
         if (typeof this.request.headers.get === 'function') {
           cookieHeader = this.request.headers.get('cookie') || '';
         } else {
-          const rawHeaders = this.request.headers as any;
-          cookieHeader = rawHeaders['cookie'] || rawHeaders['Cookie'] || '';
+          const rawHeaders = this.request.headers as unknown as Record<string, unknown>;
+          cookieHeader = (rawHeaders['cookie'] as string) || (rawHeaders['Cookie'] as string) || '';
         }
       }
 
-      const token = this.parseCookie(cookieHeader, 'jwt_token');
+      token = this.parseCookie(cookieHeader, 'jwt_token');
+    }
+
+    if (token) {
+      if (this.isTokenExpired(token)) {
+        if (isPlatformBrowser(this.platformId)) {
+          this.deleteCookie('jwt_token');
+        }
+        return null;
+      }
       return token;
     }
+
     return null;
   }
 
@@ -128,7 +168,9 @@ export class AuthService {
     }
     this.tokenSignal.set(null);
     this.profileSignal.set(null);
-    this.router.navigate(['/login']);
+    if (!this.router.url.startsWith('/login')) {
+      this.router.navigate(['/login']);
+    }
   }
 
   // === COOKIE HELPERS ===

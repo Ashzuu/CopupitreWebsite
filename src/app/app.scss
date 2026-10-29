@@ -1,0 +1,8 @@
+@use 'styles/variables' as *;
+
+
+@media (max-width: $breakpoint-xl) {
+  ::ng-deep main {
+    padding: 0 $spacing-md;
+  }
+}

@@ -3,7 +3,7 @@
 :host {
   display: block;
   min-height: 100dvh;
-  width: 100vw;
+  width: 100%;
   background-color: var(--surface-b);
 }
 
@@ -11,17 +11,26 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 200px);
+  min-height: calc(100vh - 140px);
+  padding: $spacing-md;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-xl;
+  }
 }
 
 .auth-card {
   background: $color-background;
   border-radius: $border-radius-lg;
   box-shadow: $shadow-lg;
-  padding: $spacing-xl;
+  padding: $spacing-lg;
   width: 100%;
   max-width: 800px;
   border: 1px solid rgba($color-discrete, 0.2);
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-2xl;
+  }
 }
 
 .auth-header {
@@ -29,15 +38,24 @@
   margin-bottom: $spacing-xl;
 
   h1 {
-    font-size: $font-size-4xl;
+    font-size: $font-size-2xl;
     font-family: $font-family-heading;
     color: $color-primary-dark;
     margin-bottom: $spacing-xs;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-4xl;
+    }
   }
 
   p {
     color: $color-text-light;
     margin: 0;
+    font-size: $font-size-sm;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-base;
+    }
   }
 }
 
@@ -67,10 +85,11 @@
 
 .form-row {
   display: flex;
+  flex-direction: column;
   gap: $spacing-md;
 
-  @media (max-width: $breakpoint-sm) {
-    flex-direction: column;
+  @media (min-width: $breakpoint-sm) {
+    flex-direction: row;
   }
 
   .form-group {
@@ -100,8 +119,8 @@
     gap: $spacing-sm;
 
     input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       accent-color: $color-primary;
     }
 
@@ -113,24 +132,27 @@
 }
 
 .form-control {
+  width: 100%;
   padding: $spacing-sm $spacing-md;
   border: 1px solid rgba($color-discrete, 0.5);
   border-radius: $border-radius-sm;
   font-family: $font-family-base;
-  font-size: $font-size-base;
+  font-size: 1rem; // Prevents iOS Safari auto-zoom
   color: $color-text;
   background: $color-background;
+  min-height: 44px;
   transition: border-color $transition-fast, box-shadow $transition-fast;
 
   &:focus {
     outline: none;
     border-color: $color-primary;
-    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.15);
   }
 }
 
 textarea.form-control {
   resize: vertical;
+  min-height: 90px;
 }
 
 .error-msg {
@@ -153,6 +175,7 @@ textarea.form-control {
   width: 100%;
   padding: $spacing-md;
   font-size: $font-size-base;
+  min-height: 48px;
 }
 
 .auth-footer {

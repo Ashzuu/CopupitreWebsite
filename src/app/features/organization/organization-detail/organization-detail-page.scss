@@ -1,8 +1,12 @@
 @use '../../../styles/variables' as *;
 
-.org-detail {
-  padding-top: $spacing-xl;
-  padding-bottom: $spacing-xl;
+.org-detail-container {
+  padding-top: $spacing-lg;
+  padding-bottom: $spacing-2xl;
+
+  @media (min-width: $breakpoint-md) {
+    padding-top: $spacing-xl;
+  }
 }
 
 .org-header {
@@ -10,37 +14,69 @@
   justify-content: space-between;
   align-items: flex-start;
   background: $color-background;
-  padding: $spacing-xl;
+  padding: $spacing-md;
   border-radius: $border-radius-lg;
   box-shadow: $shadow-sm;
   margin-bottom: $spacing-xl;
   border-left: 6px solid $color-primary;
+  gap: $spacing-md;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-xl;
+  }
 
   @media (max-width: $breakpoint-md) {
     flex-direction: column;
-    gap: $spacing-md;
+    align-items: stretch;
   }
 
   &__content {
-    h1 {
-      font-size: $font-size-3xl;
+    flex: 1;
+    min-width: 0;
+
+    .org-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: $spacing-sm;
+      margin-bottom: $spacing-xs;
+    }
+
+    h1.org-name {
+      font-size: 1.35rem;
       font-family: $font-family-heading;
       color: $color-primary-dark;
-      margin-bottom: $spacing-xs;
+      margin: 0;
+      word-break: break-word;
+
+      @media (min-width: $breakpoint-sm) {
+        font-size: $font-size-2xl;
+      }
+
+      @media (min-width: $breakpoint-md) {
+        font-size: $font-size-3xl;
+      }
     }
   }
 
-  &__city {
+  .org-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm $spacing-md;
+    font-size: $font-size-sm;
     color: $color-text-light;
-    font-weight: 600;
-    margin-bottom: $spacing-sm;
-    i { margin-right: 4px; }
-  }
+    margin-top: $spacing-xs;
 
-  &__desc {
-    color: $color-text;
-    max-width: 800px;
-    line-height: 1.6;
+    .meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+
+      i {
+        color: $color-primary;
+      }
+    }
   }
 
   &__actions {
@@ -48,11 +84,12 @@
     display: flex;
     gap: $spacing-sm;
     align-items: center;
-  }
 
-  .org-meta {
-    display: flex;
-    flex-direction: column;
+    @media (max-width: $breakpoint-md) {
+      .btn {
+        width: 100%;
+      }
+    }
   }
 }
 
@@ -62,6 +99,9 @@
   gap: $spacing-xs;
   margin-bottom: $spacing-xl;
   border-bottom: 2px solid rgba($color-discrete, 0.2);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
 }
 
 .org-tab,
@@ -69,20 +109,27 @@
   display: inline-flex;
   align-items: center;
   gap: $spacing-xs;
-  padding: $spacing-sm $spacing-lg;
+  padding: $spacing-sm $spacing-md;
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
   color: $color-text-light;
   font-family: inherit;
-  font-size: $font-size-base;
+  font-size: $font-size-sm;
   font-weight: 600;
   cursor: pointer;
   margin-bottom: -2px;
+  white-space: nowrap;
+  min-height: 42px;
   transition: all $transition-fast;
 
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-sm $spacing-lg;
+    font-size: $font-size-base;
+  }
+
   i {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   &__badge,
@@ -125,8 +172,8 @@
 
   @media (min-width: $breakpoint-lg) {
     flex-direction: row;
-    > :nth-child(1) { flex: 2; }
-    > :nth-child(2) { flex: 1; }
+    > :nth-child(1) { flex: 2; min-width: 0; }
+    > :nth-child(2) { flex: 1; min-width: 0; }
   }
 }
 
@@ -134,22 +181,31 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-xl;
+  min-width: 0;
 }
 
 .org-section {
   background: $color-background;
-  padding: $spacing-lg;
+  padding: $spacing-md;
   border-radius: $border-radius-lg;
   box-shadow: $shadow-sm;
 
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-lg;
+  }
+
   &__title {
-    font-size: $font-size-xl;
+    font-size: 1.15rem;
     font-family: $font-family-heading;
     color: $color-secondary;
     margin-bottom: $spacing-md;
     display: flex;
     align-items: center;
     gap: $spacing-sm;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-xl;
+    }
 
     i {
       color: $color-primary;
@@ -162,6 +218,24 @@
     margin-top: -$spacing-sm;
     margin-bottom: $spacing-md;
   }
+}
+
+.org-desc {
+  color: $color-text;
+  line-height: 1.6;
+  margin-bottom: $spacing-md;
+  word-break: break-word;
+}
+
+.org-dress,
+.org-logistics {
+  background: $color-background-alt;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  margin-top: $spacing-sm;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .empty-state {
@@ -195,6 +269,10 @@
     box-shadow: $shadow-md;
   }
 
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+
   &__date {
     display: flex;
     flex-direction: column;
@@ -204,12 +282,23 @@
     color: $color-text-inverse;
     padding: $spacing-sm $spacing-md;
     border-radius: $border-radius-sm;
-    min-width: 80px;
+    min-width: 75px;
+
+    @media (max-width: 480px) {
+      flex-direction: row;
+      gap: $spacing-xs;
+      padding: $spacing-xs $spacing-sm;
+      align-self: flex-start;
+    }
 
     .day {
       font-size: $font-size-xl;
       font-weight: 700;
       line-height: 1;
+
+      @media (max-width: 480px) {
+        font-size: 1.1rem;
+      }
     }
     .month {
       font-size: $font-size-sm;
@@ -220,11 +309,13 @@
 
   &__info {
     flex: 1;
+    min-width: 0;
 
     h3 {
-      font-size: $font-size-lg;
+      font-size: 1.05rem;
       margin-bottom: $spacing-xs;
       color: $color-secondary;
+      word-break: break-word;
     }
 
     .location {
@@ -238,6 +329,7 @@
       font-size: $font-size-sm;
       color: $color-text;
       margin: 0;
+      word-break: break-word;
     }
   }
 }
@@ -262,10 +354,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
     margin-bottom: $spacing-xs;
 
     strong {
       color: $color-secondary;
+      word-break: break-word;
     }
 
     .badge {
@@ -282,6 +377,7 @@
     font-size: $font-size-sm;
     color: $color-text;
     margin: 0;
+    word-break: break-word;
   }
 }
 
@@ -307,6 +403,7 @@
   background: $color-background-alt;
   border-radius: $border-radius-md;
   border: 1px solid rgba($color-discrete, 0.2);
+  gap: $spacing-sm;
 
   &__name {
     font-weight: 500;
@@ -314,6 +411,7 @@
     display: flex;
     align-items: center;
     gap: $spacing-sm;
+    flex-wrap: wrap;
 
     i {
       color: $color-discrete-secondary;
@@ -327,7 +425,6 @@
       font-weight: 600;
       padding: 1px 6px;
       border-radius: $border-radius-sm;
-      margin-left: $spacing-xs;
     }
   }
 
@@ -346,9 +443,17 @@
   gap: $spacing-sm;
   align-items: center;
 
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+    .btn {
+      width: 100%;
+    }
+  }
+
   .input-field {
     flex: 1;
-    font-size: $font-size-sm;
+    font-size: 1rem;
   }
 
   .btn {
@@ -358,24 +463,13 @@
 }
 
 /* Loading & Error */
-.org-detail__loading, .org-detail__error {
+.error-banner {
+  background: rgba($color-error, 0.1);
+  color: $color-error;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: $spacing-3xl;
-  gap: $spacing-md;
-  text-align: center;
-
-  p {
-    color: $color-text-light;
-    font-size: $font-size-lg;
-  }
-}
-
-.org-detail__error {
-  i {
-    font-size: 3rem;
-    color: $color-error;
-  }
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
 }

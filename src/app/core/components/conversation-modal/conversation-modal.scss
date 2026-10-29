@@ -15,9 +15,9 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 600px;
-  max-width: 92vw;
+  max-width: 94vw;
   height: 620px;
-  max-height: 90vh;
+  max-height: 90dvh;
   background-color: $color-background;
   border-radius: $border-radius-sm;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
@@ -27,20 +27,39 @@
   overflow: hidden;
   animation: convPopIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
 
+  @media (max-width: $breakpoint-sm) {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    animation: convMobileSlideIn 250ms ease-out;
+  }
+
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: $spacing-md $spacing-lg;
+    padding: $spacing-sm $spacing-md;
     background-color: $color-secondary;
     color: $color-text-inverse;
     border-bottom: 1px solid rgba($color-discrete, 0.2);
+
+    @media (min-width: $breakpoint-sm) {
+      padding: $spacing-md $spacing-lg;
+    }
 
     .header-titles {
       display: flex;
       flex-direction: column;
       gap: 2px;
       overflow: hidden;
+      min-width: 0;
 
       .conv-title {
         margin: 0;
@@ -50,6 +69,9 @@
         align-items: center;
         gap: $spacing-xs;
         color: $color-text-inverse;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         i {
           color: $color-primary;
@@ -74,6 +96,11 @@
       cursor: pointer;
       padding: $spacing-xs;
       border-radius: $border-radius-sm;
+      min-width: 40px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: all $transition-fast;
 
       &:hover,
@@ -88,10 +115,15 @@
   &__body {
     flex: 1;
     overflow-y: auto;
-    padding: $spacing-lg;
+    padding: $spacing-md;
     background-color: $color-background-alt;
     display: flex;
     flex-direction: column;
+    -webkit-overflow-scrolling: touch;
+
+    @media (min-width: $breakpoint-sm) {
+      padding: $spacing-lg;
+    }
   }
 
   .conv-state {
@@ -150,7 +182,7 @@
         }
 
         .message-time {
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(255, 255, 255, 0.85);
         }
 
         .message-content {
@@ -195,10 +227,14 @@
   }
 
   .message-bubble {
-    max-width: 80%;
+    max-width: 90%;
     padding: $spacing-sm $spacing-md;
     border-radius: $border-radius-sm;
     word-break: break-word;
+
+    @media (min-width: $breakpoint-sm) {
+      max-width: 80%;
+    }
 
     .message-meta {
       display: flex;
@@ -233,9 +269,13 @@
   }
 
   &__footer {
-    padding: $spacing-md $spacing-lg;
+    padding: $spacing-sm $spacing-md;
     background-color: $color-background;
     border-top: 1px solid rgba($color-discrete, 0.2);
+
+    @media (min-width: $breakpoint-sm) {
+      padding: $spacing-md $spacing-lg;
+    }
 
     .input-container {
       display: flex;
@@ -249,11 +289,12 @@
         border: 1px solid rgba($color-discrete, 0.4);
         border-radius: $border-radius-md;
         font-family: inherit;
-        font-size: $font-size-sm;
+        font-size: 1rem;
         line-height: 1.4;
         color: $color-text;
         background-color: $color-background;
         outline: none;
+        min-height: 44px;
         transition: border-color $transition-fast;
 
         &:focus {
@@ -263,8 +304,8 @@
       }
 
       .btn-send {
-        width: 42px;
-        height: 42px;
+        width: 44px;
+        height: 44px;
         border-radius: $border-radius-md;
         background-color: $color-primary;
         color: #fff;
@@ -305,12 +346,8 @@
 }
 
 @keyframes convFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes convPopIn {
@@ -321,5 +358,16 @@
   to {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes convMobileSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

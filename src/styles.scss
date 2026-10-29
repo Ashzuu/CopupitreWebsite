@@ -28,13 +28,15 @@ body {
   background-color: $color-background;
   line-height: 1.6;
   overflow-x: hidden;
+  width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: $font-family-heading;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
   color: $color-secondary;
+  word-break: break-word;
 }
 
 :root {
@@ -62,6 +64,7 @@ button {
   border: none;
   font-family: inherit;
   font-size: inherit;
+  touch-action: manipulation;
 
   &:focus-visible {
     outline: 2px solid $color-primary;
@@ -82,9 +85,20 @@ ul, ol {
 
 // === UTILITY CLASSES ===
 .container {
-  width: 80%;
+  width: 100%;
+  max-width: 1300px;
   margin-inline: auto;
   padding-inline: $spacing-md;
+
+  @media (min-width: $breakpoint-md) {
+    padding-inline: $spacing-xl;
+  }
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .sr-only {
@@ -111,6 +125,9 @@ ul, ol {
   transition: all $transition-base;
   text-decoration: none;
   font-size: $font-size-base;
+  min-height: 44px;
+  touch-action: manipulation;
+  white-space: nowrap;
 
   &--primary {
     background: $color-primary;
@@ -149,12 +166,14 @@ ul, ol {
     padding: $spacing-md $spacing-xl;
     font-size: $font-size-lg;
     border-radius: $border-radius-xl;
+    min-height: 48px;
   }
 
   &--small {
     padding: $spacing-xs $spacing-sm;
     font-size: 0.85rem;
     border-radius: $border-radius-sm;
+    min-height: 36px;
   }
 
   &--icon {
@@ -163,6 +182,8 @@ ul, ol {
     align-items: center;
     justify-content: center;
     border-radius: $border-radius-md;
+    min-height: 36px;
+    min-width: 36px;
   }
 
   &--danger {
@@ -180,10 +201,14 @@ ul, ol {
 
 // === SECTION BASE ===
 .section {
-  padding: $spacing-3xl 0;
+  padding: $spacing-xl 0;
+
+  @media (min-width: $breakpoint-md) {
+    padding: $spacing-3xl 0;
+  }
 
   &__title {
-    font-size: $font-size-3xl;
+    font-size: $font-size-2xl;
     text-align: center;
     margin-bottom: $spacing-md;
 
@@ -195,10 +220,15 @@ ul, ol {
   &__subtitle {
     text-align: center;
     color: $color-text-light;
-    font-size: $font-size-lg;
+    font-size: $font-size-base;
     max-width: 600px;
     margin-inline: auto;
-    margin-bottom: $spacing-3xl;
+    margin-bottom: $spacing-xl;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: $font-size-lg;
+      margin-bottom: $spacing-3xl;
+    }
   }
 }
 
@@ -212,29 +242,35 @@ ul, ol {
   label {
     font-weight: 500;
     color: $color-primary-dark;
+    font-size: $font-size-sm;
   }
 }
 
 .input-field {
   width: 100%;
   padding: $spacing-sm $spacing-md;
-  border: 1px solid rgba($color-discrete, 0.3);
+  border: 1px solid rgba($color-discrete, 0.4);
   border-radius: $border-radius-md;
   font-family: $font-family-base;
-  font-size: $font-size-base;
+  font-size: 1rem; // Prevents iOS Safari auto-zoom on focus
   color: $color-text;
   background-color: $color-background;
   transition: all $transition-fast;
+  min-height: 44px;
 
   &:focus {
     outline: none;
     border-color: $color-primary;
-    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.15);
   }
 
   &::placeholder {
     color: rgba($color-text-light, 0.6);
   }
+}
+
+textarea.input-field {
+  min-height: 80px;
 }
 
 .required {

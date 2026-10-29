@@ -1,19 +1,24 @@
 @use '../../../styles/variables' as *;
 
 .header {
-  background-color: rgba($color-secondary, 0.95);
+  background-color: rgba($color-secondary, 0.96);
   backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
   z-index: 1000;
   box-shadow: $shadow-md;
   color: $color-text-inverse;
-  padding-block: $spacing-md;
+  padding-block: $spacing-sm;
+
+  @media (min-width: $breakpoint-md) {
+    padding-block: $spacing-md;
+  }
 
   &__inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: $spacing-md;
   }
 
   &__logo {
@@ -21,9 +26,13 @@
     align-items: center;
     gap: $spacing-sm;
     font-family: $font-family-heading;
-    font-size: $font-size-xl;
+    font-size: 1.35rem;
     font-weight: 700;
     color: $color-text-inverse;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: $font-size-xl;
+    }
     
     i {
       color: $color-primary;
@@ -35,37 +44,78 @@
     }
   }
 
+  /* Barre d'actions mobiles (Notifs + Burger) */
+  &__mobile-bar {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    @media (min-width: $breakpoint-xl) {
+      display: none;
+    }
+  }
+
   &__mobile-toggle {
-    display: none;
     background: transparent;
     color: $color-text-inverse;
     font-size: 1.5rem;
     padding: $spacing-xs;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: $border-radius-sm;
 
-    @media (max-width: $breakpoint-md - 1) {
-      display: block;
+    &:hover,
+    &:focus-visible {
+      color: $color-primary;
+      outline: none;
     }
   }
 
+  /* Backdrop d'obscurcissement sur mobile */
+  &__mobile-backdrop {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+
+    @media (min-width: $breakpoint-xl) {
+      display: none;
+    }
+  }
+
+  /* Navigation */
   &__nav {
     display: flex;
     align-items: center;
-    gap: $spacing-2xl;
+    gap: $spacing-xl;
 
-    @media (max-width: $breakpoint-md - 1) {
-      position: absolute;
-      top: 100%;
+    @media (max-width: $breakpoint-xl - 1) {
+      position: fixed;
+      top: 60px;
       left: 0;
-      width: 100%;
+      right: 0;
+      max-height: calc(100dvh - 60px);
       background-color: $color-secondary;
       flex-direction: column;
+      align-items: stretch;
       padding: $spacing-lg;
       gap: $spacing-lg;
       border-top: 1px solid rgba($color-discrete, 0.2);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      box-shadow: $shadow-xl;
+      z-index: 999;
       display: none;
 
       &--open {
         display: flex;
+        animation: mobileNavSlide 200ms ease-out;
       }
     }
   }
@@ -78,19 +128,31 @@
     margin: 0;
     padding: 0;
 
-    @media (max-width: $breakpoint-md - 1) {
+    @media (max-width: $breakpoint-xl - 1) {
       flex-direction: column;
+      align-items: stretch;
       width: 100%;
-      gap: $spacing-md;
+      gap: $spacing-xs;
     }
   }
 
   &__nav-link {
-    color: rgba($color-text-inverse, 0.85);
+    color: rgba($color-text-inverse, 0.88);
     font-weight: 500;
     transition: color $transition-fast;
     position: relative;
-    padding-block: $spacing-xs;
+    padding: $spacing-xs $spacing-sm;
+    display: block;
+    border-radius: $border-radius-sm;
+
+    @media (max-width: $breakpoint-xl - 1) {
+      padding: $spacing-sm $spacing-md;
+      font-size: 1.05rem;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+      }
+    }
 
     &:hover,
     &.active {
@@ -106,17 +168,119 @@
       height: 2px;
       background-color: $color-primary;
       border-radius: $border-radius-sm;
+
+      @media (max-width: $breakpoint-xl - 1) {
+        display: none;
+      }
     }
   }
 
-  &__actions {
+  /* Section utilisateur mobile dans le tiroir */
+  &__mobile-user-nav {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    border-top: 1px solid rgba($color-discrete, 0.2);
+    padding-top: $spacing-md;
+
+    @media (min-width: $breakpoint-xl) {
+      display: none;
+    }
+  }
+
+  &__mobile-user-info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: 0.85rem;
+    color: $color-discrete;
+    padding: $spacing-xs $spacing-md;
+
+    i {
+      color: $color-primary;
+    }
+  }
+
+  &__mobile-user-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__mobile-link {
     display: flex;
     align-items: center;
     gap: $spacing-md;
+    padding: $spacing-sm $spacing-md;
+    color: rgba($color-text-inverse, 0.9);
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: $border-radius-sm;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background-color $transition-fast;
 
-    @media (max-width: $breakpoint-md - 1) {
+    i {
+      color: $color-primary;
+      font-size: 1.1rem;
+      width: 20px;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background-color: rgba($color-primary, 0.15);
+      color: #fff;
+      outline: none;
+    }
+
+    &--danger {
+      color: $color-error;
+      margin-top: $spacing-xs;
+
+      i {
+        color: $color-error;
+      }
+
+      &:hover,
+      &:focus-visible {
+        background-color: rgba($color-error, 0.15);
+        color: $color-error;
+      }
+    }
+  }
+
+  &__mobile-auth-actions {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    width: 100%;
+    border-top: 1px solid rgba($color-discrete, 0.2);
+    padding-top: $spacing-md;
+
+    @media (min-width: $breakpoint-xl) {
+      display: none;
+    }
+
+    .btn--block {
       width: 100%;
-      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+  &__actions--desktop {
+    display: none;
+
+    @media (min-width: $breakpoint-xl) {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
     }
   }
 
@@ -126,8 +290,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: $border-radius-full;
     background-color: rgba($color-secondary-light, 0.4);
     border: 1px solid rgba($color-discrete, 0.25);
@@ -135,6 +299,7 @@
     font-size: 1.15rem;
     cursor: pointer;
     transition: all $transition-fast;
+    flex-shrink: 0;
 
     &:hover,
     &:focus-visible {
@@ -142,6 +307,12 @@
       border-color: $color-primary;
       color: $color-primary;
       outline: none;
+    }
+
+    &--mobile {
+      width: 40px;
+      height: 40px;
+      font-size: 1.1rem;
     }
   }
 
@@ -175,6 +346,7 @@
     font-size: $font-size-sm;
     font-weight: 500;
     cursor: pointer;
+    min-height: 40px;
     transition: all $transition-fast;
 
     i {
@@ -204,7 +376,7 @@
 .profile-drawer-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(2px);
   z-index: 1090;
   animation: drawerFadeIn 200ms ease;
@@ -217,7 +389,7 @@
   right: 0;
   bottom: 0;
   width: 340px;
-  max-width: 88vw;
+  max-width: 100vw;
   background-color: $color-secondary;
   color: $color-text-inverse;
   z-index: 1100;
@@ -226,11 +398,15 @@
   flex-direction: column;
   animation: drawerSlideIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
 
+  @media (max-width: $breakpoint-xl - 1) {
+    width: 100%;
+  }
+
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: $spacing-lg;
+    padding: $spacing-md $spacing-lg;
     border-bottom: 1px solid rgba($color-discrete, 0.2);
     background-color: rgba($color-secondary-light, 0.3);
   }
@@ -289,6 +465,11 @@
     font-size: 1.2rem;
     padding: $spacing-xs;
     cursor: pointer;
+    min-width: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: $border-radius-sm;
     transition: all $transition-fast;
 
@@ -326,6 +507,7 @@
     border: none;
     cursor: pointer;
     text-align: left;
+    min-height: 44px;
 
     i {
       font-size: 1.15rem;
@@ -365,7 +547,11 @@
 /* Styles spécifiques au tiroir de notifications (US-COM-02) */
 .notif-drawer {
   width: 400px;
-  max-width: 92vw;
+  max-width: 100vw;
+
+  @media (max-width: $breakpoint-xl - 1) {
+    width: 100%;
+  }
 
   &__title {
     display: flex;
@@ -403,6 +589,9 @@
       cursor: pointer;
       text-decoration: underline;
       padding: $spacing-xs;
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
 
       &:hover {
         color: #ffffff;
@@ -450,6 +639,7 @@
   cursor: pointer;
   transition: background-color $transition-fast;
   position: relative;
+  min-height: 52px;
 
   &:hover,
   &:focus-visible {
@@ -545,5 +735,16 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes mobileNavSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

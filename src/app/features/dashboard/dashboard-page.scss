@@ -7,22 +7,34 @@
 
 .dashboard {
   &__header {
-    margin-bottom: $spacing-2xl;
+    margin-bottom: $spacing-xl;
+
+    @media (min-width: $breakpoint-md) {
+      margin-bottom: $spacing-2xl;
+    }
   }
 
   &__title {
-    font-size: $font-size-3xl;
+    font-size: $font-size-2xl;
     margin-bottom: $spacing-xs;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: $font-size-3xl;
+    }
   }
 
   &__subtitle {
     color: $color-text-light;
-    font-size: $font-size-lg;
+    font-size: $font-size-sm;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: $font-size-lg;
+    }
   }
 
   &__loading, &__error {
     text-align: center;
-    padding: $spacing-4xl;
+    padding: $spacing-2xl $spacing-md;
     background: $color-background-alt;
     border-radius: $border-radius-xl;
     display: flex;
@@ -30,36 +42,58 @@
     align-items: center;
     gap: $spacing-md;
 
+    @media (min-width: $breakpoint-md) {
+      padding: $spacing-4xl;
+    }
+
     i { font-size: 2.5rem; }
   }
 
   &__error { color: $color-error; }
 
   &__personal {
-    margin-bottom: $spacing-3xl;
+    margin-bottom: $spacing-2xl;
+
+    @media (min-width: $breakpoint-md) {
+      margin-bottom: $spacing-3xl;
+    }
   }
 
   &__organizations {
-    margin-bottom: $spacing-3xl;
+    margin-bottom: $spacing-2xl;
+
+    @media (min-width: $breakpoint-md) {
+      margin-bottom: $spacing-3xl;
+    }
   }
 
   &__section-title {
-    font-size: $font-size-2xl;
+    font-size: 1.25rem;
     color: $color-primary-dark;
     border-bottom: 3px solid $color-primary;
     padding-bottom: $spacing-sm;
-    margin-bottom: $spacing-xl;
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-  }
-
-  &__section-subtitle {
-    font-size: $font-size-xl;
     margin-bottom: $spacing-lg;
     display: flex;
     align-items: center;
     gap: $spacing-sm;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: $font-size-2xl;
+      margin-bottom: $spacing-xl;
+    }
+  }
+
+  &__section-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: $spacing-md;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: $font-size-xl;
+      margin-bottom: $spacing-lg;
+    }
 
     i { color: $color-primary; }
   }
@@ -67,11 +101,13 @@
   &__stats-grid {
     display: flex;
     flex-direction: column;
-    gap: $spacing-lg;
-    margin-bottom: $spacing-2xl;
+    gap: $spacing-md;
+    margin-bottom: $spacing-xl;
 
-    @media (min-width: $breakpoint-md) {
+    @media (min-width: $breakpoint-sm) {
       flex-direction: row;
+      gap: $spacing-lg;
+      margin-bottom: $spacing-2xl;
       > * { flex: 1; }
     }
   }
@@ -79,11 +115,12 @@
   &__content-grid {
     display: flex;
     flex-direction: column;
-    gap: $spacing-2xl;
+    gap: $spacing-xl;
 
     @media (min-width: $breakpoint-lg) {
       flex-direction: row;
-      > * { flex: 1; }
+      gap: $spacing-2xl;
+      > * { flex: 1; min-width: 0; }
     }
   }
 
@@ -91,16 +128,25 @@
     background: $color-background;
     border-radius: $border-radius-xl;
     box-shadow: $shadow-sm;
-    padding: $spacing-xl;
+    padding: $spacing-md;
     border: 1px solid rgba($color-discrete, 0.2);
+
+    @media (min-width: $breakpoint-sm) {
+      padding: $spacing-xl;
+    }
   }
 
   &__section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: $spacing-lg;
+    flex-wrap: wrap;
+    margin-bottom: $spacing-md;
     gap: $spacing-sm;
+
+    @media (min-width: $breakpoint-sm) {
+      margin-bottom: $spacing-lg;
+    }
 
     .dashboard__section-subtitle {
       margin-bottom: 0;
@@ -109,7 +155,7 @@
 
   &__empty {
     text-align: center;
-    padding: $spacing-2xl;
+    padding: $spacing-xl $spacing-md;
     background: $color-background-alt;
     border-radius: $border-radius-lg;
     color: $color-text-light;
@@ -124,19 +170,31 @@
   background: $color-background;
   border-radius: $border-radius-xl;
   box-shadow: $shadow-md;
-  margin-bottom: $spacing-2xl;
+  margin-bottom: $spacing-xl;
   overflow: hidden;
   border: 1px solid rgba($color-discrete, 0.2);
+
+  @media (min-width: $breakpoint-md) {
+    margin-bottom: $spacing-2xl;
+  }
 
   &__header {
     background: $color-secondary;
     color: $color-text-inverse;
-    padding: $spacing-lg $spacing-xl;
+    padding: $spacing-md $spacing-lg;
+
+    @media (min-width: $breakpoint-sm) {
+      padding: $spacing-lg $spacing-xl;
+    }
     
     h3 {
-      font-size: $font-size-xl;
+      font-size: 1.15rem;
       margin: 0;
       color: $color-text-inverse;
+
+      @media (min-width: $breakpoint-sm) {
+        font-size: $font-size-xl;
+      }
     }
 
     a, .org-dashboard-block__title-link {
@@ -150,14 +208,22 @@
   }
 
   &__content {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xl;
-    padding: $spacing-xl;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+    padding: $spacing-md;
 
-    @media (min-width: $breakpoint-lg) {
-      flex-direction: row;
-      > * { flex: 1; min-width: 0; }
+    @media (min-width: $breakpoint-md) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: $spacing-lg;
+      padding: $spacing-lg;
+    }
+
+    @media (min-width: $breakpoint-xl) {
+      grid-template-columns: repeat(4, 1fr);
+      gap: $spacing-xl;
+      padding: $spacing-xl;
+      > * { min-width: 0; }
     }
   }
 
@@ -169,19 +235,24 @@
     padding: $spacing-md;
     border-radius: $border-radius-md;
     border: 1px solid rgba($color-discrete, 0.1);
-    max-height: 400px;
+    max-height: 420px;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   &__subtitle {
-    font-size: $font-size-lg;
+    font-size: 1rem;
     color: $color-primary-dark;
-    margin: 0 0 $spacing-sm 0;
+    margin: 0 0 $spacing-xs 0;
     display: flex;
     align-items: center;
     gap: $spacing-xs;
     border-bottom: 2px solid rgba($color-primary, 0.2);
     padding-bottom: $spacing-xs;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-lg;
+    }
   }
 }
 
@@ -190,38 +261,4 @@
   font-style: italic;
   font-size: $font-size-sm;
   margin: 0;
-}
-
-.equipment-list {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-sm;
-}
-
-.equipment-card {
-  background: $color-background;
-  border: 1px solid rgba($color-discrete, 0.3);
-  padding: $spacing-md;
-  border-radius: $border-radius-md;
-
-  h5 {
-    margin: 0 0 $spacing-xs 0;
-    font-size: $font-size-base;
-  }
-  
-  .badge {
-    display: inline-block;
-    background: rgba($color-primary, 0.1);
-    color: $color-primary-dark;
-    font-size: $font-size-xs;
-    padding: 2px 6px;
-    border-radius: $border-radius-sm;
-    margin-bottom: $spacing-xs;
-  }
-
-  p {
-    font-size: $font-size-sm;
-    color: $color-text;
-    margin: 0;
-  }
 }

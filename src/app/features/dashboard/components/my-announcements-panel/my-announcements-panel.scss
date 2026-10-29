@@ -30,11 +30,13 @@
       display: flex;
       align-items: center;
       gap: $spacing-sm;
+      flex-wrap: wrap;
 
       h4 {
         margin: 0;
         font-size: $font-size-base;
         font-weight: 600;
+        word-break: break-word;
       }
     }
 
@@ -42,6 +44,7 @@
       display: flex;
       align-items: center;
       gap: $spacing-xs;
+      flex-wrap: wrap;
     }
   }
 }
@@ -54,6 +57,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 
   &--renfort {
     background: rgba($color-primary, 0.12);
@@ -73,6 +77,7 @@
   font-weight: 600;
   padding: 2px 8px;
   border-radius: $border-radius-sm;
+  white-space: nowrap;
 
   &--open {
     background: rgba($color-success, 0.12);
@@ -95,6 +100,7 @@
   border-radius: $border-radius-sm;
   color: $color-text;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .instrument-tag {
@@ -104,13 +110,14 @@
   font-size: $font-size-xs;
   color: $color-text;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .responses-section {
   h5 {
     margin: 0 0 $spacing-sm 0;
     font-size: $font-size-sm;
-    color: $color-discrete;
+    color: $color-discrete-secondary;
     font-weight: 600;
   }
 }
@@ -136,13 +143,14 @@
 
   @media (max-width: 600px) {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
   &__main {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
   }
 
   &__applicant {
@@ -150,18 +158,19 @@
     align-items: center;
     gap: $spacing-xs;
     font-size: $font-size-sm;
+    flex-wrap: wrap;
 
     i {
       color: $color-primary;
     }
 
     .applicant-instrument {
-      color: $color-discrete;
+      color: $color-discrete-secondary;
       font-style: italic;
     }
 
     .applicant-date {
-      color: $color-discrete;
+      color: $color-discrete-secondary;
       font-size: $font-size-xs;
     }
   }
@@ -176,9 +185,10 @@
     padding: 4px 8px;
     border-radius: $border-radius-sm;
     margin-top: 2px;
+    word-break: break-word;
 
     i {
-      color: $color-discrete;
+      color: $color-discrete-secondary;
       margin-top: 2px;
     }
 
@@ -192,6 +202,13 @@
     align-items: center;
     gap: $spacing-xs;
     flex-wrap: wrap;
+
+    @media (max-width: 600px) {
+      width: 100%;
+      justify-content: flex-end;
+      border-top: 1px solid rgba($color-discrete, 0.1);
+      padding-top: $spacing-xs;
+    }
   }
 }
 
@@ -200,11 +217,17 @@
   flex-direction: column;
   gap: $spacing-xs;
 
+  @media (max-width: 600px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
   .btn-action {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
-    padding: 5px 10px;
+    padding: 6px 10px;
     font-size: $font-size-xs;
     font-weight: 600;
     border: none;
@@ -212,19 +235,11 @@
     cursor: pointer;
     text-decoration: none;
     transition: background 0.2s, opacity 0.2s;
+    min-height: 32px;
 
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;
-    }
-
-    &--contact {
-      background: rgba($color-secondary, 0.08);
-      color: $color-secondary;
-
-      &:hover {
-        background: rgba($color-secondary, 0.16);
-      }
     }
 
     &--accept, &--switch-accept {
@@ -246,9 +261,9 @@
     }
 
     &--switch-reject, &--switch-accept {
-      padding: 3px 6px;
+      padding: 4px 8px;
       font-size: 0.72rem;
-      opacity: 0.85;
+      opacity: 0.9;
 
       &:hover {
         opacity: 1;
@@ -260,14 +275,16 @@
 .btn-action--contact {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  padding: 5px 10px;
+  padding: 6px 10px;
   font-size: $font-size-xs;
   font-weight: 600;
   border-radius: $border-radius-sm;
   background: rgba($color-secondary, 0.08);
   color: $color-secondary;
   text-decoration: none;
+  min-height: 32px;
   transition: background 0.2s;
 
   &:hover {

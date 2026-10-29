@@ -2,10 +2,17 @@
 
 .create-page {
   max-width: 1200px;
+  padding-top: $spacing-lg;
+  padding-bottom: $spacing-2xl;
+
+  @media (min-width: $breakpoint-md) {
+    padding-top: $spacing-xl;
+    padding-bottom: $spacing-3xl;
+  }
 }
 
 textarea {
-  resize: none;
+  resize: vertical;
 }
 
 .create-grid {
@@ -23,28 +30,57 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: $spacing-xl;
-  position: sticky;
-  top: 1.5rem;
+
+  @media (min-width: $breakpoint-lg) {
+    position: sticky;
+    top: 5rem;
+  }
+}
+
+.notes {
+  margin: 0;
+  font-size: 14px;
+  color: $color-discrete;
+  font-style: italic;
 }
 
 .card {
   background: $color-background;
-  padding: $spacing-2xl;
+  padding: $spacing-md;
   border-radius: $border-radius-sm;
   box-shadow: $shadow-md;
+  border: 1px solid rgba($color-discrete, 0.2);
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-xl;
+  }
+
+  @media (min-width: $breakpoint-md) {
+    padding: $spacing-2xl;
+  }
 
   h1 {
-    font-size: $font-size-2xl;
+    font-size: 1.35rem;
     color: $color-primary-dark;
     margin-bottom: $spacing-xs;
     display: flex;
     align-items: center;
     gap: $spacing-sm;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-2xl;
+    }
   }
 
   .subtitle {
     color: $color-text-light;
-    margin-bottom: $spacing-xl;
+    margin-bottom: $spacing-lg;
+    font-size: $font-size-sm;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-base;
+      margin-bottom: $spacing-xl;
+    }
   }
 }
 
@@ -56,30 +92,46 @@ textarea {
 
 .form-row {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: $spacing-md;
 
-  > * {
-    flex: 1 1 200px;
+  @media (min-width: $breakpoint-sm) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    > * {
+      flex: 1 1 180px;
+    }
   }
 }
 
 .rehearsals-section {
   background: $color-background-alt;
-  padding: $spacing-lg;
+  padding: $spacing-md;
   border-radius: $border-radius-md;
   border: 1px solid rgba($color-discrete, 0.2);
 
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-lg;
+  }
+
   h2 {
-    font-size: $font-size-lg;
+    font-size: 1.1rem;
     color: $color-secondary;
     margin-bottom: $spacing-xs;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-lg;
+    }
   }
 
   .section-desc {
     color: $color-text-light;
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
     margin-bottom: $spacing-md;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-sm;
+    }
   }
 }
 
@@ -90,17 +142,35 @@ textarea {
 }
 
 .manual-row {
-  display: flex;
-  gap: $spacing-sm;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-xs;
   align-items: center;
+  background: $color-background;
+  padding: $spacing-sm;
+  border-radius: $border-radius-sm;
+  border: 1px solid rgba($color-discrete, 0.25);
+
+  @media (min-width: 640px) {
+    display: flex;
+    gap: $spacing-sm;
+    background: transparent;
+    padding: 0;
+    border: none;
+  }
 
   .input-field {
     flex: 1;
-    min-width: 0; // Prevent overflow
+    min-width: 0;
   }
 
-  input[type="time"] {
-    flex: 0 0 100px;
+  button {
+    grid-column: span 2;
+    justify-self: end;
+
+    @media (min-width: 640px) {
+      grid-column: auto;
+    }
   }
 }
 
@@ -134,14 +204,26 @@ textarea {
   margin-bottom: $spacing-sm;
 
   .form-row {
-    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    @media (min-width: $breakpoint-sm) {
+      flex-direction: row;
+      align-items: flex-end;
+    }
   }
 
   .delete-action-cell {
-    padding-bottom: $spacing-md;
+    padding-bottom: 0;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     flex: 0 0 auto !important;
+
+    @media (min-width: $breakpoint-sm) {
+      padding-bottom: $spacing-md;
+    }
   }
 }
 
@@ -166,12 +248,16 @@ textarea {
 // Concerts styling
 .concerts-card {
   h2 {
-    font-size: $font-size-xl;
+    font-size: 1.15rem;
     color: $color-secondary;
     margin-bottom: $spacing-xs;
     display: flex;
     align-items: center;
     gap: $spacing-sm;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-xl;
+    }
 
     i {
       color: $color-primary;
@@ -180,8 +266,12 @@ textarea {
 
   .section-desc {
     color: $color-text-light;
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
     margin-bottom: $spacing-md;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: $font-size-sm;
+    }
   }
 }
 
@@ -212,7 +302,11 @@ textarea {
 }
 
 .action-card {
-  padding: $spacing-lg;
+  padding: $spacing-md;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-lg;
+  }
 }
 
 .full-width-btn {

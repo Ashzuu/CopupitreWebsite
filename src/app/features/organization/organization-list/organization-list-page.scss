@@ -1,52 +1,106 @@
 @use '../../../styles/variables' as *;
 
 .org-list-page {
-  padding-top: $spacing-xl;
+  padding-top: $spacing-lg;
+
+  @media (min-width: $breakpoint-md) {
+    padding-top: $spacing-xl;
+  }
 }
 
 .org-list-layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: $spacing-2xl;
+  gap: $spacing-xl;
 
   @media (min-width: $breakpoint-lg) {
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 280px 1fr;
     align-items: start;
+    gap: $spacing-2xl;
   }
 }
 
 .org-filters {
-  position: sticky;
-  top: 1.5rem;
+  @media (min-width: $breakpoint-lg) {
+    position: sticky;
+    top: 5rem;
+  }
 }
 
 .filters-card {
   background: $color-background;
-  padding: $spacing-xl;
+  padding: $spacing-md;
   border-radius: $border-radius-xl;
   box-shadow: $shadow-sm;
   border: 1px solid rgba($color-discrete, 0.2);
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-lg;
+  }
 }
 
 .filters-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $spacing-xl;
   border-bottom: 2px solid rgba($color-primary, 0.1);
   padding-bottom: $spacing-sm;
 
-  h2 {
-    font-size: $font-size-xl;
-    color: $color-secondary;
-    margin: 0;
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+
+    h2 {
+      font-size: 1.15rem;
+      color: $color-secondary;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      i {
+        color: $color-primary;
+      }
+    }
+
+    .active-filters-badge {
+      background: $color-primary;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: $border-radius-sm;
+    }
+  }
+
+  &__actions {
     display: flex;
     align-items: center;
     gap: $spacing-sm;
+  }
+}
 
-    i {
-      color: $color-primary;
-    }
+.btn-toggle-filters {
+  background: rgba($color-secondary, 0.08);
+  border: none;
+  color: $color-secondary;
+  font-size: 1rem;
+  width: 34px;
+  height: 34px;
+  border-radius: $border-radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: rgba($color-secondary, 0.15);
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    display: none;
   }
 }
 
@@ -58,19 +112,33 @@
   cursor: pointer;
   border: none;
   transition: color $transition-fast;
+  padding: 4px 6px;
 
   &:hover {
     color: $color-primary-dark;
   }
 }
 
+.filters-content {
+  margin-top: $spacing-md;
+
+  @media (max-width: $breakpoint-lg - 1) {
+    display: none;
+
+    &--open {
+      display: block;
+      animation: filterSlideDown 200ms ease-out;
+    }
+  }
+}
+
 .filter-group {
-  margin-bottom: $spacing-xl;
+  margin-bottom: $spacing-lg;
 
   h3 {
-    font-size: $font-size-base;
+    font-size: $font-size-sm;
     color: $color-secondary;
-    margin-bottom: $spacing-sm;
+    margin-bottom: $spacing-xs;
     font-weight: 700;
   }
 }
@@ -78,12 +146,12 @@
 .checkbox-list {
   display: flex;
   flex-direction: column;
-  gap: $spacing-xs;
-  max-height: 200px;
+  gap: 2px;
+  max-height: 180px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding-right: 5px;
 
-  /* Custom scrollbar for checklist */
   &::-webkit-scrollbar {
     width: 4px;
   }
@@ -100,13 +168,15 @@
   font-size: $font-size-sm;
   color: $color-text-light;
   cursor: pointer;
-  padding: $spacing-xs;
+  padding: 6px $spacing-xs;
   border-radius: $border-radius-sm;
   transition: background-color $transition-fast;
 
   input {
     cursor: pointer;
     accent-color: $color-primary;
+    width: 18px;
+    height: 18px;
   }
 
   &:hover {
@@ -124,12 +194,16 @@
 .org-results {
   display: flex;
   flex-direction: column;
-  gap: $spacing-xl;
+  gap: $spacing-lg;
+
+  @media (min-width: $breakpoint-md) {
+    gap: $spacing-xl;
+  }
 }
 
 .search-bar-card {
   background: $color-background;
-  padding: $spacing-md;
+  padding: $spacing-sm $spacing-md;
   border-radius: $border-radius-lg;
   box-shadow: $shadow-sm;
   border: 1px solid rgba($color-discrete, 0.2);
@@ -147,11 +221,12 @@
   left: $spacing-md;
   color: $color-discrete;
   font-size: 1.1rem;
+  pointer-events: none;
 }
 
 .search-input {
   padding-left: 2.75rem !important;
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 .results-header {
@@ -159,19 +234,28 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: $spacing-md;
-  margin-bottom: $spacing-md;
+  gap: $spacing-sm $spacing-md;
 
   h2 {
-    font-size: $font-size-2xl;
+    font-size: 1.25rem;
     color: $color-secondary;
     margin: 0;
     display: flex;
     align-items: center;
     gap: $spacing-sm;
 
+    @media (min-width: $breakpoint-md) {
+      font-size: $font-size-2xl;
+    }
+
     i {
       color: $color-primary;
+    }
+  }
+
+  @media (max-width: $breakpoint-xs) {
+    .btn {
+      width: 100%;
     }
   }
 }
@@ -179,7 +263,11 @@
 .org-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: $spacing-lg;
+  gap: $spacing-md;
+
+  @media (min-width: $breakpoint-sm) {
+    gap: $spacing-lg;
+  }
 
   @media (min-width: $breakpoint-md) {
     grid-template-columns: repeat(2, 1fr);
@@ -191,13 +279,18 @@
   border-radius: $border-radius-xl;
   box-shadow: $shadow-sm;
   border: 1px solid rgba($color-discrete, 0.15);
-  padding: $spacing-xl;
+  padding: $spacing-md;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: $spacing-lg;
+  gap: $spacing-md;
   transition: all $transition-spring;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-xl;
+    gap: $spacing-lg;
+  }
 
   &:hover {
     transform: translateY(-4px);
@@ -222,28 +315,31 @@
 }
 
 .org-card__icon-wrapper {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   background-color: rgba($color-primary, 0.1);
   color: $color-primary;
   border-radius: $border-radius-lg;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem;
+  font-size: 1.25rem;
+  flex-shrink: 0;
 }
 
 .org-card__title-area {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .org-card__name {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: $color-secondary;
   margin: 0;
   line-height: 1.3;
+  word-break: break-word;
 }
 
 .org-card__city {
@@ -260,77 +356,93 @@
 }
 
 .org-card__description {
-  color: $color-text-light;
-  font-size: 0.925rem;
+  color: $color-text;
+  font-size: $font-size-sm;
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin: 0;
+  word-break: break-word;
 }
 
 .org-card__details {
-  background-color: $color-background-alt;
-  padding: $spacing-md;
-  border-radius: $border-radius-md;
   display: flex;
   flex-direction: column;
   gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+  padding-top: $spacing-sm;
+  border-top: 1px solid rgba($color-discrete, 0.15);
 }
 
 .org-card__detail-item {
   display: flex;
   align-items: center;
   gap: $spacing-sm;
-  font-size: $font-size-sm;
-  color: $color-text;
+  font-size: $font-size-xs;
+  color: $color-text-light;
 
   i {
     color: $color-primary;
   }
+
+  strong {
+    color: $color-secondary;
+  }
 }
 
 .org-card__footer {
-  margin-top: $spacing-lg;
-  border-top: 1px solid rgba($color-discrete, 0.1);
-  padding-top: $spacing-md;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .btn-more {
+  color: $color-primary;
   font-size: $font-size-sm;
   font-weight: 600;
-  color: $color-primary;
   display: inline-flex;
   align-items: center;
   gap: $spacing-xs;
   transition: all $transition-fast;
 
   i {
+    font-size: 0.8rem;
     transition: transform $transition-fast;
   }
 }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-md;
-  padding: $spacing-3xl;
-  background-color: $color-background-alt;
-  border-radius: $border-radius-xl;
-  border: 1px dashed rgba($color-discrete, 0.5);
+.org-empty {
   text-align: center;
-  color: $color-text-light;
+  padding: $spacing-3xl $spacing-md;
+  background: $color-background;
+  border-radius: $border-radius-xl;
+  border: 1px solid rgba($color-discrete, 0.2);
 
-  .empty-icon {
-    font-size: 3rem;
-    color: rgba($color-discrete, 0.7);
+  &__icon {
+    font-size: 2.5rem;
+    color: $color-discrete;
+    margin-bottom: $spacing-md;
+  }
+
+  h3 {
+    margin: 0 0 $spacing-xs 0;
+    color: $color-secondary;
   }
 
   p {
-    font-size: 1.05rem;
-    margin: 0;
+    margin: 0 0 $spacing-lg 0;
+    color: $color-text-light;
+  }
+}
+
+@keyframes filterSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

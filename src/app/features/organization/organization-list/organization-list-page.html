@@ -5,50 +5,68 @@
       <aside class="org-filters">
         <div class="filters-card">
           <div class="filters-header">
-            <h2><i class="pi pi-filter"></i> Filtres</h2>
-            <button class="btn-reset" (click)="resetFilters()">Réinitialiser</button>
+            <div class="filters-header__title">
+              <h2><i class="pi pi-filter"></i> Filtres</h2>
+              @if (activeFiltersCount() > 0) {
+                <span class="active-filters-badge">{{ activeFiltersCount() }}</span>
+              }
+            </div>
+            <div class="filters-header__actions">
+              <button type="button" class="btn-reset" (click)="resetFilters()">Réinitialiser</button>
+              <button
+                type="button"
+                class="btn-toggle-filters"
+                (click)="toggleMobileFilters()"
+                [attr.aria-expanded]="mobileFiltersOpen()"
+                aria-label="Afficher ou masquer les filtres sur mobile"
+              >
+                <i class="pi" [class]="mobileFiltersOpen() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+              </button>
+            </div>
           </div>
 
-          <!-- Filter by City (Multiple Selection) -->
-          <div class="filter-group">
-            <h3>Villes</h3>
-            <div class="checkbox-list">
-              @if (cityOptions().length > 0) {
-                @for (opt of cityOptions(); track opt.label) {
+          <div class="filters-content" [class.filters-content--open]="mobileFiltersOpen()">
+            <!-- Filter by City (Multiple Selection) -->
+            <div class="filter-group">
+              <h3>Villes</h3>
+              <div class="checkbox-list">
+                @if (cityOptions().length > 0) {
+                  @for (opt of cityOptions(); track opt.label) {
+                    <label class="checkbox-label">
+                      <input type="checkbox" [checked]="opt.checked" (change)="onCityChange(opt.label, !opt.checked)">
+                      <span>{{ opt.label }}</span>
+                    </label>
+                  }
+                } @else {
+                  <p class="empty-filter">Aucune ville disponible</p>
+                }
+              </div>
+            </div>
+
+            <!-- Filter by Size (Multiple Selection) -->
+            <div class="filter-group">
+              <h3>Taille de l'ensemble</h3>
+              <div class="checkbox-list">
+                @for (opt of sizeOptions(); track opt.label) {
                   <label class="checkbox-label">
-                    <input type="checkbox" [checked]="opt.checked" (change)="onCityChange(opt.label, !opt.checked)">
+                    <input type="checkbox" [checked]="opt.checked" (change)="onSizeChange(opt.label, !opt.checked)">
+                    <span>{{ opt.label }} musiciens</span>
+                  </label>
+                }
+              </div>
+            </div>
+
+            <!-- Filter by Rehearsal Day (Multiple Selection) -->
+            <div class="filter-group">
+              <h3>Jour de répétition</h3>
+              <div class="checkbox-list">
+                @for (opt of dayOptions(); track opt.value) {
+                  <label class="checkbox-label">
+                    <input type="checkbox" [checked]="opt.checked" (change)="onDayChange(opt.value, !opt.checked)">
                     <span>{{ opt.label }}</span>
                   </label>
                 }
-              } @else {
-                <p class="empty-filter">Aucune ville disponible</p>
-              }
-            </div>
-          </div>
-
-          <!-- Filter by Size (Multiple Selection) -->
-          <div class="filter-group">
-            <h3>Taille de l'ensemble</h3>
-            <div class="checkbox-list">
-              @for (opt of sizeOptions(); track opt.label) {
-                <label class="checkbox-label">
-                  <input type="checkbox" [checked]="opt.checked" (change)="onSizeChange(opt.label, !opt.checked)">
-                  <span>{{ opt.label }} musiciens</span>
-                </label>
-              }
-            </div>
-          </div>
-
-          <!-- Filter by Rehearsal Day (Multiple Selection) -->
-          <div class="filter-group">
-            <h3>Jour de répétition</h3>
-            <div class="checkbox-list">
-              @for (opt of dayOptions(); track opt.value) {
-                <label class="checkbox-label">
-                  <input type="checkbox" [checked]="opt.checked" (change)="onDayChange(opt.value, !opt.checked)">
-                  <span>{{ opt.label }}</span>
-                </label>
-              }
+              </div>
             </div>
           </div>
         </div>
@@ -100,32 +118,33 @@
                         <span><strong>{{ org.musicianCount }}</strong> musiciens</span>
                       </div>
                     }
-                    
+                    @if (org.formationType) {
+                      <div class="org-card__detail-item">
+                        <i class="pi pi-tag"></i>
+                        <span>{{ org.formationType }}</span>
+                      </div>
+                    }
                     @if (org.rehearsalSchedules && org.rehearsalSchedules.length > 0) {
                       <div class="org-card__detail-item">
                         <i class="pi pi-calendar"></i>
-                        <span>
-                          Répétition : 
-                          @for (s of org.rehearsalSchedules; track s.id; let last = $last) {
-                            <strong>{{ s.dayOfWeek | titlecase }}</strong>{{ last ? '' : ', ' }}
-                          }
-                        </span>
+                        <span>Répétitions : <strong>{{ org.rehearsalSchedules[0].dayOfWeek | titlecase }}</strong></span>
                       </div>
                     }
                   </div>
 
                   <div class="org-card__footer">
-                    <span class="btn-more">Voir les détails <i class="pi pi-arrow-right"></i></span>
+                    <span class="btn-more">Voir la fiche <i class="pi pi-arrow-right"></i></span>
                   </div>
                 </div>
               </div>
             }
           </div>
         } @else {
-          <div class="empty-state">
-            <i class="pi pi-search-minus empty-icon"></i>
-            <p>Aucune organisation ne correspond à vos critères de recherche.</p>
-            <button class="btn btn--secondary" (click)="resetFilters()">Réinitialiser les filtres</button>
+          <div class="org-empty">
+            <i class="pi pi-search org-empty__icon"></i>
+            <h3>Aucune organisation trouvée</h3>
+            <p>Essayez de modifier ou de réinitialiser vos critères de recherche.</p>
+            <button class="btn btn--secondary btn--small" (click)="resetFilters()">Réinitialiser les filtres</button>
           </div>
         }
       </main>

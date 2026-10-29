@@ -1,0 +1,21 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Allow: /renforts
+Allow: /recrutements
+Allow: /organisations
+Allow: /materiels
+Allow: /login
+
+# Interdire les sections authentifiées privées
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /mes-candidatures
+Disallow: /messagerie
+Disallow: /annonces/create
+Disallow: /organizations/create
+Disallow: /organizations/edit/
+Disallow: /materiel/create
+Disallow: /api/
+
+Sitemap: https://copupitre.fr/sitemap.xml

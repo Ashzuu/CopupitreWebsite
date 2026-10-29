@@ -1,13 +1,45 @@
 <header class="header">
   <div class="container header__inner">
-    <a routerLink="/dashboard" class="header__logo">
+    <a routerLink="/dashboard" class="header__logo" (click)="closeAllMenus()">
       <i class="pi pi-music" aria-hidden="true"></i>
       <span>Copupitre</span>
     </a>
 
-    <button class="header__mobile-toggle" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()" aria-label="Menu principal">
-      <i class="pi" [class]="menuOpen() ? 'pi-times' : 'pi-bars'"></i>
-    </button>
+    <!-- Actions directes visibles sur mobile (Notifs & Toggle) -->
+    <div class="header__mobile-bar">
+      @if (authService.isAuthenticated()) {
+        <button
+          type="button"
+          class="header__notif-btn header__notif-btn--mobile"
+          (click)="toggleNotificationPanel()"
+          [attr.aria-expanded]="notifService.isOpen()"
+          aria-haspopup="dialog"
+          aria-label="Notifications"
+          title="Notifications"
+        >
+          <i class="pi pi-bell" aria-hidden="true"></i>
+          @if (notifService.unreadCount() > 0) {
+            <span class="header__notif-badge" aria-label="{{ notifService.unreadCount() }} notifications non lues">
+              {{ notifService.unreadCount() > 9 ? '9+' : notifService.unreadCount() }}
+            </span>
+          }
+        </button>
+      }
+
+      <button
+        class="header__mobile-toggle"
+        (click)="toggleMenu()"
+        [attr.aria-expanded]="menuOpen()"
+        aria-label="Menu principal"
+      >
+        <i class="pi" [class]="menuOpen() ? 'pi-times' : 'pi-bars'"></i>
+      </button>
+    </div>
+
+    <!-- Backdrop mobile pour fermer le menu au clic extérieur -->
+    @if (menuOpen()) {
+      <div class="header__mobile-backdrop" (click)="closeMenu()" aria-hidden="true"></div>
+    }
 
     <nav class="header__nav" [class.header__nav--open]="menuOpen()">
       <ul class="header__nav-list">
@@ -18,12 +50,49 @@
         <li><a routerLink="/a-propos" class="header__nav-link" (click)="closeMenu()">À propos</a></li>
       </ul>
 
-      <div class="header__actions">
+      <!-- Raccourcis connectés visibles dans le menu mobile -->
+      @if (authService.isAuthenticated()) {
+        <div class="header__mobile-user-nav">
+          <div class="header__mobile-user-info">
+            <i class="pi pi-user" aria-hidden="true"></i>
+            <span>{{ authService.currentUserFullName() || authService.currentUsername() || 'Mon Profil' }}</span>
+          </div>
+          <ul class="header__mobile-user-links">
+            <li>
+              <a routerLink="/profile" class="header__mobile-link" (click)="closeAllMenus()">
+                <i class="pi pi-user-edit" aria-hidden="true"></i> Mon profil
+              </a>
+            </li>
+            <li>
+              <a routerLink="/mes-candidatures" class="header__mobile-link" (click)="closeAllMenus()">
+                <i class="pi pi-briefcase" aria-hidden="true"></i> Mes candidatures
+              </a>
+            </li>
+            <li>
+              <a routerLink="/messagerie" class="header__mobile-link" (click)="closeAllMenus()">
+                <i class="pi pi-comments" aria-hidden="true"></i> Messagerie
+              </a>
+            </li>
+            <li>
+              <a routerLink="/dashboard" class="header__mobile-link" (click)="closeAllMenus()">
+                <i class="pi pi-th-large" aria-hidden="true"></i> Tableau de bord
+              </a>
+            </li>
+            <li>
+              <button type="button" class="header__mobile-link header__mobile-link--danger" (click)="logout()">
+                <i class="pi pi-sign-out" aria-hidden="true"></i> Déconnexion
+              </button>
+            </li>
+          </ul>
+        </div>
+      }
+
+      <div class="header__actions header__actions--desktop">
         @if (authService.isAuthenticated()) {
           <!-- Bouton Cloche de notifications (US-COM-02) -->
           <button
             type="button"
-            class="header__notif-btn"
+            class="header__notif-btn header__notif-btn--desktop"
             (click)="toggleNotificationPanel()"
             [attr.aria-expanded]="notifService.isOpen()"
             aria-haspopup="dialog"
@@ -56,6 +125,14 @@
           <a routerLink="/login" class="btn btn--primary" (click)="closeMenu()">Inscription</a>
         }
       </div>
+
+      <!-- Actions non connectées sur mobile -->
+      @if (!authService.isAuthenticated()) {
+        <div class="header__mobile-auth-actions">
+          <a routerLink="/login" class="btn btn--secondary btn--block" (click)="closeMenu()">Connexion</a>
+          <a routerLink="/login" class="btn btn--primary btn--block" (click)="closeMenu()">Inscription</a>
+        </div>
+      }
     </nav>
   </div>
 </header>
@@ -151,7 +228,7 @@
   </aside>
 }
 
-<!-- Tiroir du menu profil -->
+<!-- Tiroir du menu profil (Desktop) -->
 @if (authService.isAuthenticated() && profileMenuOpen()) {
   <div class="profile-drawer-backdrop" (click)="closeProfileMenu()" aria-hidden="true"></div>
   <aside

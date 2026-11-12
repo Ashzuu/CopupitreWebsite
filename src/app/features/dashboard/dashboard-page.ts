@@ -14,6 +14,7 @@ import { ScheduleTable } from './components/schedule-table/schedule-table';
 import { DashboardService } from './data/dashboard-service';
 import { EquipmentRequest } from '@models/equipment-request';
 import { ReinforcementResponse } from '@models/reinforcement';
+import { getOrganizationSlug, Organization } from '@models/organization';
 
 @Component({
   selector: 'copupitre-dashboard-page',
@@ -41,6 +42,10 @@ export class DashboardPage implements OnInit {
 
   /** Candidatures déposées par l'utilisateur connecté */
   readonly userApplications = signal<ReinforcementResponse[]>([]);
+
+  getOrgSlug(org: Organization): string {
+    return getOrganizationSlug(org);
+  }
 
   ngOnInit() {
     this.service.loadDashboardData();

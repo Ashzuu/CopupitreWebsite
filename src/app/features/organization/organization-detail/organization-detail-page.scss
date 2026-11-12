@@ -2,7 +2,7 @@
 
 .org-detail-container {
   padding-top: $spacing-lg;
-  padding-bottom: $spacing-2xl;
+  padding-bottom: $spacing-xl;
 
   @media (min-width: $breakpoint-md) {
     padding-top: $spacing-xl;
@@ -162,7 +162,20 @@
 }
 
 .org-admin-panel {
-  max-width: 800px;
+  max-width: 1500px;
+}
+
+.manage-user-musicians {
+  display: flex;
+  gap: 10px;
+
+  .org-section--musicians {
+    width: 60%;
+  }
+
+  .org-section--admins {
+    width: 40%;
+  }
 }
 
 .org-grid {
@@ -217,6 +230,10 @@
     color: $color-text-light;
     margin-top: -$spacing-sm;
     margin-bottom: $spacing-md;
+  }
+
+  label {
+    min-width: fit-content;
   }
 }
 
@@ -472,4 +489,671 @@
   align-items: center;
   gap: $spacing-sm;
   margin-bottom: $spacing-lg;
+}
+
+/* ========================================================
+   EPIC 02: Musiciens & EPIC 07: Absences Styles
+   ======================================================== */
+
+.panel-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+  margin-bottom: $spacing-xl;
+  background: $color-background;
+  padding: $spacing-lg;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  border-left: 4px solid $color-primary;
+
+  .panel-title {
+    font-size: $font-size-xl;
+    font-family: $font-family-heading;
+    color: $color-secondary;
+    margin: 0 0 $spacing-xs 0;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    i {
+      color: $color-primary;
+    }
+  }
+
+  .panel-subtitle {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $color-discrete-secondary;
+  }
+
+  .panel-actions-group {
+    display: flex;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+  }
+}
+
+.stats-section {
+  background: $color-background;
+  padding: $spacing-lg;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  margin-bottom: $spacing-xl;
+
+  .stats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+
+    .section-title {
+      font-size: $font-size-lg;
+      color: $color-secondary;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      i {
+        color: $color-primary;
+      }
+    }
+  }
+
+  .period-selector {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    .period-label {
+      font-size: $font-size-sm;
+      font-weight: 500;
+      color: $color-discrete-secondary;
+    }
+  }
+}
+
+.btn-group {
+  display: inline-flex;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  border: 1px solid rgba($color-discrete, 0.4);
+
+  .btn--tab {
+    background: $color-background;
+    border: none;
+    padding: 6px 12px;
+    font-size: $font-size-xs;
+    font-weight: 500;
+    color: $color-secondary;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:not(:last-child) {
+      border-right: 1px solid rgba($color-discrete, 0.4);
+    }
+
+    &:hover {
+      background: rgba($color-primary, 0.08);
+    }
+
+    &.btn--tab-active {
+      background: $color-primary;
+      color: $color-background;
+      font-weight: 600;
+    }
+  }
+}
+
+.custom-dates-bar {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  background: $color-background-alt;
+  border-radius: $border-radius-md;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .input-inline {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $font-size-sm;
+    color: $color-secondary;
+  }
+
+  .input-field--inline {
+    padding: 4px 8px;
+    font-size: $font-size-sm;
+  }
+}
+
+.absences-list-section {
+  background: $color-background;
+  padding: $spacing-lg;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  margin-bottom: $spacing-xl;
+
+  .filters-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+
+    .section-title {
+      font-size: $font-size-lg;
+      color: $color-secondary;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      i {
+        color: $color-primary;
+      }
+    }
+
+    .filters-group {
+      display: flex;
+      gap: $spacing-sm;
+      flex-wrap: wrap;
+
+      .select-field {
+        padding: 6px 10px;
+        font-size: $font-size-xs;
+        border-radius: $border-radius-md;
+        border: 1px solid rgba($color-discrete, 0.4);
+      }
+    }
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+  border: 1px solid rgba($color-discrete, 0.25);
+  border-radius: $border-radius-md;
+}
+
+.copupitre-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid rgba($color-discrete, 0.2);
+  }
+
+  th {
+    background: $color-background-alt;
+    color: $color-secondary;
+    font-weight: 600;
+    font-size: $font-size-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  tbody {
+    overflow-y: auto;
+    tr:hover {
+      background: rgba($color-primary, 0.03);
+    }
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .text-right {
+    text-align: right;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: $color-discrete-secondary;
+    padding: $spacing-xl;
+    font-style: italic;
+  }
+
+  .reason-cell {
+    max-width: 250px;
+    word-break: break-word;
+  }
+
+  .date-end {
+    color: $color-discrete-secondary;
+    font-size: $font-size-xs;
+  }
+}
+
+.count-badge {
+  display: inline-block;
+  min-width: 28px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: $font-size-xs;
+
+  &--total {
+    background: rgba($color-secondary, 0.1);
+    color: $color-secondary;
+  }
+
+  &--justified {
+    background: rgba($color-success, 0.15);
+    color: $color-success;
+  }
+
+  &--unjustified {
+    background: rgba($color-error, 0.15);
+    color: $color-error;
+  }
+
+  &--pending {
+    background: rgba($color-primary, 0.15);
+    color: $color-primary;
+  }
+}
+
+.event-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-xs;
+  font-weight: 500;
+
+  &--rehearsal {
+    background: rgba($color-secondary, 0.1);
+    color: $color-secondary;
+  }
+
+  &--concert {
+    background: rgba($color-primary, 0.15);
+    color: $color-primary;
+    font-weight: 600;
+  }
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-xs;
+  font-weight: 600;
+
+  &--justified {
+    background: rgba($color-success, 0.15);
+    color: $color-success;
+    border: 1px solid rgba($color-success, 0.3);
+  }
+
+  &--unjustified {
+    background: rgba($color-error, 0.15);
+    color: $color-error;
+    border: 1px solid rgba($color-error, 0.3);
+  }
+
+  &--pending {
+    background: rgba($color-primary, 0.15);
+    color: $color-primary;
+    border: 1px solid rgba($color-primary, 0.3);
+  }
+}
+
+.actions-cell {
+  white-space: nowrap;
+  display: flex;
+  gap: $spacing-xs;
+  justify-content: flex-end;
+}
+
+.btn--action-validate {
+  background: rgba($color-success, 0.15);
+  color: $color-success;
+  border: 1px solid rgba($color-success, 0.3);
+  padding: 3px 8px;
+  border-radius: $border-radius-sm;
+  cursor: pointer;
+  font-size: $font-size-xs;
+
+  &:hover {
+    background: $color-success;
+    color: $color-background;
+  }
+}
+
+.btn--action-refuse {
+  background: rgba($color-error, 0.15);
+  color: $color-error;
+  border: 1px solid rgba($color-error, 0.3);
+  padding: 3px 8px;
+  border-radius: $border-radius-sm;
+  cursor: pointer;
+  font-size: $font-size-xs;
+
+  &:hover {
+    background: $color-error;
+    color: $color-background;
+  }
+}
+
+/* Musicians section */
+.org-section--musicians {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  .actions-row {
+    display: flex;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+  }
+
+  .add-musician-card {
+    background: $color-background-alt;
+    padding: $spacing-md;
+    border-radius: $border-radius-md;
+    border: 1px solid rgba($color-discrete, 0.3);
+    margin-bottom: $spacing-md;
+
+    .form-title {
+      font-size: $font-size-lg;
+      color: $color-secondary;
+      margin: 0 0 $spacing-sm 0;
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+
+      i {
+        color: $color-primary;
+      }
+    }
+
+    .musician-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: $spacing-sm;
+
+      .form-actions-full {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: flex-end;
+        gap: $spacing-sm;
+        margin-top: $spacing-xs;
+      }
+    }
+  }
+
+  .instrument-tag {
+    background: rgba($color-discrete-secondary, 0.1);
+    color: $color-discrete-secondary;
+    padding: 2px 6px;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-xs;
+    font-weight: 500;
+  }
+
+  .user-link-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: $font-size-xs;
+    padding: 2px 6px;
+    border-radius: $border-radius-sm;
+
+    &--linked {
+      background: rgba($color-success, 0.12);
+      color: $color-success;
+      font-weight: 500;
+    }
+
+    &--unlinked {
+      background: rgba($color-discrete, 0.2);
+      color: $color-discrete-secondary;
+    }
+  }
+}
+
+/* Modals */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: $spacing-md;
+  backdrop-filter: blur(2px);
+}
+
+.modal-dialog {
+  background: $color-background;
+  border-radius: $border-radius-lg;
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: $shadow-lg;
+  display: flex;
+  flex-direction: column;
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-md $spacing-lg;
+    border-bottom: 1px solid rgba($color-discrete, 0.2);
+
+    h3 {
+      margin: 0;
+      font-size: $font-size-lg;
+      color: $color-secondary;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      i {
+        color: $color-primary;
+      }
+    }
+
+    .modal-close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: $color-discrete-secondary;
+      padding: 0;
+      line-height: 1;
+
+      &:hover {
+        color: $color-error;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: $spacing-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+
+    .modal-desc {
+      margin: 0;
+      font-size: $font-size-sm;
+      color: $color-discrete-secondary;
+      line-height: 1.5;
+
+      code {
+        background: rgba($color-discrete, 0.2);
+        padding: 2px 4px;
+        border-radius: 3px;
+        color: $color-secondary;
+      }
+    }
+
+    .notice-box {
+      display: flex;
+      gap: $spacing-sm;
+      padding: $spacing-sm $spacing-md;
+      background: rgba($color-primary, 0.1);
+      border-left: 3px solid $color-primary;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-xs;
+      color: $color-secondary;
+      line-height: 1.4;
+
+      i {
+        color: $color-primary;
+        font-size: 1rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+    }
+
+    .file-upload-zone {
+      border: 2px dashed rgba($color-discrete, 0.5);
+      border-radius: $border-radius-md;
+      padding: $spacing-lg;
+      text-align: center;
+      transition: all 0.2s ease;
+
+      input[type="file"] {
+        display: none;
+      }
+
+      .file-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: $spacing-sm;
+        cursor: pointer;
+        color: $color-secondary;
+
+        i {
+          font-size: 2rem;
+          color: $color-primary;
+        }
+
+        span {
+          font-weight: 500;
+          font-size: $font-size-sm;
+        }
+      }
+
+      &:hover {
+        border-color: $color-primary;
+        background: rgba($color-primary, 0.02);
+      }
+    }
+
+    .import-summary-card {
+      background: $color-background-alt;
+      padding: $spacing-md;
+      border-radius: $border-radius-md;
+      border: 1px solid rgba($color-discrete, 0.2);
+
+      h4 {
+        margin: 0 0 $spacing-xs 0;
+        font-size: $font-size-sm;
+        color: $color-secondary;
+      }
+
+      .summary-stats {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 $spacing-sm 0;
+        font-size: $font-size-xs;
+        display: flex;
+        gap: $spacing-md;
+        flex-wrap: wrap;
+
+        .stat-success {
+          color: $color-success;
+        }
+        .stat-warning {
+          color: $color-primary;
+        }
+        .stat-error {
+          color: $color-error;
+        }
+      }
+
+      .import-log-box {
+        max-height: 120px;
+        overflow-y: auto;
+        font-size: $font-size-xs;
+        color: $color-discrete-secondary;
+        background: $color-background;
+        padding: $spacing-xs $spacing-sm;
+        border-radius: $border-radius-sm;
+        border: 1px solid rgba($color-discrete, 0.2);
+
+        .log-line {
+          padding: 2px 0;
+          border-bottom: 1px dashed rgba($color-discrete, 0.15);
+        }
+      }
+    }
+
+    .form-group-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: $spacing-sm;
+
+      @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      label {
+        font-size: $font-size-xs;
+        font-weight: 600;
+        color: $color-secondary;
+      }
+
+      .input-field {
+        padding: 8px 10px;
+        border-radius: $border-radius-md;
+        border: 1px solid rgba($color-discrete, 0.4);
+        font-size: $font-size-sm;
+
+        &:focus {
+          border-color: $color-primary;
+          outline: none;
+        }
+      }
+
+      .textarea-field {
+        resize: vertical;
+      }
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    border-top: 1px solid rgba($color-discrete, 0.2);
+    background: $color-background-alt;
+    border-bottom-left-radius: $border-radius-lg;
+    border-bottom-right-radius: $border-radius-lg;
+  }
 }

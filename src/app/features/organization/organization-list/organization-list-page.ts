@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser, TitleCasePipe } from '@angular/common';
-import { Organization } from '@models/organization';
+import { getOrganizationSlug, Organization } from '@models/organization';
 import { BaseLayout } from '@layouts/base-layout/base-layout';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -137,6 +137,10 @@ export class OrganizationListPage implements OnInit {
 
     return list;
   });
+
+  getOrgSlug(org: Organization): string {
+    return getOrganizationSlug(org);
+  }
 
   // Action methods
   onCityChange(city: string, checked: boolean) {

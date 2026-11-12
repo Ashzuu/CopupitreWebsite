@@ -103,4 +103,10 @@ describe('OrganizationListPage', () => {
     expect(component.selectedCities()).toEqual([]);
     expect(component.filteredOrganizations().length).toBe(3);
   });
+
+  it('devrait générer un slug URL valide pour une organisation', () => {
+    expect(component.getOrgSlug(mockOrganizations[0])).toBe('harmonie-de-lyon');
+    expect(component.getOrgSlug({ id: 10, name: 'stock', city: 'Paris', description: '', rehearsalSchedules: [], adminUsernames: [] })).toBe('stock');
+    expect(component.getOrgSlug({ id: 99, name: '', city: 'Paris', description: '', rehearsalSchedules: [], adminUsernames: [] })).toBe('99');
+  });
 });

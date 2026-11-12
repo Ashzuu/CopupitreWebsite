@@ -95,3 +95,22 @@ export type DayOfWeek =
   | 'FRIDAY'
   | 'SATURDAY'
   | 'SUNDAY';
+
+/**
+ * Normalise un nom d'organisation en slug compatible URL (minuscules, tirets, sans accents).
+ * Si aucun nom n'est fourni, renvoie l'identifiant technique numérique.
+ */
+export function getOrganizationSlug(org: { id?: number; name?: string; organizationId?: number; organizationName?: string }): string {
+  const name = org.name || org.organizationName;
+  if (!name || !name.trim()) {
+    const id = org.id ?? org.organizationId;
+    return id !== undefined ? String(id) : '';
+  }
+  return name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}

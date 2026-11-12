@@ -8,3 +8,5 @@ export * from './subscription-status';
 export * from './in-app-notification';
 export * from './chat-message';
 export * from './conversation';
+export * from './musician';
+export * from './absence';

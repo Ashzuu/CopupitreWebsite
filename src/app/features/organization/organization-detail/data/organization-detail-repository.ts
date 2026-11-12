@@ -8,12 +8,12 @@ export class OrganizationDetailRepository {
   private orgRepo = inject(OrganizationRepository);
 
   /** Executes the getOrganizationById action. */
-  getOrganizationById(id: number): Observable<Organization> {
+  getOrganizationById(id: number | string): Observable<Organization> {
     return this.orgRepo.getById(id);
   }
 
   /** Executes the getOrganizationAnnouncements action. */
-  getOrganizationAnnouncements(orgId: number): Observable<ReinforcementAnnouncement[]> {
+  getOrganizationAnnouncements(orgId: number | string): Observable<ReinforcementAnnouncement[]> {
     return this.orgRepo.getOrganizationReinforcements(orgId);
   }
 }

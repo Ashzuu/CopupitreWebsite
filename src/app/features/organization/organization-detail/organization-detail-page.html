@@ -31,6 +31,15 @@
         <div class="org-header__actions">
           <button
             type="button"
+            class="btn btn--outline"
+            (click)="contactOrganization()"
+            title="Envoyer un message à cet orchestre"
+          >
+            <i class="pi pi-envelope" aria-hidden="true"></i>
+            <span>Contacter l'orchestre</span>
+          </button>
+          <button
+            type="button"
             class="btn"
             [class.btn--primary]="!service.isSubscribed()"
             [class.btn--secondary]="service.isSubscribed()"
@@ -51,8 +60,8 @@
         </div>
       </header>
 
-      <!-- Onglets d'organisation (visible pour les administrateurs) -->
-      @if (isAdmin()) {
+      <!-- Onglets d'organisation -->
+      @if (isAdmin() || canAccessAbsences()) {
         <nav class="org-tabs" role="tablist" aria-label="Sections de l'organisation">
           <button
             type="button"
@@ -66,19 +75,37 @@
           >
             <i class="pi pi-info-circle" aria-hidden="true"></i> Général
           </button>
-          <button
-            type="button"
-            role="tab"
-            id="tab-admin"
-            class="org-tab"
-            [class.org-tab--active]="activeTab() === 'admin'"
-            [attr.aria-selected]="activeTab() === 'admin'"
-            aria-controls="panel-admin"
-            (click)="setTab('admin')"
-          >
-            <i class="pi pi-shield" aria-hidden="true"></i> Administration
-            <span class="org-tab__badge">Admin</span>
-          </button>
+
+          @if (canAccessAbsences()) {
+            <button
+              type="button"
+              role="tab"
+              id="tab-absences"
+              class="org-tab"
+              [class.org-tab--active]="activeTab() === 'absences'"
+              [attr.aria-selected]="activeTab() === 'absences'"
+              aria-controls="panel-absences"
+              (click)="setTab('absences')"
+            >
+              <i class="pi pi-calendar-times" aria-hidden="true"></i> Absences
+            </button>
+          }
+
+          @if (isAdmin()) {
+            <button
+              type="button"
+              role="tab"
+              id="tab-admin"
+              class="org-tab"
+              [class.org-tab--active]="activeTab() === 'admin'"
+              [attr.aria-selected]="activeTab() === 'admin'"
+              aria-controls="panel-admin"
+              (click)="setTab('admin')"
+            >
+              <i class="pi pi-shield" aria-hidden="true"></i> Administration
+              <span class="org-tab__badge">Admin</span>
+            </button>
+          }
         </nav>
       }
 
@@ -121,7 +148,14 @@
 
             <!-- Concerts programmés -->
             <section class="org-section">
-              <h2 class="org-section__title"><i class="pi pi-ticket" aria-hidden="true"></i> Concerts à venir</h2>
+              <div class="section-header-row">
+                <h2 class="org-section__title"><i class="pi pi-ticket" aria-hidden="true"></i> Concerts à venir</h2>
+                @if (canAccessAbsences()) {
+                  <button type="button" class="btn btn--small btn--outline" (click)="openAbsenceModal('CONCERT')">
+                    <i class="pi pi-calendar-times" aria-hidden="true"></i> Signaler une absence à un concert
+                  </button>
+                }
+              </div>
               @if (org.concerts && org.concerts.length > 0) {
                 <div class="concerts-list">
                   @for (concert of org.concerts; track concert.id) {
@@ -149,7 +183,14 @@
           <div class="org-sidebar">
             <!-- Horaires & répétitions -->
             <section class="org-section">
-              <h2 class="org-section__title"><i class="pi pi-calendar" aria-hidden="true"></i> Répétitions</h2>
+              <div class="section-header-row">
+                <h2 class="org-section__title"><i class="pi pi-calendar" aria-hidden="true"></i> Répétitions</h2>
+                @if (canAccessAbsences()) {
+                  <button type="button" class="btn btn--small btn--outline" (click)="openAbsenceModal('REHEARSAL')">
+                    <i class="pi pi-calendar-times" aria-hidden="true"></i> Signaler une absence
+                  </button>
+                }
+              </div>
               @if (org.rehearsalSchedules && org.rehearsalSchedules.length > 0) {
                 <copupitre-schedule-table [schedules]="org.rehearsalSchedules"></copupitre-schedule-table>
               } @else {
@@ -181,8 +222,338 @@
             </section>
           </div>
         </div>
+      } @else if (canAccessAbsences() && activeTab() === 'absences') {
+        <!-- EPIC 07: Gestion des Absences -->
+        <div id="panel-absences" role="tabpanel" aria-labelledby="tab-absences" class="org-absences-panel">
+          <div class="panel-header-actions">
+            <div>
+              <h2 class="panel-title"><i class="pi pi-calendar-times" aria-hidden="true"></i> Gestion des Absences</h2>
+              <p class="panel-subtitle">Suivi des indisponibilités pour les répétitions et concerts de l'ensemble.</p>
+            </div>
+            <div class="panel-actions-group">
+              <button type="button" class="btn btn--primary btn--small" (click)="openAbsenceModal()">
+                <i class="pi pi-plus" aria-hidden="true"></i> Enregistrer une absence
+              </button>
+              @if (isAdmin()) {
+                <button type="button" class="btn btn--danger btn--small" (click)="openCancelEventModal()">
+                  <i class="pi pi-megaphone" aria-hidden="true"></i> Avertir d'une annulation
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- RG-ABS-02: Compteurs statistiques par période -->
+          @if (isAdmin()) {
+            <section class="org-section stats-section">
+              <div class="stats-header">
+                <h3 class="section-title"><i class="pi pi-chart-bar" aria-hidden="true"></i> Compteurs d'absences par musicien</h3>
+                <div class="period-selector">
+                  <span class="period-label">Période :</span>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn--tab" [class.btn--tab-active]="selectedPeriod() === '1m'" (click)="setPeriod('1m')">1 mois</button>
+                    <button type="button" class="btn btn--tab" [class.btn--tab-active]="selectedPeriod() === '3m'" (click)="setPeriod('3m')">3 mois</button>
+                    <button type="button" class="btn btn--tab" [class.btn--tab-active]="selectedPeriod() === '6m'" (click)="setPeriod('6m')">6 mois</button>
+                    <button type="button" class="btn btn--tab" [class.btn--tab-active]="selectedPeriod() === 'custom'" (click)="setPeriod('custom')">Personnalisée</button>
+                  </div>
+                </div>
+              </div>
+
+              @if (selectedPeriod() === 'custom') {
+                <div class="custom-dates-bar">
+                  <div class="input-inline">
+                    <label for="periodStart">Du :</label>
+                    <input type="date" id="periodStart" [ngModel]="periodStartDate()" (ngModelChange)="periodStartDate.set($event); loadAbsenceData()" class="input-field input-field--inline" />
+                  </div>
+                  <div class="input-inline">
+                    <label for="periodEnd">Au :</label>
+                    <input type="date" id="periodEnd" [ngModel]="periodEndDate()" (ngModelChange)="periodEndDate.set($event); loadAbsenceData()" class="input-field input-field--inline" />
+                  </div>
+                </div>
+              }
+
+              <div class="table-container">
+                <table class="copupitre-table">
+                  <thead>
+                    <tr>
+                      <th>Musicien</th>
+                      <th>Instrument</th>
+                      <th class="text-center">Total absences</th>
+                      <th class="text-center">Justifiées</th>
+                      <th class="text-center">Non justifiées</th>
+                      <th class="text-center">En attente</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (stat of service.absenceStats(); track stat.musicianId) {
+                      <tr>
+                        <td><strong>{{ stat.musicianName }}</strong></td>
+                        <td>{{ stat.instrument }}</td>
+                        <td class="text-center"><span class="count-badge count-badge--total">{{ stat.totalAbsences }}</span></td>
+                        <td class="text-center"><span class="count-badge count-badge--justified">{{ stat.justifiedCount }}</span></td>
+                        <td class="text-center"><span class="count-badge count-badge--unjustified">{{ stat.unjustifiedCount }}</span></td>
+                        <td class="text-center"><span class="count-badge count-badge--pending">{{ stat.pendingCount }}</span></td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="6" class="empty-state">Aucun musicien répertorié pour cette organisation.</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          }
+
+          <!-- Liste filtrable des absences (RG-ABS-02, US-ABS-02, US-ABS-03) -->
+          <section class="org-section absences-list-section">
+            <div class="filters-bar">
+              <h3 class="section-title"><i class="pi pi-list" aria-hidden="true"></i> Historique des absences</h3>
+              <div class="filters-group">
+                <select [ngModel]="filterEventType()" (ngModelChange)="filterEventType.set($event); loadAbsenceData()" class="input-field select-field" aria-label="Filtrer par type">
+                  <option value="">Tous types</option>
+                  <option value="REHEARSAL">Répétition</option>
+                  <option value="CONCERT">Concert</option>
+                </select>
+
+                <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event); loadAbsenceData()" class="input-field select-field" aria-label="Filtrer par statut">
+                  <option value="">Tous statuts</option>
+                  <option value="PENDING">En attente</option>
+                  <option value="JUSTIFIED">Justifiée</option>
+                  <option value="UNJUSTIFIED">Non justifiée</option>
+                </select>
+
+                @if (isAdmin()) {
+                  <select [ngModel]="filterMusicianId()" (ngModelChange)="filterMusicianId.set($event); loadAbsenceData()" class="input-field select-field" aria-label="Filtrer par musicien">
+                    <option [ngValue]="null">Tous les musiciens</option>
+                    @for (m of service.musicians(); track m.id) {
+                      <option [ngValue]="m.id">{{ m.firstName }} {{ m.lastName }} ({{ m.instrument }})</option>
+                    }
+                  </select>
+                }
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table class="copupitre-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Événement</th>
+                    <th>Musicien</th>
+                    <th>Pupitre</th>
+                    <th>Motif</th>
+                    <th>Statut</th>
+                    @if (isAdmin()) {
+                      <th>Actions</th>
+                    }
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (absence of service.absences(); track absence.id) {
+                    <tr>
+                      <td>
+                        <strong>{{ absence.eventDate | date:'dd/MM/yyyy' }}</strong>
+                        @if (absence.endDate && absence.endDate !== absence.eventDate) {
+                          <span class="date-end"> au {{ absence.endDate | date:'dd/MM/yyyy' }}</span>
+                        }
+                      </td>
+                      <td>
+                        <span class="event-badge" [class.event-badge--rehearsal]="absence.eventType === 'REHEARSAL'" [class.event-badge--concert]="absence.eventType === 'CONCERT'">
+                          {{ absence.eventType === 'REHEARSAL' ? 'Répétition' : 'Concert' }}
+                        </span>
+                      </td>
+                      <td>{{ absence.musicianFirstName }} {{ absence.musicianLastName }}</td>
+                      <td>{{ absence.instrument }}</td>
+                      <td class="reason-cell">{{ absence.reason }}</td>
+                      <td>
+                        <span class="status-badge" [class.status-badge--justified]="absence.status === 'JUSTIFIED'" [class.status-badge--unjustified]="absence.status === 'UNJUSTIFIED'" [class.status-badge--pending]="absence.status === 'PENDING'">
+                          {{ absence.status === 'JUSTIFIED' ? 'Justifiée' : (absence.status === 'UNJUSTIFIED' ? 'Non justifiée' : 'En attente') }}
+                        </span>
+                      </td>
+                      @if (isAdmin()) {
+                        <td class="actions-cell">
+                          @if (absence.status !== 'JUSTIFIED') {
+                            <button type="button" class="btn btn--small btn--action-validate" (click)="changeAbsenceStatus(absence, 'JUSTIFIED')" title="Marquer comme justifiée">
+                              <i class="pi pi-check" aria-hidden="true"></i> Justifier
+                            </button>
+                          }
+                          @if (absence.status !== 'UNJUSTIFIED') {
+                            <button type="button" class="btn btn--small btn--action-refuse" (click)="changeAbsenceStatus(absence, 'UNJUSTIFIED')" title="Marquer comme non justifiée">
+                              <i class="pi pi-times" aria-hidden="true"></i> Refuser
+                            </button>
+                          }
+                        </td>
+                      }
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td [attr.colspan]="isAdmin() ? 7 : 6" class="empty-state">Aucune absence enregistrée pour les filtres sélectionnés.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
       } @else if (isAdmin() && activeTab() === 'admin') {
         <div id="panel-admin" role="tabpanel" aria-labelledby="tab-admin" class="org-admin-panel">
+          <div class="manage-user-musicians">
+          <!-- EPIC 02: Gestion des Musiciens de l'ensemble (UC-ORG-09, US-ORG-09, US-ORG-10, US-ORG-11, US-ORG-12) -->
+            <section class="org-section org-section--musicians">
+              <div class="section-header-row">
+                <div>
+                  <h2 class="org-section__title"><i class="pi pi-users" aria-hidden="true"></i> Musiciens de l'Ensemble</h2>
+                  <p class="org-section__subtitle">
+                    Gérez la liste nominative des musiciens de l'orchestre, importez vos effectifs via CSV ou liez un compte utilisateur.
+                  </p>
+                </div>
+                <div class="actions-row">
+                  <button type="button" class="btn btn--primary btn--small" (click)="toggleAddMusicianForm()">
+                    <i class="pi pi-user-plus" aria-hidden="true"></i> Ajouter manuellement
+                  </button>
+                  <button type="button" class="btn btn--secondary btn--small" (click)="openCsvModal()">
+                    <i class="pi pi-file-import" aria-hidden="true"></i> Importer des musiciens (CSV)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Formulaire d'ajout manuel de musicien (RG-ORG-11, US-ORG-10) -->
+              @if (showAddMusicianForm()) {
+                <div class="form-card add-musician-card">
+                  <h3 class="form-title"><i class="pi pi-plus-circle" aria-hidden="true"></i> Nouveau musicien</h3>
+                  <form (ngSubmit)="submitAddMusician()" class="musician-form-grid">
+                    <div class="form-group">
+                      <label for="mLastName">Nom *</label>
+                      <input type="text" id="mLastName" [ngModel]="newMusician().lastName" (ngModelChange)="newMusician.set({ ...newMusician(), lastName: $event })" name="lastName" class="input-field" placeholder="Ex: Dupont" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="mFirstName">Prénom *</label>
+                      <input type="text" id="mFirstName" [ngModel]="newMusician().firstName" (ngModelChange)="newMusician.set({ ...newMusician(), firstName: $event })" name="firstName" class="input-field" placeholder="Ex: Jean" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="mEmail">Email *</label>
+                      <input type="email" id="mEmail" [ngModel]="newMusician().email" (ngModelChange)="newMusician.set({ ...newMusician(), email: $event })" name="email" class="input-field" placeholder="Ex: jean.dupont@test.fr" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="mInstrument">Instrument *</label>
+                      <input type="text" id="mInstrument" [ngModel]="newMusician().instrument" (ngModelChange)="newMusician.set({ ...newMusician(), instrument: $event })" name="instrument" class="input-field" placeholder="Ex: Clarinette" required />
+                    </div>
+                    <div class="form-actions-full">
+                      <button type="button" class="btn btn--outline btn--small" (click)="toggleAddMusicianForm()">Annuler</button>
+                      <button type="submit" class="btn btn--primary btn--small" [disabled]="isSubmittingMusician()">
+                        <i class="pi pi-check" aria-hidden="true"></i> Enregistrer le musicien
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              }
+
+              <!-- Tableau des musiciens de l'organisation -->
+              <div class="table-container">
+                <table class="copupitre-table">
+                  <thead>
+                    <tr>
+                      <th>Nom & Prénom</th>
+                      <th>Email</th>
+                      <th>Instrument</th>
+                      <th>Compte utilisateur</th>
+                      <th class="text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (musician of service.musicians(); track musician.id) {
+                      <tr>
+                        <td><strong>{{ musician.lastName }} {{ musician.firstName }}</strong></td>
+                        <td>{{ musician.email }}</td>
+                        <td><span class="instrument-tag">{{ musician.instrument }}</span></td>
+                        <td>
+                          @if (musician.userId) {
+                            <span class="user-link-badge user-link-badge--linked" title="Lié au compte utilisateur">
+                              <i class="pi pi-check-circle" aria-hidden="true"></i> {{ musician.username || 'Compte lié' }}
+                            </span>
+                          } @else {
+                            <span class="user-link-badge user-link-badge--unlinked" title="Non lié à un compte inscrit">
+                              <i class="pi pi-info-circle" aria-hidden="true"></i> Non lié
+                            </span>
+                          }
+                        </td>
+                        <td class="text-right actions-cell">
+                          <button type="button" class="btn btn--small btn--outline" (click)="openAssociateModal(musician)" title="Associer à un utilisateur via email">
+                            <i class="pi pi-link" aria-hidden="true"></i> Lier
+                          </button>
+                          <button type="button" class="btn btn--icon btn--danger btn--small" (click)="deleteMusician(musician)" title="Retirer ce musicien de l'organisation">
+                            <i class="pi pi-trash" aria-hidden="true"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="5" class="empty-state">Aucun musicien répertorié. Vous pouvez en importer via CSV ou en ajouter un manuellement.</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- US-ORG-08: Gestion des administrateurs -->
+            <section class="org-section org-section--admins">
+              <h2 class="org-section__title"><i class="pi pi-shield" aria-hidden="true"></i> Gestion des Administrateurs</h2>
+              <p class="org-section__subtitle">
+                Membres autorisés à gérer la fiche, modifier les paramètres, publier des annonces et coordonner les administrateurs de cet ensemble.
+              </p>
+
+              <ul class="admins-list">
+                @for (admin of org.adminUsernames; track admin) {
+                  <li class="admin-item">
+                    <span class="admin-item__name">
+                      <i class="pi pi-user" aria-hidden="true"></i> {{ admin }}
+                      @if (isCurrentUser(admin)) {
+                        <span class="admin-badge admin-badge--current">Vous</span>
+                      }
+                    </span>
+                    <button
+                      type="button"
+                      class="btn btn--icon btn--danger btn--small"
+                      [disabled]="org.adminUsernames.length <= 1 || isCurrentUser(admin)"
+                      (click)="removeAdmin(admin)"
+                      [title]="isCurrentUser(admin) ? 'Vous ne pouvez pas vous retirer vous-même des administrateurs' : (org.adminUsernames.length <= 1 ? 'Impossible de supprimer le seul administrateur restant' : 'Retirer ' + admin)"
+                      [attr.aria-label]="isCurrentUser(admin) ? 'Vous ne pouvez pas vous retirer vous-même' : 'Retirer l\'administrateur ' + admin"
+                    >
+                      <i class="pi pi-trash" aria-hidden="true"></i>
+                    </button>
+                  </li>
+                } @empty {
+                  <li class="empty-state">Aucun administrateur répertorié.</li>
+                }
+              </ul>
+
+              <form class="admin-add-form" (ngSubmit)="addAdmin()">
+                <label for="newAdminUsername" class="sr-only">Nom d'utilisateur ou pseudo du nouvel administrateur</label>
+                <div class="admin-add-group">
+                  <input
+                    type="text"
+                    id="newAdminUsername"
+                    name="newAdminUsername"
+                    [ngModel]="newAdminUsername()"
+                    (ngModelChange)="newAdminUsername.set($event)"
+                    class="input-field"
+                    placeholder="Pseudo ou identifiant du musicien"
+                    [disabled]="isSubmittingAdmin()"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    class="btn btn--secondary btn--small"
+                    [disabled]="isSubmittingAdmin() || !newAdminUsername().trim()"
+                  >
+                    <i class="pi pi-user-plus" aria-hidden="true"></i> Ajouter un administrateur
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+
           <!-- Candidatures aux besoins annuels de recrutement -->
           <section class="org-section org-section--permanents">
             <h2 class="org-section__title"><i class="pi pi-id-card" aria-hidden="true"></i> Recrutements Permanents & Candidatures</h2>
@@ -195,65 +566,207 @@
               <p class="empty-state">Aucun besoin permanent configuré pour cet ensemble.</p>
             }
           </section>
-
-          <!-- US-ORG-08: Gestion des administrateurs -->
-          <section class="org-section org-section--admins">
-            <h2 class="org-section__title"><i class="pi pi-shield" aria-hidden="true"></i> Gestion des Administrateurs</h2>
-            <p class="org-section__subtitle">
-              Membres autorisés à gérer la fiche, modifier les paramètres, publier des annonces et coordonner les administrateurs de cet ensemble.
-            </p>
-            
-            <ul class="admins-list">
-              @for (admin of org.adminUsernames; track admin) {
-                <li class="admin-item">
-                  <span class="admin-item__name">
-                    <i class="pi pi-user" aria-hidden="true"></i> {{ admin }}
-                    @if (isCurrentUser(admin)) {
-                      <span class="admin-badge admin-badge--current">Vous</span>
-                    }
-                  </span>
-                  <button
-                    type="button"
-                    class="btn btn--icon btn--danger btn--small"
-                    [disabled]="org.adminUsernames.length <= 1 || isCurrentUser(admin)"
-                    (click)="removeAdmin(admin)"
-                    [title]="isCurrentUser(admin) ? 'Vous ne pouvez pas vous retirer vous-même des administrateurs' : (org.adminUsernames.length <= 1 ? 'Impossible de supprimer le seul administrateur restant' : 'Retirer ' + admin)"
-                    [attr.aria-label]="isCurrentUser(admin) ? 'Vous ne pouvez pas vous retirer vous-même' : 'Retirer l\'administrateur ' + admin"
-                  >
-                    <i class="pi pi-trash" aria-hidden="true"></i>
-                  </button>
-                </li>
-              } @empty {
-                <li class="empty-state">Aucun administrateur répertorié.</li>
-              }
-            </ul>
-
-            <form class="admin-add-form" (ngSubmit)="addAdmin()">
-              <label for="newAdminUsername" class="sr-only">Nom d'utilisateur ou pseudo du nouvel administrateur</label>
-              <div class="admin-add-group">
-                <input
-                  type="text"
-                  id="newAdminUsername"
-                  name="newAdminUsername"
-                  [ngModel]="newAdminUsername()"
-                  (ngModelChange)="newAdminUsername.set($event)"
-                  class="input-field"
-                  placeholder="Pseudo ou identifiant du musicien"
-                  [disabled]="isSubmittingAdmin()"
-                  required
-                />
-                <button
-                  type="submit"
-                  class="btn btn--secondary btn--small"
-                  [disabled]="isSubmittingAdmin() || !newAdminUsername().trim()"
-                >
-                  <i class="pi pi-user-plus" aria-hidden="true"></i> Ajouter un administrateur
-                </button>
-              </div>
-            </form>
-          </section>
         </div>
       }
     }
+
+    <!-- MODALE: Importation CSV des Musiciens (US-ORG-09, RG-ORG-10) -->
+    @if (showCsvModal()) {
+      <div class="modal-backdrop" (click)="closeCsvModal()">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <header class="modal-header">
+            <h3><i class="pi pi-file-import" aria-hidden="true"></i> Importer des musiciens (CSV)</h3>
+            <button type="button" class="modal-close-btn" (click)="closeCsvModal()" aria-label="Fermer">&times;</button>
+          </header>
+          <div class="modal-body">
+            <p class="modal-desc">
+              Le fichier CSV doit contenir au minimum les colonnes : <code>Nom</code>, <code>Prénom</code>, <code>Email</code>, <code>Instrument</code>.
+              Les doublons et les musiciens déjà enregistrés dans l'ensemble seront automatiquement ignorés.
+            </p>
+            <div class="file-upload-zone">
+              <input type="file" id="csvFileInput" accept=".csv,text/csv" (change)="onCsvFileChange($event)" />
+              <label for="csvFileInput" class="file-label">
+                <i class="pi pi-upload" aria-hidden="true"></i>
+                <span>{{ selectedCsvFile()?.name || 'Cliquez pour choisir un fichier CSV' }}</span>
+              </label>
+            </div>
+
+            @if (csvImportResult(); as res) {
+              <div class="import-summary-card">
+                <h4>Résultat de l'import :</h4>
+                <ul class="summary-stats">
+                  <li><strong>Lignes traitées :</strong> {{ res.totalRows }}</li>
+                  <li class="stat-success"><strong>Importés :</strong> {{ res.importedCount }}</li>
+                  <li class="stat-warning"><strong>Doublons ignorés :</strong> {{ res.skippedCount }}</li>
+                  @if (res.errorCount > 0) {
+                    <li class="stat-error"><strong>Erreurs :</strong> {{ res.errorCount }}</li>
+                  }
+                </ul>
+                @if (res.messages && res.messages.length > 0) {
+                  <div class="import-log-box">
+                    @for (msg of res.messages; track msg) {
+                      <div class="log-line">{{ msg }}</div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+          <footer class="modal-footer">
+            <button type="button" class="btn btn--outline" (click)="closeCsvModal()">Fermer</button>
+            <button type="button" class="btn btn--primary" [disabled]="!selectedCsvFile() || isImportingCsv()" (click)="submitCsvImport()">
+              <i class="pi pi-upload" aria-hidden="true"></i> Lancer l'importation
+            </button>
+          </footer>
+        </div>
+      </div>
+    }
+
+    <!-- MODALE: Associer un musicien à un compte utilisateur (US-ORG-12) -->
+    @if (showAssociateModal()) {
+      <div class="modal-backdrop" (click)="closeAssociateModal()">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <header class="modal-header">
+            <h3><i class="pi pi-link" aria-hidden="true"></i> Associer un musicien à un utilisateur</h3>
+            <button type="button" class="modal-close-btn" (click)="closeAssociateModal()" aria-label="Fermer">&times;</button>
+          </header>
+          <div class="modal-body">
+            <p class="modal-desc">
+              Associez le musicien <strong>{{ associatingMusician()?.firstName }} {{ associatingMusician()?.lastName }}</strong> à son compte utilisateur Copupitre.
+            </p>
+            <div class="form-group">
+              <label for="associateEmail">Adresse email du compte utilisateur *</label>
+              <input
+                type="email"
+                id="associateEmail"
+                [ngModel]="associateEmail()"
+                (ngModelChange)="associateEmail.set($event)"
+                class="input-field"
+                placeholder="Ex: musicien@copupitre.fr"
+                required
+              />
+            </div>
+          </div>
+          <footer class="modal-footer">
+            <button type="button" class="btn btn--outline" (click)="closeAssociateModal()">Annuler</button>
+            <button type="button" class="btn btn--primary" [disabled]="!associateEmail().trim() || isAssociatingUser()" (click)="submitAssociateUser()">
+              <i class="pi pi-link" aria-hidden="true"></i> Confirmer l'association
+            </button>
+          </footer>
+        </div>
+      </div>
+    }
+
+    <!-- MODALE: Déclarer une absence (RG-ABS-01, US-ABS-01) -->
+    @if (showAbsenceModal()) {
+      <div class="modal-backdrop" (click)="closeAbsenceModal()">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <header class="modal-header">
+            <h3><i class="pi pi-calendar-times" aria-hidden="true"></i> Enregistrer une absence</h3>
+            <button type="button" class="modal-close-btn" (click)="closeAbsenceModal()" aria-label="Fermer">&times;</button>
+          </header>
+          <div class="modal-body">
+            @if (!isAdmin()) {
+              <div class="notice-box">
+                <i class="pi pi-info-circle" aria-hidden="true"></i>
+                <span>Prévenance requise : 24h avant une répétition et 1 semaine avant un concert. Sinon, l'absence est automatiquement signalée comme non justifiée.</span>
+              </div>
+            }
+
+            <div class="form-group">
+              <label for="absenceMusician">Musicien concerné *</label>
+              @if (isAdmin()) {
+                <select id="absenceMusician" [ngModel]="newAbsenceData().musicianId" (ngModelChange)="newAbsenceData.set({ ...newAbsenceData(), musicianId: $event })" class="input-field select-field" required>
+                  <option [ngValue]="null" disabled>Sélectionner un musicien</option>
+                  @for (m of service.musicians(); track m.id) {
+                    <option [ngValue]="m.id">{{ m.firstName }} {{ m.lastName }} ({{ m.instrument }})</option>
+                  }
+                </select>
+              } @else {
+                <input type="text" id="absenceMusician" class="input-field" [value]="currentConnectedMusician()?.firstName + ' ' + currentConnectedMusician()?.lastName + ' (' + currentConnectedMusician()?.instrument + ')'" disabled />
+              }
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-group">
+                <label for="absenceType">Type d'événement *</label>
+                <select id="absenceType" [ngModel]="newAbsenceData().eventType" (ngModelChange)="newAbsenceData.set({ ...newAbsenceData(), eventType: $event })" class="input-field select-field" required>
+                  <option value="REHEARSAL">Répétition</option>
+                  <option value="CONCERT">Concert</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="absenceDate">Date de l'événement *</label>
+                <input type="date" id="absenceDate" [ngModel]="newAbsenceData().eventDate" (ngModelChange)="newAbsenceData.set({ ...newAbsenceData(), eventDate: $event })" class="input-field" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="absenceReason">Motif de l'absence *</label>
+              <textarea id="absenceReason" [ngModel]="newAbsenceData().reason" (ngModelChange)="newAbsenceData.set({ ...newAbsenceData(), reason: $event })" class="input-field textarea-field" rows="3" placeholder="Précisez la raison de votre indisponibilité..." required></textarea>
+            </div>
+
+            @if (isAdmin()) {
+              <div class="form-group">
+                <label for="absenceStatusAdmin">Statut (saisie administrateur) *</label>
+                <select id="absenceStatusAdmin" [ngModel]="newAbsenceData().status" (ngModelChange)="newAbsenceData.set({ ...newAbsenceData(), status: $event })" class="input-field select-field">
+                  <option value="JUSTIFIED">Justifiée</option>
+                  <option value="UNJUSTIFIED">Non justifiée</option>
+                </select>
+              </div>
+            }
+          </div>
+          <footer class="modal-footer">
+            <button type="button" class="btn btn--outline" (click)="closeAbsenceModal()">Annuler</button>
+            <button type="button" class="btn btn--primary" [disabled]="isSubmittingAbsence()" (click)="submitAbsence()">
+              <i class="pi pi-check" aria-hidden="true"></i> Valider l'absence
+            </button>
+          </footer>
+        </div>
+      </div>
+    }
+
+    <!-- MODALE: Avertir d'une annulation (RG-ABS-03, UC-ABS-04) -->
+    @if (showCancelEventModal()) {
+      <div class="modal-backdrop" (click)="closeCancelEventModal()">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <header class="modal-header">
+            <h3><i class="pi pi-megaphone" aria-hidden="true"></i> Avertir d'une annulation d'événement</h3>
+            <button type="button" class="modal-close-btn" (click)="closeCancelEventModal()" aria-label="Fermer">&times;</button>
+          </header>
+          <div class="modal-body">
+            <p class="modal-desc">
+              Tous les membres et musiciens de l'organisation recevront une notification automatique concernant cette annulation.
+            </p>
+
+            <div class="form-group-row">
+              <div class="form-group">
+                <label for="cancelType">Événement annulé *</label>
+                <select id="cancelType" [ngModel]="cancelEventData().eventType" (ngModelChange)="cancelEventData.set({ ...cancelEventData(), eventType: $event })" class="input-field select-field" required>
+                  <option value="REHEARSAL">Répétition</option>
+                  <option value="CONCERT">Concert</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="cancelDate">Date de l'événement *</label>
+                <input type="date" id="cancelDate" [ngModel]="cancelEventData().eventDate" (ngModelChange)="cancelEventData.set({ ...cancelEventData(), eventDate: $event })" class="input-field" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="cancelMessage">Motif de l'annulation *</label>
+              <textarea id="cancelMessage" [ngModel]="cancelEventData().message" (ngModelChange)="cancelEventData.set({ ...cancelEventData(), message: $event })" class="input-field textarea-field" rows="3" placeholder="Ex: Salle indisponible pour travaux..." required></textarea>
+            </div>
+          </div>
+          <footer class="modal-footer">
+            <button type="button" class="btn btn--outline" (click)="closeCancelEventModal()">Annuler</button>
+            <button type="button" class="btn btn--danger" [disabled]="isSubmittingCancelEvent()" (click)="submitCancelEvent()">
+              <i class="pi pi-send" aria-hidden="true"></i> Diffuser l'annulation aux membres
+            </button>
+          </footer>
+        </div>
+      </div>
+    }
+
   </div>
 </copupitre-base-layout>

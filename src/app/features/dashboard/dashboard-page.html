@@ -83,7 +83,7 @@
             <div class="org-dashboard-block">
               <div class="org-dashboard-block__header">
                 <h3>
-                  <a [routerLink]="['/organization', block.organization.id]" class="org-dashboard-block__title-link">
+                  <a [routerLink]="['/organization', getOrgSlug(block.organization)]" class="org-dashboard-block__title-link">
                     {{ block.organization.name }}
                   </a>
                 </h3>

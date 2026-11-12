@@ -225,8 +225,12 @@
                           {{ msg.isMe ? 'Moi' : msg.senderFullName }}
                         </span>
                         @if (!msg.isMe && msg.senderRole) {
-                          <span class="role-badge">
-                            {{ msg.senderRole === 'ORGANIZATION' ? 'Organisation' : 'Musicien' }}
+                          <span
+                            class="role-badge"
+                            [class.role-badge--admin]="msg.senderRole === 'ORGANIZATION' || msg.senderRole === 'ORGANIZATION_ADMIN'"
+                            [class.role-badge--musician]="msg.senderRole === 'MUSICIAN'"
+                          >
+                            {{ msg.senderRole === 'ORGANIZATION' || msg.senderRole === 'ORGANIZATION_ADMIN' ? 'Organisation' : 'Musicien' }}
                           </span>
                         }
                         <time class="message-time" [dateTime]="msg.createdAt">

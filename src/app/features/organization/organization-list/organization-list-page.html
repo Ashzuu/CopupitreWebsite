@@ -93,7 +93,7 @@
         @if (filteredOrganizations().length > 0) {
           <div class="org-grid">
             @for (org of filteredOrganizations(); track org.id) {
-              <div class="org-card" [routerLink]="['/organization', org.id]">
+              <div class="org-card" [routerLink]="['/organization', getOrgSlug(org)]">
                 <div>
                   <div class="org-card__header">
                     <div class="org-card__icon-wrapper">

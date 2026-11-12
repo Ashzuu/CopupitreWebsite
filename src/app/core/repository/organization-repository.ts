@@ -15,8 +15,8 @@ export class OrganizationRepository {
     return this.http.get<Organization[]>(`${this.BASE_API_URL}/api/organizations/all`);
   }
 
-  getById(orgId: number): Observable<Organization> {
-    return this.http.get<Organization>(`${this.BASE_API_URL}/api/organizations/${orgId}`);
+  getById(orgId: number | string): Observable<Organization> {
+    return this.http.get<Organization>(`${this.BASE_API_URL}/api/organizations/${encodeURIComponent(orgId)}`);
   }
 
   /** Executes the getUserOrganizations action. */
@@ -25,16 +25,16 @@ export class OrganizationRepository {
   }
 
   /** Executes the getOrganizationReinforcements action. */
-  getOrganizationReinforcements(orgId: number): Observable<ReinforcementAnnouncement[]> {
+  getOrganizationReinforcements(orgId: number | string): Observable<ReinforcementAnnouncement[]> {
     return this.http.get<ReinforcementAnnouncement[]>(
-      this.BASE_API_URL + '/api/organizations/' + orgId + '/reinforcements',
+      `${this.BASE_API_URL}/api/organizations/${encodeURIComponent(orgId)}/reinforcements`,
     );
   }
 
   /** Executes the getOrganizationEquipmentRequests action. */
-  getOrganizationEquipmentRequests(orgId: number): Observable<EquipmentRequest[]> {
+  getOrganizationEquipmentRequests(orgId: number | string): Observable<EquipmentRequest[]> {
     return this.http.get<EquipmentRequest[]>(
-      this.BASE_API_URL + '/api/organizations/' + orgId + '/equipment-requests',
+      `${this.BASE_API_URL}/api/organizations/${encodeURIComponent(orgId)}/equipment-requests`,
     );
   }
 

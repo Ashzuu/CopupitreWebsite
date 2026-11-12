@@ -44,7 +44,7 @@ describe('HomePage', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     const heroTitle = compiled.querySelector('.hero-title');
-    expect(heroTitle?.textContent).toContain('L\'harmonie collective commence par l\'entraide');
+    expect(heroTitle?.textContent).toContain('A la recherche d\'un');
 
     const showcaseSection = compiled.querySelector('.horn-showcase-section');
     expect(showcaseSection).toBeTruthy();

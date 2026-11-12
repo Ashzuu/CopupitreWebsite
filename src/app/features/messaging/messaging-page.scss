@@ -446,8 +446,19 @@
   flex-direction: column;
   gap: $spacing-sm;
   -webkit-overflow-scrolling: touch;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-lg;
+  }
 }
 
+.messages-flow {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.message-row,
 .chat-bubble-wrap {
   display: flex;
   width: 100%;
@@ -455,14 +466,28 @@
   &--me {
     justify-content: flex-end;
 
+    .message-bubble,
     .chat-bubble {
       background-color: $color-primary;
-      color: #fff;
+      color: $color-text-inverse;
       border-bottom-right-radius: 2px;
 
-      .sender-name,
+      .sender-name {
+        color: #fff;
+      }
+
+      .role-badge {
+        background-color: rgba(255, 255, 255, 0.25);
+        color: #fff;
+      }
+
       .message-time {
         color: rgba(255, 255, 255, 0.85);
+      }
+
+      .message-text,
+      .message-content {
+        color: #fff;
       }
     }
   }
@@ -470,39 +495,74 @@
   &--other {
     justify-content: flex-start;
 
+    .message-bubble,
     .chat-bubble {
-      background-color: #fff;
+      background-color: $color-background;
       color: $color-text;
       border-bottom-left-radius: 2px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 
       .sender-name {
         color: $color-secondary;
-        font-weight: 700;
       }
+
+      .role-badge {
+        background-color: rgba($color-secondary, 0.1);
+        color: $color-secondary;
+
+        &--admin {
+          background-color: rgba($color-primary, 0.15);
+          color: $color-primary;
+        }
+        &--musician {
+          background-color: rgba($color-secondary, 0.1);
+          color: $color-secondary;
+        }
+      }
+
       .message-time {
-        color: $color-discrete-secondary;
+        color: $color-text-light;
+      }
+
+      .message-text,
+      .message-content {
+        color: $color-text;
       }
     }
   }
 }
 
+.message-bubble,
 .chat-bubble {
-  max-width: 88%;
+  max-width: 90%;
   padding: $spacing-sm $spacing-md;
-  border-radius: $border-radius-md;
+  border-radius: $border-radius-sm;
   word-break: break-word;
 
   @media (min-width: $breakpoint-md) {
     max-width: 75%;
   }
 
+  .message-meta,
   .bubble-meta {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: $spacing-xs;
     margin-bottom: 4px;
     font-size: 0.75rem;
+
+    .sender-name {
+      font-weight: 600;
+    }
+
+    .role-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: $border-radius-sm;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
 
     .message-time {
       margin-left: auto;
@@ -510,9 +570,10 @@
     }
   }
 
-  .message-text {
+  .message-text,
+  .message-content {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     line-height: 1.45;
     white-space: pre-wrap;
   }

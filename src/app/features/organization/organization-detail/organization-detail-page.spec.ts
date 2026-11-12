@@ -263,4 +263,241 @@ describe('OrganizationDetailPage', () => {
       expect(notifSuccessSpy).toHaveBeenCalled();
     });
   });
+
+  describe('Prise de contact avec l\'orchestre', () => {
+    it('devrait rediriger vers /login avec avertissement si non connecté', () => {
+      mockAuthService.isAuthenticated.set(false);
+      const warnSpy = vi.spyOn(notifService, 'showWarning');
+      const routerSpy = vi.spyOn((component as any).router, 'navigate');
+
+      component.contactOrganization();
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Veuillez vous connecter pour contacter cette organisation.',
+        'Connexion requise',
+      );
+      expect(routerSpy).toHaveBeenCalledWith(['/login']);
+    });
+
+    it('devrait rediriger vers la messagerie si connecté', () => {
+      mockAuthService.isAuthenticated.set(true);
+      const routerSpy = vi.spyOn((component as any).router, 'navigate');
+
+      component.contactOrganization();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/messagerie']);
+    });
+  });
+
+  describe('EPIC 02: Gestion des Musiciens (UC-ORG-09)', () => {
+    it('devrait refuser l\'ajout manuel si des champs sont manquants', () => {
+      const warnSpy = vi.spyOn(notifService, 'showWarning');
+      component.newMusician.set({ firstName: '', lastName: '', email: '', instrument: '' });
+
+      component.submitAddMusician();
+
+      expect(warnSpy).toHaveBeenCalledWith('Veuillez remplir tous les champs obligatoires.');
+    });
+
+    it('devrait ajouter un musicien manuellement et réinitialiser le formulaire (US-ORG-10, RG-ORG-11)', async () => {
+      const addSpy = vi.spyOn(component.service, 'addMusician').mockResolvedValue({
+        id: 10,
+        firstName: 'Jean',
+        lastName: 'Dupont',
+        email: 'jean@test.fr',
+        instrument: 'Violon',
+      });
+      const successSpy = vi.spyOn(notifService, 'showSuccess');
+
+      component.newMusician.set({
+        firstName: 'Jean',
+        lastName: 'Dupont',
+        email: 'jean@test.fr',
+        instrument: 'Violon',
+      });
+
+      component.submitAddMusician();
+      await Promise.resolve();
+
+      expect(addSpy).toHaveBeenCalledWith(42, {
+        firstName: 'Jean',
+        lastName: 'Dupont',
+        email: 'jean@test.fr',
+        instrument: 'Violon',
+      });
+      expect(component.showAddMusicianForm()).toBe(false);
+      expect(successSpy).toHaveBeenCalled();
+    });
+
+    it('devrait importer un fichier CSV et afficher le bilan (US-ORG-09, RG-ORG-10)', async () => {
+      const mockResult = {
+        totalRows: 2,
+        importedCount: 2,
+        skippedCount: 0,
+        errorCount: 0,
+        messages: [],
+        musicians: [],
+      };
+      const importSpy = vi.spyOn(component.service, 'importCsv').mockResolvedValue(mockResult);
+      const successSpy = vi.spyOn(notifService, 'showSuccess');
+
+      const file = new File(['dummy'], 'musiciens.csv', { type: 'text/csv' });
+      component.selectedCsvFile.set(file);
+
+      component.submitCsvImport();
+      await Promise.resolve();
+
+      expect(importSpy).toHaveBeenCalledWith(42, file);
+      expect(component.csvImportResult()).toEqual(mockResult);
+      expect(successSpy).toHaveBeenCalled();
+    });
+
+    it('devrait supprimer un musicien de l\'organisation (US-ORG-11)', async () => {
+      vi.spyOn(window, 'confirm').mockReturnValue(true);
+      const removeSpy = vi.spyOn(component.service, 'removeMusician').mockResolvedValue();
+      const successSpy = vi.spyOn(notifService, 'showSuccess');
+      const musician = { id: 7, firstName: 'Paul', lastName: 'Nérac', email: 'paul@test.fr', instrument: 'Cor' };
+
+      component.deleteMusician(musician);
+      await Promise.resolve();
+
+      expect(removeSpy).toHaveBeenCalledWith(42, 7);
+      expect(successSpy).toHaveBeenCalled();
+    });
+
+    it('devrait associer un musicien existant à un compte utilisateur par email (US-ORG-12)', async () => {
+      const associateSpy = vi.spyOn(component.service, 'associateUser').mockResolvedValue({
+        id: 7,
+        firstName: 'Paul',
+        lastName: 'Nérac',
+        email: 'paul@test.fr',
+        instrument: 'Cor',
+        userId: 99,
+        username: 'paul99',
+      });
+      const successSpy = vi.spyOn(notifService, 'showSuccess');
+
+      const musician = { id: 7, firstName: 'Paul', lastName: 'Nérac', email: 'paul@test.fr', instrument: 'Cor' };
+      component.openAssociateModal(musician);
+      component.associateEmail.set('user@copupitre.fr');
+
+      component.submitAssociateUser();
+      await Promise.resolve();
+
+      expect(associateSpy).toHaveBeenCalledWith(42, 7, 'user@copupitre.fr');
+      expect(component.showAssociateModal()).toBe(false);
+      expect(successSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('EPIC 07: Gestion des Absences', () => {
+    it('devrait charger les statistiques et les absences lors du changement de période (RG-ABS-02)', () => {
+      const loadStatsSpy = vi.spyOn(component.service, 'loadAbsenceStats').mockResolvedValue();
+      const loadAbsencesSpy = vi.spyOn(component.service, 'loadAbsences').mockResolvedValue();
+
+      component.setPeriod('3m');
+
+      expect(component.selectedPeriod()).toBe('3m');
+      expect(loadStatsSpy).toHaveBeenCalled();
+      expect(loadAbsencesSpy).toHaveBeenCalled();
+    });
+
+    it('devrait enregistrer une absence valide (US-ABS-01, RG-ABS-01)', async () => {
+      const registerSpy = vi.spyOn(component.service, 'registerAbsence').mockResolvedValue({
+        id: 1,
+        organizationId: 42,
+        musicianId: 10,
+        musicianFirstName: 'Jean',
+        musicianLastName: 'Dupont',
+        musicianEmail: 'jean@test.fr',
+        instrument: 'Violon',
+        eventType: 'REHEARSAL',
+        eventDate: '2026-11-20',
+        reason: 'Voyage',
+        status: 'JUSTIFIED',
+        submittedByAdmin: true,
+        createdAt: '2026-11-12T10:00:00Z',
+      });
+      const successSpy = vi.spyOn(notifService, 'showSuccess');
+
+      component.newAbsenceData.set({
+        musicianId: 10,
+        eventType: 'REHEARSAL',
+        eventDate: '2026-11-20',
+        endDate: '',
+        reason: 'Voyage',
+        status: 'JUSTIFIED',
+      });
+
+      component.submitAbsence();
+      await Promise.resolve();
+
+      expect(registerSpy).toHaveBeenCalled();
+      expect(component.showAbsenceModal()).toBe(false);
+      expect(successSpy).toHaveBeenCalled();
+    });
+
+    it('devrait mettre à jour le statut d\'une absence (RG-ABS-04)', async () => {
+      const updateSpy = vi.spyOn(component.service, 'updateAbsenceStatus').mockResolvedValue({
+        id: 5,
+        organizationId: 42,
+        musicianId: 10,
+        musicianFirstName: 'Jean',
+        musicianLastName: 'Dupont',
+        musicianEmail: 'jean@test.fr',
+        instrument: 'Violon',
+        eventType: 'CONCERT',
+        eventDate: '2026-12-01',
+        reason: 'Motif',
+        status: 'JUSTIFIED',
+        submittedByAdmin: false,
+        createdAt: '2026-11-12T10:00:00Z',
+      });
+      const successSpy = vi.spyOn(notifService, 'showSuccess');
+
+      const mockAbsence = {
+        id: 5,
+        organizationId: 42,
+        musicianId: 10,
+        musicianFirstName: 'Jean',
+        musicianLastName: 'Dupont',
+        musicianEmail: 'jean@test.fr',
+        instrument: 'Violon',
+        eventType: 'CONCERT' as const,
+        eventDate: '2026-12-01',
+        reason: 'Motif',
+        status: 'PENDING' as const,
+        submittedByAdmin: false,
+        createdAt: '2026-11-12T10:00:00Z',
+      };
+
+      component.changeAbsenceStatus(mockAbsence, 'JUSTIFIED');
+      await Promise.resolve();
+
+      expect(updateSpy).toHaveBeenCalledWith(42, 5, 'JUSTIFIED');
+      expect(successSpy).toHaveBeenCalled();
+    });
+
+    it('devrait avertir les membres d\'une annulation d\'événement (RG-ABS-03, UC-ABS-04)', async () => {
+      const notifySpy = vi.spyOn(component.service, 'notifyEventCancellation').mockResolvedValue();
+      const successSpy = vi.spyOn(notifService, 'showSuccess');
+
+      component.cancelEventData.set({
+        eventType: 'REHEARSAL',
+        eventDate: '2026-11-25',
+        message: 'Intempéries',
+      });
+
+      component.submitCancelEvent();
+      await Promise.resolve();
+
+      expect(notifySpy).toHaveBeenCalledWith(42, {
+        eventType: 'REHEARSAL',
+        eventDate: '2026-11-25',
+        message: 'Intempéries',
+      });
+      expect(component.showCancelEventModal()).toBe(false);
+      expect(successSpy).toHaveBeenCalled();
+    });
+  });
 });

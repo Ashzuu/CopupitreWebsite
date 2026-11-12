@@ -9,10 +9,10 @@
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()" class="auth-form">
           <div class="form-group">
-            <label for="identifier">Identifiant (Email ou Pseudo)</label>
-            <input id="identifier" type="text" formControlName="identifier" class="form-control" placeholder="Votre identifiant">
+            <label for="identifier">Email</label>
+            <input id="identifier" type="text" formControlName="identifier" class="form-control" placeholder="Votre email">
             @if (loginForm.controls.identifier.touched && loginForm.controls.identifier.invalid) {
-              <span class="error-msg">L'identifiant est requis.</span>
+              <span class="error-msg">L'email est requis.</span>
             }
           </div>
 

@@ -59,6 +59,10 @@ export const routes: Routes = [
     title: "Détails de l'organisation - Copupitre",
   },
   {
+    path: 'organisation/:id',
+    redirectTo: 'organization/:id',
+  },
+  {
     path: 'renforts',
     loadComponent: () =>
       import('../features/reinforcements/reinforcements-list/reinforcements-list-page').then(
